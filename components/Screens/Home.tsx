@@ -28,7 +28,8 @@ const Home = () => {
                 left={(props) => <Avatar.Icon {...props} icon="nintendo-game-boy" style={{backgroundColor: theme.colors.secondary}} />}
                 right={(props) => 
                     <View style={{flexDirection: "row"}}>
-                        <IconButton {...props} icon="skip-next-circle-outline" onPress={() => {}} />
+                        {/* hint button */}
+                        <IconButton {...props} icon="head-question-outline" onPress={() => {}} />
                     </View>
                 }
             />
@@ -42,7 +43,8 @@ const Home = () => {
                     showLineNumbers={true}
                     wrapLines={WRAP_LINES ? true : undefined}
 
-                    selectedLineNumbers={[1, 5, 11]}
+                    selectedLineNumbers={[selectedLine]}
+                    onLinePress={(lineIndex) => { setSelectedLine(lineIndex) }}
                 >
                     {codeString}
                 </CodeHighlighter>
@@ -56,7 +58,16 @@ const Home = () => {
                     disabled={selectedLine == -1}
                     onPress={() => {}}
                 >
-                    Submit!
+                    Submit
+                </Button>
+
+                <Button
+                    icon="skip-next-circle-outline"
+                    mode="contained"
+                    style={{backgroundColor: theme.colors.error}}
+                    onPress={() => {}}
+                >
+                    Skip
                 </Button>
             </View>
         </View>
@@ -84,10 +95,11 @@ const styles = StyleSheet.create({
         flex: 6
     },
     bottomWrapper: {
-        margin: 15,
-        justifyContent: "center",
+        margin: 10,
+        justifyContent: "space-around",
         alignItems: "center",
-        flex: 1
+        flex: 1,
+        flexDirection: "row"
     }
 });
 

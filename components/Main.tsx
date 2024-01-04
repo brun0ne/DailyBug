@@ -22,6 +22,11 @@ const Main = () => {
                         <MaterialCommunityIcons name="home" color={color} size={26} />
                     ),
                 }} />
+                <Tab.Screen name="Create" component={User} options={{
+                    tabBarIcon:({color})=>(
+                        <MaterialCommunityIcons name="creation" color={color} size={26} />
+                    ),
+                }} />
                 <Tab.Screen name="Profile" component={User} options={{
                     tabBarIcon:({color})=>(
                         <MaterialCommunityIcons name="account" color={color} size={26} />

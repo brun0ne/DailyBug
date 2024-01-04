@@ -7,7 +7,7 @@ import {
 	Text,
 	type TextStyle,
 	View,
-	type ViewStyle,
+	Pressable,
 } from "react-native";
 import SyntaxHighlighter, { SyntaxHighlighterProps,
 } from "react-syntax-highlighter";
@@ -18,13 +18,15 @@ import {
 	getRNStylesFromHljsStyle,
 	styles
 } from "./styles";
+import { TouchableRipple } from "react-native-paper";
 
 export interface CodeHighlighterProps extends SyntaxHighlighterProps {
 	hljsStyle: ReactStyle;
 	textStyle?: StyleProp<TextStyle>;
 	verticalScrollViewProps?: ScrollViewProps;
 	horizontalScrollViewProps?: ScrollViewProps;
-	selectedLineNumbers?: Array<Number>
+	selectedLineNumbers?: Array<number>;
+	onLinePress?: (lineIndex: number) => any
 }
 
 export const CodeHighlighter: FunctionComponent<CodeHighlighterProps> = ({
@@ -34,6 +36,7 @@ export const CodeHighlighter: FunctionComponent<CodeHighlighterProps> = ({
 	horizontalScrollViewProps,
 	verticalScrollViewProps,
 	selectedLineNumbers,
+	onLinePress,
 	...rest
 }) => {
 	const stylesheet: HighlighterStyleSheet = useMemo(
@@ -77,11 +80,11 @@ export const CodeHighlighter: FunctionComponent<CodeHighlighterProps> = ({
 						const isSelected = (selectedLineNumbers ?? []).includes(index);
 
 						acc.push(
-							<View key={`${keyPrefixWithIndex}_view`}>
+							<TouchableRipple rippleColor={"white"} key={`${keyPrefixWithIndex}_view`} onPress={() => { onLinePress(index) }}>
 								<Text style={[isSelected ? styles.selectedLine : styles.line, nodeStyles]} key={keyPrefixWithIndex}>
 									{renderNode(node.children, `${keyPrefixWithIndex}_child`)}
 								</Text>
-							</View>
+							</TouchableRipple >
 						);
 					}
 					else {
