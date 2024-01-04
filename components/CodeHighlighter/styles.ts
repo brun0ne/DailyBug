@@ -42,5 +42,9 @@ export const styles = StyleSheet.create({
 		alignSelf: 'flex-start',
 		textAlign: 'right',
 		opacity: 0.5
-	}
+	},
+	selectedLine: {
+		backgroundColor: "#555",
+	},
+	line: {}
 });

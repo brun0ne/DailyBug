@@ -24,6 +24,7 @@ export interface CodeHighlighterProps extends SyntaxHighlighterProps {
 	textStyle?: StyleProp<TextStyle>;
 	verticalScrollViewProps?: ScrollViewProps;
 	horizontalScrollViewProps?: ScrollViewProps;
+	selectedLineNumbers?: Array<Number>
 }
 
 export const CodeHighlighter: FunctionComponent<CodeHighlighterProps> = ({
@@ -32,6 +33,7 @@ export const CodeHighlighter: FunctionComponent<CodeHighlighterProps> = ({
 	hljsStyle,
 	horizontalScrollViewProps,
 	verticalScrollViewProps,
+	selectedLineNumbers,
 	...rest
 }) => {
 	const stylesheet: HighlighterStyleSheet = useMemo(
@@ -53,36 +55,44 @@ export const CodeHighlighter: FunctionComponent<CodeHighlighterProps> = ({
 			const keyPrefixWithIndex = `${keyPrefix}_${index}`;
 
 			if (node.children) {
-				const isLineNumber = rest.showLineNumbers && index == 0 && node.children[0].value;
-
 				const nodeStyles = StyleSheet.flatten([
 					textStyle,
 					{ color: stylesheet.hljs?.color },
 					getStylesForNode(node)
 				]);
 
-				if (isLineNumber) {
-					// console.log(keyPrefix, node.children[0].value);
-
+				if (rest.showLineNumbers && index == 0 && node.children[0].value) {
 					acc.push(
 						<View style={{ flexDirection: "row", flex: 1 }} key={`${keyPrefixWithIndex}_view`}>
 							<Text style={styles.lineNumberStyles} key={`${keyPrefixWithIndex}_line_number_${node.children[0].value}`}>
 								{node.children[0].value}
 							</Text>
-							<Text style={nodeStyles} key={keyPrefixWithIndex}>
-								{renderNode(node.children.slice(1), `${keyPrefixWithIndex}_child`)}
-							</Text>
 						</View>
 					);
 				}
 				else {
-					acc.push(
-						<View key={`${keyPrefixWithIndex}_view`}>
-							<Text style={nodeStyles} key={keyPrefixWithIndex}>
-								{renderNode(node.children, `${keyPrefixWithIndex}_child`)}
-							</Text>
-						</View>
-					);
+					const isLine = !(keyPrefixWithIndex.includes("child"));
+
+					if (isLine) {
+						const isSelected = (selectedLineNumbers ?? []).includes(index);
+
+						acc.push(
+							<View key={`${keyPrefixWithIndex}_view`}>
+								<Text style={[isSelected ? styles.selectedLine : styles.line, nodeStyles]} key={keyPrefixWithIndex}>
+									{renderNode(node.children, `${keyPrefixWithIndex}_child`)}
+								</Text>
+							</View>
+						);
+					}
+					else {
+						acc.push(
+							<View key={`${keyPrefixWithIndex}_view`}>
+								<Text style={nodeStyles} key={keyPrefixWithIndex}>
+									{renderNode(node.children, `${keyPrefixWithIndex}_child`)}
+								</Text>
+							</View>
+						);
+					}
 				}
 			}
 

@@ -41,6 +41,8 @@ const Home = () => {
                     language="typescript"
                     showLineNumbers={true}
                     wrapLines={WRAP_LINES ? true : undefined}
+
+                    selectedLineNumbers={[1, 5, 11]}
                 >
                     {codeString}
                 </CodeHighlighter>
