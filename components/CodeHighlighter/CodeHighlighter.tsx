@@ -22,14 +22,16 @@ import {
 export interface CodeHighlighterProps extends SyntaxHighlighterProps {
 	hljsStyle: ReactStyle;
 	textStyle?: StyleProp<TextStyle>;
-	scrollViewProps?: ScrollViewProps;
+	verticalScrollViewProps?: ScrollViewProps;
+	horizontalScrollViewProps?: ScrollViewProps;
 }
 
 export const CodeHighlighter: FunctionComponent<CodeHighlighterProps> = ({
 	children,
 	textStyle,
 	hljsStyle,
-	scrollViewProps,
+	horizontalScrollViewProps,
+	verticalScrollViewProps,
 	...rest
 }) => {
 	const stylesheet: HighlighterStyleSheet = useMemo(
@@ -51,7 +53,7 @@ export const CodeHighlighter: FunctionComponent<CodeHighlighterProps> = ({
 			const keyPrefixWithIndex = `${keyPrefix}_${index}`;
 
 			if (node.children) {
-				const isLineNumber = (rest as any).showLineNumbers && index == 0 && node.children[0].value;
+				const isLineNumber = rest.showLineNumbers && index == 0 && node.children[0].value;
 
 				const nodeStyles = StyleSheet.flatten([
 					textStyle,
@@ -94,13 +96,13 @@ export const CodeHighlighter: FunctionComponent<CodeHighlighterProps> = ({
 	const renderer = (props: rendererProps) => {
 		const { rows } = props;
 		return (
-			<ScrollView>
+			<ScrollView {...verticalScrollViewProps} contentContainerStyle={verticalScrollViewProps?.contentContainerStyle}>
 				<ScrollView
-					{...scrollViewProps}
+					{...horizontalScrollViewProps}
 					horizontal
 					contentContainerStyle={[
 						stylesheet.hljs,
-						scrollViewProps?.contentContainerStyle
+						horizontalScrollViewProps?.contentContainerStyle
 					]}
 				>
 					<View>{renderNode(rows)}</View>

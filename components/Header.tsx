@@ -1,11 +1,17 @@
-import React from "react";
-import { Text } from "react-native";
-import AppText from "./AppText";
-
-const name = "🐛 Daily Bug 🐛";
+import * as React from 'react';
+import { Appbar, useTheme } from 'react-native-paper';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
 const Header = () => {
-    return <AppText><Text style={{fontSize: 20}}>{name}</Text></AppText>
+    const theme = useTheme();
+
+    return (
+        <Appbar.Header>
+            <MaterialCommunityIcons name="bug-check" color={theme.colors.primary} size={35} style={{ margin: 10 }}/>
+            <Appbar.Content title="Daily Bug" />
+            <Appbar.Action icon="dots-vertical" onPress={() => {}} />
+        </Appbar.Header>
+    )
 };
 
 export default Header;
