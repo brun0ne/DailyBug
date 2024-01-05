@@ -1,6 +1,6 @@
 import React, { useImperativeHandle } from 'react';
 import { StyleSheet } from 'react-native';
-import { ActivityIndicator, Avatar, Card, Modal, Portal, Text, useTheme } from 'react-native-paper';
+import { ActivityIndicator, Avatar, Button, Card, Modal, Portal, Text, useTheme } from 'react-native-paper';
 
 export type HintModalProps = {
     isLoading: () => boolean;
@@ -25,26 +25,37 @@ const HintModal = (props: HintModalProps, ref) => {
                 { props.isLoading() ? (
                     <ActivityIndicator />
                 ) : (
-                    <Card.Title
-                        title="Hint"
-                        subtitle={props.getHintText()}
-                        left={(props) => <Avatar.Icon {...props} icon="help-circle" style={{ backgroundColor: theme.colors.secondary }} />}
-                    />
+                    <Card>
+                        <Card.Title
+                            title={<Text variant="titleLarge">{"Hint"}</Text>}
+                            left={ (props) => <Avatar.Icon {...props} icon="help-circle" style={{ backgroundColor: theme.colors.secondary }} /> }
+                        />
+
+                        <Card.Content>
+                            <Text variant="bodyMedium">{props.getHintText()}</Text>
+                        </Card.Content>
+
+                        <Card.Actions style={styles.buttons}>
+                            <Button textColor={theme.colors.secondary} style={styles.okButton} onPress={hideModal}>Got it!</Button>
+                        </Card.Actions>
+                    </Card>
                 )}
-                <Text style={styles.bottomText}>Touch anywhere to dismiss.</Text>
             </Modal>
         </Portal>
     );
 };
 
 const styles = StyleSheet.create({
-    "container": {
-        backgroundColor: 'white',
+    container: {
+        backgroundColor: 'transparent',
+        borderColor: 'transparent',
+        shadowColor: 'transparent',
         padding: 20
     },
-    "bottomText": {
-        marginTop: 30
-    }
+    buttons: {
+        marginTop: 10
+    },
+    okButton: {}
 });
 
 export type HintModalHandle = {

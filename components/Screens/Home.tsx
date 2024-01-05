@@ -6,6 +6,7 @@ import { Avatar, Card, IconButton, Button, useTheme, ActivityIndicator } from "r
 import CodeView, { CodeViewHandle } from "../CodeView";
 import Confetti, { ConfettiHandle } from "../Confetti";
 import HintModal, { HintModalHandle } from "../HintModal";
+import SubmitButton, { SubmitButtonHandle } from "../SubmitButton";
 
 import AppConfig from "../../util/AppConfig";
 import { Bug } from "../../util/Bug";
@@ -14,12 +15,12 @@ const Home = () => {
     const theme = useTheme();
 
     const [bug, setBug] = useState<Bug>(null);
-    const [isLoading, setLoading] = useState(true);
-    const [selected, markAsSelected] = useState(false);
+    const [isLoading, setLoading] = useState(false);
 
     const confettiRef = useRef<ConfettiHandle>(null);
     const codeViewRef = useRef<CodeViewHandle>(null);
     const hintModalRef = useRef<HintModalHandle>(null);
+    const submitButtonRef = useRef<SubmitButtonHandle>(null);
 
     const loadBugFromAPI = async () => {
         try {
@@ -37,16 +38,22 @@ const Home = () => {
     };
 
     useEffect(() => {
-        if (isLoading)
+        if (!bug && !isLoading) {
+            setLoading(true);
             loadBugFromAPI();
+        }
     });
+
+    const isAnswerCorrect = () => (
+        bug && submitButtonRef && !submitButtonRef.current.getIsDisabled() && (bug.answer - 1) == codeViewRef.current.getSelectedLine()
+    );
 
     return (
         <View style={styles.mainWrapper}>
             <HintModal ref={hintModalRef} getHintText={() => (
-                bug.hint
+                bug ? bug.hint : "Error"
             )} isLoading={() => (
-                isLoading
+                !bug || isLoading
             )} />
             <Confetti ref={confettiRef} />
 
@@ -63,25 +70,24 @@ const Home = () => {
             />
 
             <View style={styles.topWrapper}>
-                { isLoading ? (
+                { (!bug || isLoading) ? (
                     <ActivityIndicator />
                 ) : (
                 <CodeView codeString={bug.body} wrapLines={false} ref={codeViewRef} callback={(_lineIndex: number) => {
-                    if (!selected)
-                        markAsSelected(true);
+                    submitButtonRef.current.setDisabled(false);
                 }} />)}
             </View>
             
             <View style={styles.bottomWrapper}>
-                <Button
-                    icon="check-circle"
-                    mode="contained"
-                    style={{backgroundColor: !selected ? theme.colors.backdrop : theme.colors.secondary}}
-                    disabled={!selected}
-                    onPress={() => { confettiRef.current.submit(); console.log(codeViewRef.current.getSelectedLine()) }}
-                >
-                    Submit
-                </Button>
+                <SubmitButton ref={submitButtonRef} onPress={ () => {
+                    if (isAnswerCorrect()) {
+                        confettiRef.current.submit();
+                        setBug(null);
+                    }
+                    else {
+                        // ...
+                    }
+                }} />
 
                 <Button
                     icon="skip-next-circle-outline"
