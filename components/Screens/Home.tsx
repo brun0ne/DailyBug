@@ -1,30 +1,53 @@
-import React, { useRef, useState } from "react";
-import { View, StyleSheet, Animated } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { View, StyleSheet } from "react-native";
 
-import { Avatar, Card, IconButton, Button, useTheme } from "react-native-paper";
+import { Avatar, Card, IconButton, Button, useTheme, ActivityIndicator } from "react-native-paper";
 
 import CodeView, { CodeViewHandle } from "../CodeView";
-import Confetti, { ConfettiHandle } from "../Confetti"
+import Confetti, { ConfettiHandle } from "../Confetti";
+import HintModal, { HintModalHandle } from "../HintModal";
+
+import AppConfig from "../../util/AppConfig";
+import { Bug } from "../../util/Bug";
 
 const Home = () => {
     const theme = useTheme();
 
+    const [bug, setBug] = useState<Bug>(null);
+    const [isLoading, setLoading] = useState(true);
     const [selected, markAsSelected] = useState(false);
 
     const confettiRef = useRef<ConfettiHandle>(null);
     const codeViewRef = useRef<CodeViewHandle>(null);
+    const hintModalRef = useRef<HintModalHandle>(null);
 
-    /** placeholder -- syntax highlighting test */
+    const loadBugFromAPI = async () => {
+        try {
+            const response = await fetch(AppConfig.api("requestBug"));
+            const json = await response.json();
+            setBug(json);
+        }
+        catch (error) {
+            console.error(error);
+        }
+        finally {
+            setLoading(false);
+            console.log("BUG from API loaded");
+        }
+    };
 
-    let codeString = "const x = () => {return 1}; // test of some loooooooong line\n/* Second line */\n";
-
-    for (let i = 0; i < 30; i++)
-    {
-        codeString += "/* abcd " + i + " */\n";
-    }
+    useEffect(() => {
+        if (isLoading)
+            loadBugFromAPI();
+    });
 
     return (
         <View style={styles.mainWrapper}>
+            <HintModal ref={hintModalRef} getHintText={() => (
+                bug.hint
+            )} isLoading={() => (
+                isLoading
+            )} />
             <Confetti ref={confettiRef} />
 
             <Card.Title
@@ -34,16 +57,19 @@ const Home = () => {
                 right={(props) => 
                     <View style={{flexDirection: "row"}}>
                         {/* hint button */}
-                        <IconButton {...props} icon="head-question-outline" onPress={() => {}} />
+                        <IconButton {...props} icon="head-question-outline" onPress={() => {hintModalRef.current.showModal()}} />
                     </View>
                 }
             />
 
             <View style={styles.topWrapper}>
-                <CodeView codeString={codeString} wrapLines={false} ref={codeViewRef} callback={(_lineIndex: number) => {
+                { isLoading ? (
+                    <ActivityIndicator />
+                ) : (
+                <CodeView codeString={bug.body} wrapLines={false} ref={codeViewRef} callback={(_lineIndex: number) => {
                     if (!selected)
                         markAsSelected(true);
-                }} />
+                }} />)}
             </View>
             
             <View style={styles.bottomWrapper}>
