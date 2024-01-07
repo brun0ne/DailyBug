@@ -1,5 +1,5 @@
 
-import React, { useImperativeHandle, useRef } from "react";
+import React, { useImperativeHandle, useRef, useState } from "react";
 import { View, StyleSheet, Animated } from "react-native";
 
 import ConfettiCannon from 'react-native-confetti-cannon';
@@ -9,13 +9,15 @@ const Confetti = (_props, ref) => {
     const confettiRef = useRef<ConfettiCannon>(null); 
     const confettiWrapperRef = useRef<View>(null);
 
-    const submit = () => {
-        confettiWrapperRef.current.setNativeProps({style: {display: "flex"}});
+    const [display, setDisplay] = useState(false);
+
+    const start = () => {
+        setDisplay(true);
         confettiRef.current.start();
     };
 
     useImperativeHandle(ref, () => ({
-        submit
+        start
     }));
 
     const confettiStart = () => {
@@ -28,7 +30,7 @@ const Confetti = (_props, ref) => {
     };
 
     const confettiStop = () => {
-        confettiWrapperRef.current.setNativeProps({style: {display: "none"}});
+        setDisplay(false);
 
         Animated.timing(fadeAnim, {
             toValue: 100,
@@ -38,7 +40,7 @@ const Confetti = (_props, ref) => {
     };
 
     return (
-        <Animated.View style={[styles.confettiView, {opacity: fadeAnim}]} ref={confettiWrapperRef}>
+        <Animated.View style={[styles.confettiView, {opacity: fadeAnim, display: display ? "flex" : "none"}]} ref={confettiWrapperRef}>
             <ConfettiCannon count={50} origin={{x: 0, y: 0}} autoStart={false} ref={confettiRef} onAnimationStart={confettiStart} onAnimationEnd={confettiStop} />
         </Animated.View>
     );
@@ -54,7 +56,7 @@ const styles = StyleSheet.create({
 });
 
 export type ConfettiHandle = {
-    submit: () => void;
+    start: () => void;
 };
 
 export default React.forwardRef<ConfettiHandle, any>(Confetti);

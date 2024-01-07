@@ -81,7 +81,7 @@ const Home = () => {
             <View style={styles.bottomWrapper}>
                 <SubmitButton ref={submitButtonRef} onPress={ () => {
                     if (isAnswerCorrect()) {
-                        confettiRef.current.submit();
+                        // confettiRef.current.start();
                         setBug(null);
                     }
                     else {
