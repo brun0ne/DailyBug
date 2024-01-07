@@ -14,11 +14,13 @@ import AppConfig from "../../util/AppConfig";
 
 import HomeHeader from "../HomeHeader";
 import HomeButtons from "../HomeButtons";
+import IncorrectPopup from "../IncorrectPopup";
 
 const Home = () => {
     const [bug, setBug] = useState<Bug>(null);
     const [isLoading, setLoading] = useState(false);
     
+    const [incorrectPopupShown, setIncorrectPopupShown] = useState(false);
     const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
     const [selectedLine, setSelectedLine] = useState<LineToHighlight | null>(null);
 
@@ -67,18 +69,28 @@ const Home = () => {
             return;
 
         if (isAnswerCorrect()) {
+            /* Correct answer */
             confettiRef.current.start();
+
+            setIncorrectPopupShown(false)
             setBug(null);
             setSelectedLine(null);
         }
         else {
+            /* Incorrect answer */
+            setIncorrectPopupShown(true);
             setSubmitButtonDisabled(true);
+            
             setSelectedLine({
                 index: selectedLine.index,
                 color: "#a13e28"
             });
         }
     }, [confettiRef, isAnswerCorrect]);
+
+    const hideIncorrectCallback = useCallback(() => {
+        setIncorrectPopupShown(false)
+    }, []);
 
     /* Hint callbacks */
     const hintCallback = useCallback(() => {
@@ -99,6 +111,8 @@ const Home = () => {
             <HintModal ref={hintModalRef} getHintText={getHintTextCallback} isLoading={isLoadingCallback} />
             
             <Confetti ref={confettiRef} />
+
+            <IncorrectPopup visible={incorrectPopupShown} hideCallback={hideIncorrectCallback} />
 
             <HomeHeader hintCallback={hintCallback} />
 

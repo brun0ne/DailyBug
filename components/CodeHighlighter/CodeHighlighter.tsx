@@ -126,7 +126,7 @@ export const CodeHighlighter: FunctionComponent<CodeHighlighterProps> = ({
 						horizontalScrollViewProps?.contentContainerStyle
 					]}
 				>
-					<View>{renderNode(rows)}</View>
+					<View style={{width: "100%"}}>{renderNode(rows)}</View>
 				</ScrollView>
 			</ScrollView>
 		);
