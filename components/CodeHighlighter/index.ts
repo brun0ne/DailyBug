@@ -1,8 +1,9 @@
 import CodeHighlighter, {
 	type CodeHighlighterProps,
+	type LineToHighlight
 } from "./CodeHighlighter";
 
-export type { CodeHighlighterProps };
+export type { CodeHighlighterProps, LineToHighlight };
 
 export default CodeHighlighter;
 

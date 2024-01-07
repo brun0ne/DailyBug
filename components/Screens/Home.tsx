@@ -1,27 +1,29 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { View, StyleSheet } from "react-native";
 
-import { Avatar, Card, IconButton, Button, useTheme, ActivityIndicator } from "react-native-paper";
+import { ActivityIndicator } from "react-native-paper";
 
-import CodeView, { CodeViewHandle } from "../CodeView";
+import CodeView from "../CodeView";
 import Confetti, { ConfettiHandle } from "../Confetti";
 import HintModal, { HintModalHandle } from "../HintModal";
-import SubmitButton, { SubmitButtonHandle } from "../SubmitButton";
+
+import { LineToHighlight } from "../CodeHighlighter";
+import { Bug } from "../../util/Bug";
 
 import AppConfig from "../../util/AppConfig";
-import { Bug } from "../../util/Bug";
+
 import HomeHeader from "../HomeHeader";
+import HomeButtons from "../HomeButtons";
 
 const Home = () => {
-    const theme = useTheme();
-
     const [bug, setBug] = useState<Bug>(null);
     const [isLoading, setLoading] = useState(false);
+    
+    const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
+    const [selectedLine, setSelectedLine] = useState<LineToHighlight | null>(null);
 
     const confettiRef = useRef<ConfettiHandle>(null);
-    const codeViewRef = useRef<CodeViewHandle>(null);
     const hintModalRef = useRef<HintModalHandle>(null);
-    const submitButtonRef = useRef<SubmitButtonHandle>(null);
 
     const loadBugFromAPI = async () => {
         try {
@@ -45,25 +47,40 @@ const Home = () => {
         }
     });
 
-    const isAnswerCorrect = () => (
-        bug && submitButtonRef && !submitButtonRef.current.getIsDisabled() && (bug.answer - 1) == codeViewRef.current.getSelectedLine()
-    );
+    /* Core callbacks */
+    const isAnswerCorrect = useCallback(() => (
+        bug && selectedLine && !submitButtonDisabled && (bug.answer - 1) == selectedLine.index
+    ), [bug, submitButtonDisabled, selectedLine]);
 
-    const codeViewCallback = useCallback((_lineIndex: number) => {
-        submitButtonRef.current.setDisabled(false);
-    }, [submitButtonRef])
+    const codeViewCallback = useCallback((lineIndex: number) => {
+        setSubmitButtonDisabled(false);
+        setSelectedLine(
+            {
+                index: lineIndex,
+                color: "#555"
+            }
+        );
+    }, [])
 
     const submitButtonCallback = useCallback(() => {
+        if (!selectedLine)
+            return;
+
         if (isAnswerCorrect()) {
             confettiRef.current.start();
             setBug(null);
-            console.log("test")
+            setSelectedLine(null);
         }
         else {
-            // ...
+            setSubmitButtonDisabled(true);
+            setSelectedLine({
+                index: selectedLine.index,
+                color: "#a13e28"
+            });
         }
-    }, [confettiRef, submitButtonRef, codeViewRef, bug]);
+    }, [confettiRef, isAnswerCorrect]);
 
+    /* Hint callbacks */
     const hintCallback = useCallback(() => {
         hintModalRef.current.showModal()
     }, [hintModalRef]);
@@ -72,6 +89,7 @@ const Home = () => {
         bug ? bug.hint : "Error"
     ), [bug]);
 
+    /* Loading callback */
     const isLoadingCallback = useCallback(() => (
         !bug || isLoading
     ), [bug, isLoading]);
@@ -88,20 +106,11 @@ const Home = () => {
                 { (!bug || isLoading) ? (
                     <ActivityIndicator />
                 ) : (
-                <CodeView codeString={bug.body} wrapLines={false} ref={codeViewRef} callback={codeViewCallback} />)}
+                <CodeView codeString={bug.body} wrapLines={false} callback={codeViewCallback} linesToHighlight={selectedLine ? [selectedLine] : []} />)}
             </View>
             
             <View style={styles.bottomWrapper}>
-                <SubmitButton ref={submitButtonRef} onPress={submitButtonCallback} />
-
-                <Button
-                    icon="skip-next-circle-outline"
-                    mode="contained"
-                    style={{backgroundColor: theme.colors.error}}
-                    // onPress={() => {}}
-                >
-                    Skip
-                </Button>
+                <HomeButtons submitButtonDisabled={submitButtonDisabled} submitButtonCallback={submitButtonCallback} />
             </View>
         </View>
     );

@@ -1,26 +1,17 @@
-import React, { useImperativeHandle, useState, memo } from "react";
+import React, { useImperativeHandle, useState, memo, useCallback } from "react";
 import { StyleSheet } from "react-native";
 
-import CodeHighlighter from "./CodeHighlighter";
+import CodeHighlighter, { type LineToHighlight } from "./CodeHighlighter";
 import { atomOneDarkReasonable } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 export type CodeViewProps = {
     codeString: string;
     wrapLines: boolean;
+    linesToHighlight?: Array<LineToHighlight>;
     callback: (lineIndex: number) => any;
 };
 
 const CodeView = (props: CodeViewProps, ref) => {
-    const [selectedLine, setSelectedLine] = useState(-1);
-
-    const getSelectedLine = () => {
-        return selectedLine;
-    }
-
-    useImperativeHandle(ref, () => ({
-        getSelectedLine
-    }));
-
     return (
         <CodeHighlighter
             hljsStyle={atomOneDarkReasonable}
@@ -29,12 +20,8 @@ const CodeView = (props: CodeViewProps, ref) => {
             language="typescript"
             showLineNumbers={true}
             wrapLines={props.wrapLines ? true : undefined}
-
-            selectedLineNumbers={[selectedLine]}
-            onLinePress={(lineIndex) => {
-                props.callback(lineIndex);
-                setSelectedLine(lineIndex);
-            }}
+            selectedLines={props.linesToHighlight}
+            onLinePress={props.callback}
         >
             {props.codeString}
         </CodeHighlighter>

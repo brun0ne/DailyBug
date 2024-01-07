@@ -2,26 +2,19 @@ import React, { useImperativeHandle, useState } from 'react';
 import { Button, useTheme } from 'react-native-paper';
 
 export type SubmitButtonProps = {
-    onPress: () => any
+    disabled: boolean;
+    onPress: () => any;
 };
 
-const SubmitButton = (props: SubmitButtonProps, ref) => {
-    const [isDisabled, setDisabled] = useState(true);
+const SubmitButton = (props: SubmitButtonProps) => {
     const theme = useTheme();
-
-    const getIsDisabled = () => (isDisabled);
-
-    useImperativeHandle(ref, () => ({
-        setDisabled,
-        getIsDisabled
-    }));
 
     return (
         <Button
             icon="check-circle"
             mode="contained"
-            style={{ backgroundColor: isDisabled ? theme.colors.backdrop : theme.colors.secondary }}
-            disabled={isDisabled}
+            style={{ backgroundColor: props.disabled ? theme.colors.backdrop : theme.colors.secondary }}
+            disabled={props.disabled}
             onPress={props.onPress}
         >
             Submit
@@ -29,9 +22,4 @@ const SubmitButton = (props: SubmitButtonProps, ref) => {
     );
 };
 
-export type SubmitButtonHandle = {
-    setDisabled: (disabled: boolean) => void;
-    getIsDisabled: () => boolean;
-};
-
-export default React.forwardRef<SubmitButtonHandle, SubmitButtonProps>(SubmitButton);
+export default SubmitButton;

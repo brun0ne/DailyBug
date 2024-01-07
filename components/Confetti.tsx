@@ -18,25 +18,27 @@ const Confetti = (_props, ref) => {
     }));
 
     const confettiStart = () => {
-        Animated.timing(fadeAnim, {
-            toValue: 100,
-            duration: 0,
-            useNativeDriver: true
-        }).start();
+        const fadeOut = () => {
+            Animated.timing(fadeAnim, {
+                toValue: 0.01,
+                duration: 1000,
+                useNativeDriver: true,
+                delay: 2000
+            }).start();
+        }
 
         Animated.timing(fadeAnim, {
-            toValue: 0,
-            duration: 3000,
-            useNativeDriver: true,
-            delay: 100
-        }).start();
+            toValue: 1,
+            duration: 10,
+            useNativeDriver: true
+        }).start(fadeOut);
     };
 
     const confettiStop = () => {};
 
     return (
         <Animated.View style={[styles.confettiView, {opacity: fadeAnim}]} ref={confettiWrapperRef}>
-            <ConfettiCannon count={20} origin={{x: 0, y: 0}} autoStart={false} ref={confettiRef} onAnimationStart={confettiStart} onAnimationEnd={confettiStop} />
+            <ConfettiCannon count={20} origin={{x: -50, y: 0}} autoStart={false} ref={confettiRef} onAnimationStart={confettiStart} onAnimationEnd={confettiStop} />
         </Animated.View>
     );
 };
