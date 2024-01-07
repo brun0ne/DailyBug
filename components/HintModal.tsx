@@ -1,4 +1,4 @@
-import React, { useImperativeHandle } from 'react';
+import React, { useImperativeHandle, memo, useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import { ActivityIndicator, Avatar, Button, Card, Modal, Portal, Text, useTheme } from 'react-native-paper';
 
@@ -19,6 +19,10 @@ const HintModal = (props: HintModalProps, ref) => {
         showModal
     }));
 
+    const titleLeftCallback = useCallback((props) => (
+        <Avatar.Icon {...props} icon="help-circle" style={{ backgroundColor: theme.colors.secondary }} />
+    ), [theme]);
+
     return (
         <Portal>
             <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={styles.container}>
@@ -28,7 +32,7 @@ const HintModal = (props: HintModalProps, ref) => {
                     <Card>
                         <Card.Title
                             title={<Text variant="titleLarge">{"Hint"}</Text>}
-                            left={ (props) => <Avatar.Icon {...props} icon="help-circle" style={{ backgroundColor: theme.colors.secondary }} /> }
+                            left={titleLeftCallback}
                         />
 
                         <Card.Content>
@@ -62,4 +66,4 @@ export type HintModalHandle = {
     showModal: () => void;
 };
 
-export default React.forwardRef<HintModalHandle, HintModalProps>(HintModal);
+export default memo(React.forwardRef<HintModalHandle, HintModalProps>(HintModal));

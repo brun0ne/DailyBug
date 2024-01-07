@@ -68,13 +68,18 @@ const Home = () => {
         hintModalRef.current.showModal()
     }, [hintModalRef]);
 
+    const getHintTextCallback = useCallback(() => (
+        bug ? bug.hint : "Error"
+    ), [bug]);
+
+    const isLoadingCallback = useCallback(() => (
+        !bug || isLoading
+    ), [bug, isLoading]);
+
     return (
         <View style={styles.mainWrapper}>
-            <HintModal ref={hintModalRef} getHintText={() => (
-                bug ? bug.hint : "Error"
-            )} isLoading={() => (
-                !bug || isLoading
-            )} />
+            <HintModal ref={hintModalRef} getHintText={getHintTextCallback} isLoading={isLoadingCallback} />
+            
             <Confetti ref={confettiRef} />
 
             <HomeHeader hintCallback={hintCallback} />
@@ -93,7 +98,7 @@ const Home = () => {
                     icon="skip-next-circle-outline"
                     mode="contained"
                     style={{backgroundColor: theme.colors.error}}
-                    onPress={() => {}}
+                    // onPress={() => {}}
                 >
                     Skip
                 </Button>
