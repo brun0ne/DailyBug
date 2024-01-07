@@ -10,6 +10,7 @@ import SubmitButton, { SubmitButtonHandle } from "../SubmitButton";
 
 import AppConfig from "../../util/AppConfig";
 import { Bug } from "../../util/Bug";
+import HomeHeader from "../HomeHeader";
 
 const Home = () => {
     const theme = useTheme();
@@ -63,6 +64,10 @@ const Home = () => {
         }
     }, [confettiRef, submitButtonRef, codeViewRef, bug]);
 
+    const hintCallback = useCallback(() => {
+        hintModalRef.current.showModal()
+    }, [hintModalRef]);
+
     return (
         <View style={styles.mainWrapper}>
             <HintModal ref={hintModalRef} getHintText={() => (
@@ -72,17 +77,7 @@ const Home = () => {
             )} />
             <Confetti ref={confettiRef} />
 
-            <Card.Title
-                title="Where is the Bug?"
-                subtitle="Select a line of code and submit!"
-                left={(props) => <Avatar.Icon {...props} icon="nintendo-game-boy" style={{backgroundColor: theme.colors.secondary}} />}
-                right={(props) => 
-                    <View style={{flexDirection: "row"}}>
-                        {/* hint button */}
-                        <IconButton {...props} icon="head-question-outline" onPress={() => {hintModalRef.current.showModal()}} />
-                    </View>
-                }
-            />
+            <HomeHeader hintCallback={hintCallback} />
 
             <View style={styles.topWrapper}>
                 { (!bug || isLoading) ? (
