@@ -1,4 +1,4 @@
-import React, { useImperativeHandle, useState } from "react";
+import React, { useImperativeHandle, useState, memo } from "react";
 import { StyleSheet } from "react-native";
 
 import CodeHighlighter from "./CodeHighlighter";
@@ -56,4 +56,4 @@ export type CodeViewHandle = {
     getSelectedLine: () => number;
 };
 
-export default React.forwardRef<CodeViewHandle, CodeViewProps>(CodeView);
+export default memo(React.forwardRef<CodeViewHandle, CodeViewProps>(CodeView));

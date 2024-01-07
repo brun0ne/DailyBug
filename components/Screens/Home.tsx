@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { View, StyleSheet } from "react-native";
 
 import { Avatar, Card, IconButton, Button, useTheme, ActivityIndicator } from "react-native-paper";
@@ -48,6 +48,21 @@ const Home = () => {
         bug && submitButtonRef && !submitButtonRef.current.getIsDisabled() && (bug.answer - 1) == codeViewRef.current.getSelectedLine()
     );
 
+    const codeViewCallback = useCallback((_lineIndex: number) => {
+        submitButtonRef.current.setDisabled(false);
+    }, [submitButtonRef])
+
+    const submitButtonCallback = useCallback(() => {
+        if (isAnswerCorrect()) {
+            confettiRef.current.start();
+            setBug(null);
+            console.log("test")
+        }
+        else {
+            // ...
+        }
+    }, [confettiRef, submitButtonRef, codeViewRef, bug]);
+
     return (
         <View style={styles.mainWrapper}>
             <HintModal ref={hintModalRef} getHintText={() => (
@@ -73,21 +88,11 @@ const Home = () => {
                 { (!bug || isLoading) ? (
                     <ActivityIndicator />
                 ) : (
-                <CodeView codeString={bug.body} wrapLines={false} ref={codeViewRef} callback={(_lineIndex: number) => {
-                    submitButtonRef.current.setDisabled(false);
-                }} />)}
+                <CodeView codeString={bug.body} wrapLines={false} ref={codeViewRef} callback={codeViewCallback} />)}
             </View>
             
             <View style={styles.bottomWrapper}>
-                <SubmitButton ref={submitButtonRef} onPress={ () => {
-                    if (isAnswerCorrect()) {
-                        // confettiRef.current.start();
-                        setBug(null);
-                    }
-                    else {
-                        // ...
-                    }
-                }} />
+                <SubmitButton ref={submitButtonRef} onPress={submitButtonCallback} />
 
                 <Button
                     icon="skip-next-circle-outline"
