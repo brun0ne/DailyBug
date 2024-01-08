@@ -1,23 +1,16 @@
-import React, { useImperativeHandle, memo, useCallback } from 'react';
+import React, { memo, useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import { ActivityIndicator, Avatar, Button, Card, Modal, Portal, Text, useTheme } from 'react-native-paper';
 
 export type HintModalProps = {
+    visible: boolean;
+    hide: () => any;
     isLoading: () => boolean;
     getHintText: () => string;
 };
 
 const HintModal = (props: HintModalProps, ref) => {
-    const [visible, setVisible] = React.useState(false);
-
     const theme = useTheme();
-
-    const showModal = () => setVisible(true);
-    const hideModal = () => setVisible(false);
-
-    useImperativeHandle(ref, () => ({
-        showModal
-    }));
 
     const titleLeftCallback = useCallback((props) => (
         <Avatar.Icon {...props} icon="help-circle" style={{ backgroundColor: theme.colors.secondary }} />
@@ -25,7 +18,7 @@ const HintModal = (props: HintModalProps, ref) => {
 
     return (
         <Portal>
-            <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={styles.container}>
+            <Modal visible={props.visible} onDismiss={props.hide} contentContainerStyle={styles.container}>
                 { props.isLoading() ? (
                     <ActivityIndicator />
                 ) : (
@@ -40,7 +33,7 @@ const HintModal = (props: HintModalProps, ref) => {
                         </Card.Content>
 
                         <Card.Actions style={styles.buttons}>
-                            <Button textColor={theme.colors.secondary} style={styles.okButton} onPress={hideModal}>Got it!</Button>
+                            <Button textColor={theme.colors.secondary} style={styles.okButton} onPress={props.hide}>Got it!</Button>
                         </Card.Actions>
                     </Card>
                 )}
@@ -62,8 +55,4 @@ const styles = StyleSheet.create({
     okButton: {}
 });
 
-export type HintModalHandle = {
-    showModal: () => void;
-};
-
-export default memo(React.forwardRef<HintModalHandle, HintModalProps>(HintModal));
+export default memo(HintModal);

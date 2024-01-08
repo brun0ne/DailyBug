@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { View, StyleSheet } from "react-native";
 
 import { ActivityIndicator } from "react-native-paper";
 
 import CodeView from "../CodeView";
 import Confetti, { ConfettiHandle } from "../Confetti";
-import HintModal, { HintModalHandle } from "../HintModal";
+import HintModal from "../HintModal";
 
 import { LineToHighlight } from "../CodeHighlighter";
 import { Bug } from "../../util/Bug";
@@ -20,12 +20,13 @@ const Home = () => {
     const [bug, setBug] = useState<Bug>(null);
     const [isLoading, setLoading] = useState(false);
     
+    const [hintModalShown, setHintModalShown] = useState(false); 
     const [incorrectPopupShown, setIncorrectPopupShown] = useState(false);
     const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
     const [selectedLine, setSelectedLine] = useState<LineToHighlight | null>(null);
 
+    /* Confetti is fired imperatively */
     const confettiRef = useRef<ConfettiHandle>(null);
-    const hintModalRef = useRef<HintModalHandle>(null);
 
     const loadBugFromAPI = async () => {
         try {
@@ -62,7 +63,11 @@ const Home = () => {
                 color: "#555"
             }
         );
-    }, [])
+    }, []);
+
+    const linesToHighlight = useMemo(() => (
+        selectedLine ? [selectedLine] : []
+    ), [selectedLine]);
 
     const submitButtonCallback = useCallback(() => {
         if (!selectedLine)
@@ -93,9 +98,13 @@ const Home = () => {
     }, []);
 
     /* Hint callbacks */
+    const hideHindModal = useCallback(() => {
+        setHintModalShown(false);
+    }, []);
+
     const hintCallback = useCallback(() => {
-        hintModalRef.current.showModal()
-    }, [hintModalRef]);
+        setHintModalShown(true);
+    }, []);
 
     const getHintTextCallback = useCallback(() => (
         bug ? bug.hint : "Error"
@@ -108,7 +117,7 @@ const Home = () => {
 
     return (
         <View style={styles.mainWrapper}>
-            <HintModal ref={hintModalRef} getHintText={getHintTextCallback} isLoading={isLoadingCallback} />
+            <HintModal visible={hintModalShown} hide={hideHindModal} getHintText={getHintTextCallback} isLoading={isLoadingCallback} />
             
             <Confetti ref={confettiRef} />
 
@@ -120,7 +129,7 @@ const Home = () => {
                 { (!bug || isLoading) ? (
                     <ActivityIndicator />
                 ) : (
-                <CodeView codeString={bug.body} wrapLines={false} callback={codeViewCallback} linesToHighlight={selectedLine ? [selectedLine] : []} />)}
+                <CodeView codeString={bug.body} wrapLines={false} callback={codeViewCallback} linesToHighlight={linesToHighlight} />)}
             </View>
             
             <View style={styles.bottomWrapper}>
