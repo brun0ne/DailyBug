@@ -57,12 +57,10 @@ const Home = () => {
 
     const codeViewCallback = useCallback((lineIndex: number) => {
         setSubmitButtonDisabled(false);
-        setSelectedLine(
-            {
-                index: lineIndex,
-                color: "#555"
-            }
-        );
+        setSelectedLine({
+            index: lineIndex,
+            color: "#555"
+        });
     }, []);
 
     const linesToHighlight = useMemo(() => (

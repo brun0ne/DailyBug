@@ -9,7 +9,7 @@ export type HintModalProps = {
     getHintText: () => string;
 };
 
-const HintModal = (props: HintModalProps, ref) => {
+const HintModal = (props: HintModalProps) => {
     const theme = useTheme();
 
     const titleLeftCallback = useCallback((props) => (
