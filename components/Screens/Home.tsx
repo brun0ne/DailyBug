@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { View, StyleSheet } from "react-native";
-
 import { ActivityIndicator } from "react-native-paper";
+
+import { AVPlaybackSource, Audio } from 'expo-av';
 
 import CodeView from "../CodeView";
 import Confetti, { ConfettiHandle } from "../Confetti";
@@ -16,14 +17,27 @@ import HomeHeader from "../HomeHeader";
 import HomeButtons from "../HomeButtons";
 import IncorrectPopup from "../IncorrectPopup";
 
+const correctSound = require("../../assets/correct.mp3") as AVPlaybackSource;
+const wrongSound = require("../../assets/wrong.mp3") as AVPlaybackSource;
+
 const Home = () => {
     const [bug, setBug] = useState<Bug>(null);
     const [isLoading, setLoading] = useState(false);
+
+    const [sound, setSound] = useState<Audio.Sound>();
     
     const [hintModalShown, setHintModalShown] = useState(false); 
     const [incorrectPopupShown, setIncorrectPopupShown] = useState(false);
     const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
     const [selectedLine, setSelectedLine] = useState<LineToHighlight | null>(null);
+
+    /* Sound */
+    const playSound = useCallback(async (s: AVPlaybackSource) => {
+        const { sound } = await Audio.Sound.createAsync(s);
+        setSound(sound);
+
+        await sound.playAsync();
+    }, [sound]);
 
     /* Confetti is fired imperatively */
     const confettiRef = useRef<ConfettiHandle>(null);
@@ -43,12 +57,23 @@ const Home = () => {
         }
     };
 
+    /* Effects */
     useEffect(() => {
+        /* Serving Bugs */
         if (!bug && !isLoading) {
             setLoading(true);
             loadBugFromAPI();
         }
     });
+
+    useEffect(() => {
+        /* Cleanup */
+        if (sound) {
+            return () => {
+                sound.unloadAsync();
+            }
+        }
+    }, [sound]);
 
     /* Core callbacks */
     const isAnswerCorrect = useCallback(() => (
@@ -78,6 +103,8 @@ const Home = () => {
             setIncorrectPopupShown(false)
             setBug(null);
             setSelectedLine(null);
+
+            playSound(correctSound);
         }
         else {
             /* Incorrect answer */
@@ -88,6 +115,8 @@ const Home = () => {
                 index: selectedLine.index,
                 color: "#a13e28"
             });
+
+            playSound(wrongSound);
         }
     }, [confettiRef, isAnswerCorrect]);
 
