@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
 
@@ -17,10 +17,12 @@ import HomeHeader from "../HomeHeader";
 import HomeButtons from "../HomeButtons";
 import IncorrectPopup from "../IncorrectPopup";
 
+import { UserContext } from "../../util/UserContext";
+
 const correctSound = require("../../assets/correct.mp3") as AVPlaybackSource;
 const wrongSound = require("../../assets/wrong.mp3") as AVPlaybackSource;
 
-const Home = () => {
+const HomeView = () => {
     const [bug, setBug] = useState<Bug>(null);
     const [isLoading, setLoading] = useState(false);
 
@@ -30,6 +32,8 @@ const Home = () => {
     const [incorrectPopupShown, setIncorrectPopupShown] = useState(false);
     const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
     const [selectedLine, setSelectedLine] = useState<LineToHighlight | null>(null);
+
+    const {user, setUser} = useContext(UserContext);
 
     /* Sound */
     const playSound = useCallback(async (s: AVPlaybackSource) => {
@@ -92,7 +96,7 @@ const Home = () => {
         selectedLine ? [selectedLine] : []
     ), [selectedLine]);
 
-    const submitButtonCallback = useCallback(() => {
+    const submitButtonCallback = useCallback(async () => {
         if (!selectedLine)
             return;
 
@@ -103,6 +107,9 @@ const Home = () => {
             setIncorrectPopupShown(false)
             setBug(null);
             setSelectedLine(null);
+
+            await user.incrementCombo();
+            setUser(await user.getUpdated());
 
             playSound(correctSound);
         }
@@ -115,6 +122,9 @@ const Home = () => {
                 index: selectedLine.index,
                 color: "#a13e28"
             });
+
+            await user.resetCombo();
+            setUser(await user.getUpdated());
 
             playSound(wrongSound);
         }
@@ -184,4 +194,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default Home;
+export default HomeView;
