@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { View } from "react-native";
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialBottomTabNavigator } from 'react-native-paper/react-navigation';
@@ -41,7 +42,7 @@ const Main = () => {
                             <MaterialCommunityIcons name="home" color={color} size={26} />
                         ),
                     }} />
-                    <Tab.Screen name="Create" component={UserView} options={{
+                    <Tab.Screen name="Create" component={View} options={{
                         tabBarIcon:({color})=>(
                             <MaterialCommunityIcons name="creation" color={color} size={26} />
                         ),
