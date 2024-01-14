@@ -26,11 +26,10 @@ const Main = () => {
     };
 
     useEffect(() => {
-        if (!user)
+        if (!user) {
             loadUser();
+        }
     }, [user]);
-
-    console.log("main refreshed");
 
     return (
         <UserContext.Provider value={context}>

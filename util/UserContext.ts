@@ -59,8 +59,6 @@ export class User {
         new_user.combo = await this._getValueFromLocalStorage("combo");
         new_user.streak = await this._getValueFromLocalStorage("streak");
 
-        console.log(`new: ${new_user.combo} ${new_user.streak}`)
-
         return new_user;
     }
 }
