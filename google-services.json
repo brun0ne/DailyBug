@@ -12,7 +12,20 @@
           "package_name": "com.brun0ne.DailyBug"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "YOUR_ANDROID_OAUTH_CLIENT_ID",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.brun0ne.DailyBug",
+            "certificate_hash": "YOUR_CERTIFICATE_HASH"
+          }
+        },
+        {
+          "client_id": "YOUR_WEB_OAUTH_CLIENT_ID",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "YOUR_FIREBASE_API_KEY"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "YOUR_WEB_OAUTH_CLIENT_ID",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

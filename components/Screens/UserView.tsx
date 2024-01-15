@@ -4,6 +4,7 @@ import { View, StyleSheet } from "react-native";
 import { UserContext } from "../../util/UserContext";
 
 import { ActivityIndicator, Avatar, Button, Card, Text, useTheme } from "react-native-paper";
+import GoogleSignInButton from "../GoogleSignInButton";
 
 const UserView = () => {
     const {user, setUser} = useContext(UserContext); 
@@ -36,6 +37,9 @@ const UserView = () => {
                     }
                 </Card.Content>
             </Card>
+            <View style={styles.bottom}>
+                <GoogleSignInButton />
+            </View>
         </View>
     );
 }
@@ -48,6 +52,9 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         gap: 10,
         marginTop: 5
+    },
+    bottom: {
+        marginTop: 20
     }
 });
 
