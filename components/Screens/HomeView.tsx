@@ -17,7 +17,7 @@ import HomeHeader from "../HomeHeader";
 import HomeButtons from "../HomeButtons";
 import IncorrectPopup from "../IncorrectPopup";
 
-import { UserContext } from "../../util/UserContext";
+import { UserAPI, UserContext } from "../../util/UserContext";
 
 const correctSound = require("../../assets/correct.mp3") as AVPlaybackSource;
 const wrongSound = require("../../assets/wrong.mp3") as AVPlaybackSource;
@@ -33,7 +33,7 @@ const HomeView = () => {
     const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
     const [selectedLine, setSelectedLine] = useState<LineToHighlight | null>(null);
 
-    const {user, setUser} = useContext(UserContext);
+    const userContext = useContext(UserContext);
 
     /* Sound */
     const playSound = useCallback(async (s: AVPlaybackSource) => {
@@ -108,8 +108,7 @@ const HomeView = () => {
             setBug(null);
             setSelectedLine(null);
 
-            await user.incrementCombo();
-            setUser(await user.getUpdated());
+            UserAPI.incrementCombo(userContext);
 
             playSound(correctSound);
         }
@@ -123,8 +122,7 @@ const HomeView = () => {
                 color: "#a13e28"
             });
 
-            await user.resetCombo();
-            setUser(await user.getUpdated());
+            UserAPI.resetCombo(userContext);
 
             playSound(wrongSound);
         }

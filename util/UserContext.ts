@@ -1,69 +1,68 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createContext } from 'react';
+import { FirebaseAuthTypes, firebase } from '@react-native-firebase/auth';
+import { ContextType, createContext } from 'react';
 
-type UserValues = "streak" | "combo";
+import AppConfig from '../util/AppConfig';
 
-export class User {
-    logged_in: boolean
-
-    streak?: number
-    combo?: number
-
-    constructor() {
-        this.logged_in = false;
-    }
-
-    async _getValueFromLocalStorage(key: UserValues): Promise<number> {
-        const value = await AsyncStorage.getItem(key);
-            
-        if (!value) {
-            return 0;
-        }
-        return parseInt(value);
-    }
-
-    async incrementStreak(): Promise<void> {
-        if (!this.logged_in) {
-            this.streak = await this._getValueFromLocalStorage("streak");
-
-            await AsyncStorage.setItem("streak", (this.streak + 1).toString());
-        }
-        else {
-            /* call API */
-        }
-    }
-
-    async incrementCombo(): Promise<void> {
-        if (!this.logged_in) {
-            this.combo = await this._getValueFromLocalStorage("combo");
-
-            await AsyncStorage.setItem("combo", (this.combo + 1).toString());
-        }
-        else {
-            /* call API */
-        }
-    }
-
-    async resetCombo(): Promise<void> {
-        if (!this.logged_in) {
-            await AsyncStorage.setItem("combo", (0).toString());
-        }
-        else {
-            /* call API */
-        }
-    }
-
-    async getUpdated(): Promise<User> {
-        const new_user = new User();
-
-        new_user.combo = await this._getValueFromLocalStorage("combo");
-        new_user.streak = await this._getValueFromLocalStorage("streak");
-
-        return new_user;
-    }
-}
-
-export const UserContext = createContext<{user: User, setUser: React.Dispatch<React.SetStateAction<User>>}>({
+export const UserContext = createContext<{user: FirebaseAuthTypes.User, updated: boolean, setUpdated: React.Dispatch<React.SetStateAction<boolean>>}>({
     user: null,
-    setUser: () => {}
+    updated: true,
+    setUpdated: () => {}
 });
+
+type UserContextValue = ContextType<typeof UserContext>;
+
+export class UserAPI {
+    private static async doRequest(user: FirebaseAuthTypes.User, endpoint: string, method: string, reqData: any) {
+        const idToken = await user.getIdToken(true);
+
+        const headers = {
+            idToken: idToken
+        };
+
+        try {
+            const req = await fetch(AppConfig.api(endpoint), {
+                method: method,
+                headers: headers,
+                ...(method === "POST" ? { body: JSON.stringify(reqData) } : {})
+            });
+            const res = await req.json();
+            
+            return res;
+        }
+        catch (error) {
+            console.log(error);
+            return null;
+        }
+    }
+
+    static async getStreak(context: UserContextValue) {
+        const data = await UserAPI.doRequest(context.user, "user/streak", "GET", {});
+        return data.streak as number;
+    }
+
+    static async getCombo(context: UserContextValue) {
+        const data = await UserAPI.doRequest(context.user, "user/combo", "GET", {});
+        return data.combo as number;
+    }
+
+    static async incrementCombo(context: UserContextValue) {
+        const combo = await UserAPI.getCombo(context);
+        await UserAPI.doRequest(context.user, "user/combo", "POST", {
+            combo: combo + 1
+        });
+        context.setUpdated(true);
+    }
+
+    static async resetCombo(context: UserContextValue) {
+        await UserAPI.doRequest(context.user, "user/combo", "POST", {
+            combo: 0
+        });
+        context.setUpdated(true);
+    }
+
+    static async init(user: FirebaseAuthTypes.User) {
+        const res = await UserAPI.doRequest(user, "user/init", "POST", {});
+        console.log("INIT", res);
+    }
+};
+

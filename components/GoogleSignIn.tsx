@@ -7,7 +7,7 @@ GoogleSignin.configure({
     webClientId: 'YOUR_WEB_OAUTH_CLIENT_ID',
 });
 
-const onGoogleButtonPress = async () => {
+export const invokeGoogleSignIn = async () => {
     /* Check if device supports Google Play */
     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
     /* Get the user ID token */
@@ -26,7 +26,7 @@ const GoogleSignInButton = () => {
     return (
         <Button
             mode="outlined"
-            onPress={() => onGoogleButtonPress().then(onSignIn)}
+            onPress={() => invokeGoogleSignIn().then(onSignIn)}
         >
             Sign in with Google
         </Button>
