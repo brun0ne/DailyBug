@@ -35,6 +35,7 @@ const Main = () => {
     useEffect(() => {
         const subscriber = auth().onAuthStateChanged((user) => {
             setUser(user);
+            setUpdated(true);
 
             if (!user) {
                 invokeGoogleSignIn();

@@ -46,9 +46,13 @@ export class UserAPI {
     }
 
     static async incrementCombo(context: UserContextValue) {
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         const combo = await UserAPI.getCombo(context);
+
         await UserAPI.doRequest(context.user, "user/combo", "POST", {
-            combo: combo + 1
+            combo: combo + 1,
+            /* this is used to calculate a new Streak value */
+            timezone: timezone
         });
         context.setUpdated(true);
     }
