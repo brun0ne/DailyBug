@@ -6,7 +6,7 @@ const Header = () => {
     const theme = useTheme();
 
     return (
-        <Appbar.Header>
+        <Appbar.Header elevated>
             <MaterialCommunityIcons name="bug-check" color={theme.colors.primary} size={35} style={{ margin: 10 }}/>
             <Appbar.Content title="Daily Bug" />
             <Appbar.Action icon="dots-vertical" onPress={() => {}} />

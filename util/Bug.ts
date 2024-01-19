@@ -7,4 +7,5 @@ export interface Bug {
     hint: string;
     answer: number;
     body: string;
+    explanation: string;
 }

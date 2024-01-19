@@ -14,10 +14,11 @@ import { Bug } from "../../util/Bug";
 import AppConfig from "../../util/AppConfig";
 
 import HomeHeader from "../HomeHeader";
-import HomeButtons from "../HomeButtons";
+import AnswerButtons from "../AnswerButton";
 import IncorrectPopup from "../IncorrectPopup";
 
 import { UserAPI, UserContext } from "../../util/UserContext";
+import NextBugButton from "../NextBugButtons";
 
 const correctSound = require("../../assets/correct.mp3") as AVPlaybackSource;
 const wrongSound = require("../../assets/wrong.mp3") as AVPlaybackSource;
@@ -32,6 +33,7 @@ const HomeView = () => {
     const [incorrectPopupShown, setIncorrectPopupShown] = useState(false);
     const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
     const [selectedLine, setSelectedLine] = useState<LineToHighlight | null>(null);
+    const [correctAnswerState, setCorrectAnswerState] = useState(false);
 
     const userContext = useContext(UserContext);
 
@@ -84,13 +86,16 @@ const HomeView = () => {
         bug && selectedLine && !submitButtonDisabled && (bug.answer - 1) == selectedLine.index
     ), [bug, submitButtonDisabled, selectedLine]);
 
-    const codeViewCallback = useCallback((lineIndex: number) => {
+    const codeViewPressCallback = useCallback((lineIndex: number) => {
+        if (correctAnswerState)
+            return; /* disable line select */
+
         setSubmitButtonDisabled(false);
         setSelectedLine({
             index: lineIndex,
             color: "#555"
         });
-    }, []);
+    }, [correctAnswerState]);
 
     const linesToHighlight = useMemo(() => (
         selectedLine ? [selectedLine] : []
@@ -104,9 +109,12 @@ const HomeView = () => {
             /* Correct answer */
             confettiRef.current.start();
 
-            setIncorrectPopupShown(false)
-            setBug(null);
-            setSelectedLine(null);
+            setIncorrectPopupShown(false);
+            setCorrectAnswerState(true);
+            setSelectedLine({
+                index: selectedLine.index,
+                color: "#20612c"
+            });
 
             UserAPI.incrementCombo(userContext);
 
@@ -130,6 +138,12 @@ const HomeView = () => {
 
     const hideIncorrectCallback = useCallback(() => {
         setIncorrectPopupShown(false)
+    }, []);
+
+    const nextButtonCallback = useCallback(() => {
+        setCorrectAnswerState(false);
+        setBug(null);
+        setSelectedLine(null);
     }, []);
 
     /* Hint callbacks */
@@ -158,17 +172,26 @@ const HomeView = () => {
 
             <IncorrectPopup visible={incorrectPopupShown} hideCallback={hideIncorrectCallback} />
 
-            <HomeHeader hintCallback={hintCallback} />
+            <HomeHeader
+                hintCallback={hintCallback}
+                explanation={(!bug || isLoading) ? "..." : bug.explanation}
+                showExplanation={correctAnswerState}
+            />
 
             <View style={styles.topWrapper}>
                 { (!bug || isLoading) ? (
                     <ActivityIndicator />
                 ) : (
-                <CodeView codeString={bug.body} wrapLines={false} callback={codeViewCallback} linesToHighlight={linesToHighlight} />)}
+                <CodeView codeString={bug.body} wrapLines={false} callback={codeViewPressCallback} linesToHighlight={linesToHighlight} />)}
             </View>
             
             <View style={styles.bottomWrapper}>
-                <HomeButtons submitButtonDisabled={submitButtonDisabled} submitButtonCallback={submitButtonCallback} />
+                <View style={styles.buttonWrapper}>
+                    { correctAnswerState ? 
+                        <NextBugButton onPress={nextButtonCallback}></NextBugButton> :
+                        <AnswerButtons submitButtonDisabled={submitButtonDisabled} submitButtonCallback={submitButtonCallback} />
+                    }
+                </View>
             </View>
         </View>
     );
@@ -176,15 +199,22 @@ const HomeView = () => {
 
 const styles = StyleSheet.create({
     mainWrapper: {
-        paddingTop: 10,
+        paddingTop: 20,
         flex: 1
     },
     topWrapper: {
-        marginTop: 15,
-        flex: 6
+        flex: 6,
+        marginTop: 20,
+        // justifyContent: "center"
     },
     bottomWrapper: {
         margin: 10,
+        justifyContent: "space-around",
+        alignItems: "center",
+        flex: 1,
+        flexDirection: "row"
+    },
+    buttonWrapper: {
         justifyContent: "space-around",
         alignItems: "center",
         flex: 1,
