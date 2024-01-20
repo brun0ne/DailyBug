@@ -1,4 +1,4 @@
-import React, { useImperativeHandle, useState } from 'react';
+import React from 'react';
 import { Button, useTheme } from 'react-native-paper';
 
 export type SubmitButtonProps = {

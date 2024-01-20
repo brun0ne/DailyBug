@@ -1,7 +1,62 @@
-import { Skia, Canvas, Shader, Fill, useFont, Text, vec, useClockValue, useComputedValue, useValue, useTouchHandler } from "@shopify/react-native-skia";
-import { useMemo } from "react";
-import { Pressable, View, StyleSheet } from "react-native";
+import { Skia, Canvas, Shader, Fill, useFont, Text, vec, useClockValue, useComputedValue, useValue, useTouchHandler, AnimatedProp, SkFont } from "@shopify/react-native-skia";
+import { useEffect, useMemo } from "react";
+import { View, StyleSheet } from "react-native";
 import { Icon } from "react-native-paper";
+
+import {
+    Easing,
+    useDerivedValue,
+    useSharedValue,
+    withDelay,
+    withRepeat,
+    withSequence,
+    withTiming,
+} from "react-native-reanimated";
+
+type AnimatedLetterProps = {
+    text: string
+    index: number
+
+    x: number
+    y: number
+
+    font: AnimatedProp<SkFont, any>
+    color: string
+
+    jumping?: boolean
+    delayBetweenJumps?: number
+};
+
+const BezierEasing = Easing.bezier(0.25, -0.5, 0.25, 1);
+
+const JumpingLetter = ({text, index, x, y, font, color, jumping = true, delayBetweenJumps = 1000}: AnimatedLetterProps) => {
+    const offset = useSharedValue(0);
+
+    useEffect(() => {
+        if (!jumping)
+            return;
+
+        offset.value = withDelay(index * 100, withRepeat(withSequence(
+            withTiming(10, { duration: 500, easing: BezierEasing }),
+            withTiming(0, { duration: 500, easing: Easing.bounce }),
+            withDelay(delayBetweenJumps, withTiming(0))
+        ), -1));
+    });
+
+    const offset_y = useDerivedValue(() => (
+        y - offset.value
+    ), [y, offset]);
+
+    return (
+        <Text
+            x={x}
+            y={jumping ? offset_y : y}
+            text={text}
+            font={font}
+            color={color}
+        />
+    )
+};
 
 const source = Skia.RuntimeEffect.Make(`
 uniform vec2 resolution;
@@ -103,13 +158,31 @@ const ShaderButton = ({
                 <Fill>
                     <Shader source={source} uniforms={uniforms} />
                 </Fill>
-                <Text
-                    x={paddingLeft + (icon ? iconSize : 0) + 5}
-                    y={paddingTop + fontSize}
-                    text={text}
-                    font={font}
-                    color={"white"}
-                />
+                {
+                    ((array: string[]) => {
+                        let offset = 0;
+                        let acc = [];
+
+                        /* each letter is a separate element */
+                        array.forEach((c, index) => {
+                            acc.push(
+                                <JumpingLetter
+                                    key={`${c}_${index}`}
+                                    index={index}
+                                    x={offset + paddingLeft + (icon ? iconSize : 0) + 5}
+                                    y={paddingTop + fontSize}
+                                    text={c}
+                                    font={font}
+                                    color={"white"}
+                                />
+                            );
+
+                            offset += font.getTextWidth(c);
+                        });
+
+                        return acc;
+                    })([...text])
+                }
             </Canvas>
             <View style={[styles.iconView, {paddingLeft: paddingLeft}]}>
                 {typeof icon === "string" ? <Icon source={icon} size={iconSize} color="white" /> : icon}

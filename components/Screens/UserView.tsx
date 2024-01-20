@@ -1,11 +1,10 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { View, StyleSheet } from "react-native";
-import { ActivityIndicator, Avatar, Button, Card, Text, useTheme } from "react-native-paper";
+import { Avatar, Button, Card, Text, useTheme } from "react-native-paper";
 
 import auth from "@react-native-firebase/auth";
 
 import { UserAPI, UserContext } from "../../util/UserContext";
-import { AvatarImageSource } from "react-native-paper/lib/typescript/components/Avatar/AvatarImage";
 
 const UserView = () => {
     const userContext = useContext(UserContext); 

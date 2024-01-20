@@ -1,4 +1,4 @@
-import { Button, useTheme } from "react-native-paper";
+import { useTheme } from "react-native-paper";
 import ShaderButton from "./Animated/ShaderButton";
 
 export type NextBugButtonProps = {

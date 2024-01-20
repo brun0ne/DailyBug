@@ -1,4 +1,4 @@
-import { FirebaseAuthTypes, firebase } from '@react-native-firebase/auth';
+import { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { ContextType, createContext } from 'react';
 
 import AppConfig from '../util/AppConfig';

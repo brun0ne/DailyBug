@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Appbar, useTheme } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 

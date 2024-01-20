@@ -1,5 +1,4 @@
 import { memo } from "react";
-import { View, StyleSheet } from "react-native";
 import SubmitButton from "./SubmitButton";
 import { Button, useTheme } from "react-native-paper";
 
