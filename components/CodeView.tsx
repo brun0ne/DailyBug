@@ -1,4 +1,4 @@
-import React, { useImperativeHandle, useState, memo, useCallback } from "react";
+import { memo } from "react";
 import { StyleSheet } from "react-native";
 
 import CodeHighlighter, { type LineToHighlight } from "./CodeHighlighter";
@@ -11,7 +11,7 @@ export type CodeViewProps = {
     callback: (lineIndex: number) => any;
 };
 
-const CodeView = (props: CodeViewProps, ref) => {
+const CodeView = (props: CodeViewProps) => {
     return (
         <CodeHighlighter
             hljsStyle={atomOneDarkReasonable}
@@ -39,8 +39,4 @@ const styles = (wrapLines: boolean) => StyleSheet.create({
 	}
 });
 
-export type CodeViewHandle = {
-    getSelectedLine: () => number;
-};
-
-export default memo(React.forwardRef<CodeViewHandle, CodeViewProps>(CodeView));
+export default memo(CodeView);

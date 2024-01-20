@@ -1,4 +1,4 @@
-import React, { type FunctionComponent, type ReactNode, useMemo } from "react";
+import { type FunctionComponent, type ReactNode, useMemo } from "react";
 import {
 	ScrollView,
 	type ScrollViewProps,

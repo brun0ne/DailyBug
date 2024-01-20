@@ -1,5 +1,5 @@
 
-import React, { useImperativeHandle, useRef, memo } from "react";
+import { useImperativeHandle, useRef, memo, forwardRef } from "react";
 import { View, StyleSheet, Animated } from "react-native";
 
 import ConfettiCannon from 'react-native-confetti-cannon';
@@ -55,4 +55,4 @@ export type ConfettiHandle = {
     start: () => void;
 };
 
-export default memo(React.forwardRef<ConfettiHandle, any>(Confetti));
+export default memo(forwardRef<ConfettiHandle, any>(Confetti));

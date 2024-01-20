@@ -1,4 +1,4 @@
-import React, { useCallback, memo } from "react";
+import { useCallback, memo } from "react";
 import { View } from "react-native";
 import { Avatar, Card, IconButton, useTheme, Text } from "react-native-paper";
 
