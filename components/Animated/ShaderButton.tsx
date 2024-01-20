@@ -1,4 +1,4 @@
-import { Skia, Canvas, Shader, Fill, useFont, Text, vec, useClockValue, useComputedValue, useValue, useTouchHandler, AnimatedProp, SkFont } from "@shopify/react-native-skia";
+import { Skia, Canvas, Shader, Fill, useFont, Text, vec, useClockValue, useComputedValue, useValue, AnimatedProp, SkFont } from "@shopify/react-native-skia";
 import { useEffect, useMemo } from "react";
 import { View, StyleSheet } from "react-native";
 import { Icon } from "react-native-paper";
@@ -65,7 +65,7 @@ uniform vec2 pointer;
 
 vec4 main(vec2 pos) {
     vec2 n = pos/resolution;
-    vec2 n_p = pointer/resolution;
+    vec2 n_p = clamp(pointer/resolution, 0, 1);
 
     vec4 color = vec4(n.x, n.y*abs(cos(time/1000)), 1, 1);
 
@@ -123,7 +123,7 @@ const ShaderButton = ({
 
     const isTouched = useValue(false);
     const pointer = useValue(vec(0, 0));
-    const onTouch = useTouchHandler({
+    const onTouch = ({
         onStart: () => {
             isTouched.current = true;
         },
@@ -131,10 +131,10 @@ const ShaderButton = ({
             isTouched.current = false;
             onPress();
         },
-        onActive: (info) => {
-            pointer.current = info;
+        onActive: (e) => {
+            pointer.current = vec(e.nativeEvent.locationX, e.nativeEvent.locationY);
         }
-    }, [pointer, isTouched]);
+    });
 
     const uniforms = useComputedValue(() => (
         {
@@ -151,8 +151,8 @@ const ShaderButton = ({
     
     if (!font) return <></>;
     return (
-        <View style={{width: buttonWidth, height: buttonHeight}}>
-            <Canvas style={canvasStyles} onTouch={onTouch}>
+        <View style={{width: buttonWidth, height: buttonHeight}} onTouchStart={onTouch.onStart} onTouchEnd={onTouch.onEnd} onTouchMove={onTouch.onActive}>
+            <Canvas style={canvasStyles}>
                 <Fill>
                     <Shader source={source} uniforms={uniforms} />
                 </Fill>
