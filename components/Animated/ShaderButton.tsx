@@ -27,8 +27,6 @@ type AnimatedLetterProps = {
     delayBetweenJumps?: number
 };
 
-const BezierEasing = Easing.bezier(0.25, -0.5, 0.25, 1);
-
 const JumpingLetter = ({text, index, x, y, font, color, jumping = true, delayBetweenJumps = 1000}: AnimatedLetterProps) => {
     const offset = useSharedValue(0);
 
@@ -37,11 +35,11 @@ const JumpingLetter = ({text, index, x, y, font, color, jumping = true, delayBet
             return;
 
         offset.value = withDelay(index * 100, withRepeat(withSequence(
-            withTiming(10, { duration: 500, easing: BezierEasing }),
+            withTiming(10, { duration: 500, easing: Easing.bezier(0.25, -0.5, 0.25, 1) }),
             withTiming(0, { duration: 500, easing: Easing.bounce }),
             withDelay(delayBetweenJumps, withTiming(0))
         ), -1));
-    });
+    }, [jumping, index, delayBetweenJumps]);
 
     const offset_y = useDerivedValue(() => (
         y - offset.value
