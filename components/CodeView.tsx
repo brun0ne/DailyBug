@@ -6,6 +6,8 @@ import { atomOneDarkReasonable } from "react-syntax-highlighter/dist/esm/styles/
 
 export type CodeViewProps = {
     codeString: string;
+    codeLanguage: string
+
     wrapLines: boolean;
     linesToHighlight?: Array<LineToHighlight>;
     callback: (lineIndex: number) => any;
@@ -17,7 +19,7 @@ const CodeView = (props: CodeViewProps) => {
             hljsStyle={atomOneDarkReasonable}
             horizontalScrollViewProps={{ contentContainerStyle: styles(props.wrapLines).codeContainer }}
             textStyle={styles(props.wrapLines).text}
-            language="typescript"
+            language={props.codeLanguage}
             showLineNumbers={true}
             wrapLines={props.wrapLines ? true : undefined}
             selectedLines={props.linesToHighlight}

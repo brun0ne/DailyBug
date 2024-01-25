@@ -11,8 +11,6 @@ import HintModal from "../HintModal";
 import { LineToHighlight } from "../CodeHighlighter";
 import { Bug } from "../../util/Bug";
 
-import AppConfig from "../../util/AppConfig";
-
 import HomeHeader from "../HomeHeader";
 import AnswerButtons from "../AnswerButton";
 import IncorrectPopup from "../IncorrectPopup";
@@ -181,7 +179,7 @@ const HomeView = () => {
                 { (!bug || isLoading) ? (
                     <ActivityIndicator />
                 ) : (
-                <CodeView codeString={bug.body} wrapLines={false} callback={codeViewPressCallback} linesToHighlight={linesToHighlight} />)}
+                <CodeView codeString={bug.body} codeLanguage={bug.language.toLowerCase()} wrapLines={false} callback={codeViewPressCallback} linesToHighlight={linesToHighlight} />)}
             </View>
             
             <View style={styles.bottomWrapper}>
