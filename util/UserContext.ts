@@ -68,5 +68,9 @@ export class UserAPI {
         const res = await UserAPI.doRequest(user, "user/init", "POST", {});
         console.log("INIT", res);
     }
+
+    static async getBug(user: FirebaseAuthTypes.User) {
+        return await UserAPI.doRequest(user, "bugs/request", "GET", {});
+    }
 };
 

@@ -50,8 +50,7 @@ const HomeView = () => {
 
     const loadBugFromAPI = async () => {
         try {
-            const response = await fetch(AppConfig.api("requestBug"));
-            const json = await response.json();
+            const json = await UserAPI.getBug(userContext.user);
             setBug(json);
         }
         catch (error) {
