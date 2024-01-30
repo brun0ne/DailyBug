@@ -1,4 +1,4 @@
-import { Skia, Canvas, Shader, Fill, useFont, Text, vec, useClockValue, useComputedValue, useValue, AnimatedProp, SkFont } from "@shopify/react-native-skia";
+import { Skia, Canvas, Shader, Fill, useFont, Text, vec, useClockValue, useComputedValue, useValue, AnimatedProp, SkFont, RoundedRect } from "@shopify/react-native-skia";
 import { useEffect, useMemo } from "react";
 import { View, StyleSheet } from "react-native";
 import { Icon } from "react-native-paper";
@@ -69,12 +69,9 @@ vec4 main(vec2 pos) {
 
     vec4 color = vec4(n.x, n.y*abs(cos(time/1000)), 1, 1);
 
-    float rectircle_border = smoothstep(0.05, 0.06, pow(n.x - 0.5, 4) + pow(n.y - 0.5, 4));
-    color = mix(color, vec4(0), rectircle_border);
-
     if (is_touched == 1) {
         vec4 touched_overlay = vec4(sin(n_p.x), 1, 1, 1);
-        color = mix(color, touched_overlay, 0.2 * (1 - rectircle_border));
+        color = mix(color, touched_overlay, 0.2);
     }
 
     return color;
@@ -91,10 +88,12 @@ export type ShaderButtonProps = {
     paddingLeft?: number
     paddingRight?: number
     paddingTop?: number
-    paddingBottom?: number,
+    paddingBottom?: number
 
     icon?: React.ReactNode | string
     iconSize?: number
+
+    borderRadius?: number
 };
 
 const fontData = require("../../assets/Roboto/Roboto-Medium.ttf");
@@ -111,7 +110,9 @@ const ShaderButton = ({
     paddingBottom = 17,
 
     icon,
-    iconSize = 20
+    iconSize = 20,
+
+    borderRadius = 15
 }: ShaderButtonProps) => {
     const clock = useClockValue();
 
@@ -153,9 +154,9 @@ const ShaderButton = ({
     return (
         <View style={{width: buttonWidth, height: buttonHeight}} onTouchStart={onTouch.onStart} onTouchEnd={onTouch.onEnd} onTouchMove={onTouch.onActive}>
             <Canvas style={canvasStyles}>
-                <Fill>
+                <RoundedRect x={0} y={0} width={buttonWidth} height={buttonHeight} r={borderRadius}>
                     <Shader source={source} uniforms={uniforms} />
-                </Fill>
+                </RoundedRect>
                 {
                     ((array: string[]) => {
                         let offset = 0;

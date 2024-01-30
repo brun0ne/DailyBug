@@ -5,6 +5,7 @@ import { Avatar, Button, Card, ProgressBar, Text, useTheme } from "react-native-
 import auth from "@react-native-firebase/auth";
 
 import { UserAPI, UserContext } from "../../util/UserContext";
+import ShaderProgressBar from "../Animated/ShaderProgressBar";
 
 const UserView = () => {
     const userContext = useContext(UserContext); 
@@ -52,7 +53,7 @@ const UserView = () => {
                         <Text style={{fontSize: 20}}>✨ Level <Text style={{fontWeight: 'bold'}}>1</Text></Text>
                     </View>
 
-                    <ProgressBar progress={0.5} color={theme.colors.primary} style={{height: 15, borderRadius: 10}} />
+                    <ShaderProgressBar progress={0.5} />
 
                     <View style={styles.stats}> 
                         <Button icon="calendar" mode="contained" style={{backgroundColor: theme.colors.secondary}}>
