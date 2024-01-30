@@ -1,5 +1,5 @@
-import { Box, Canvas, Fill, RoundedRect, Shader, SkSize, Skia, rect, rrect, useClockValue, useComputedValue, vec } from '@shopify/react-native-skia';
-import { StyleSheet, View, Text } from 'react-native';
+import { Canvas, Fill, RoundedRect, Shader, SkSize, Skia, Text, useClockValue, useComputedValue, useFont, vec } from '@shopify/react-native-skia';
+import { StyleSheet, View } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 
 const source = Skia.RuntimeEffect.Make(`
@@ -27,23 +27,32 @@ vec4 main(vec2 pos) {
 }
 `)!;
 
+const fontData = require("../../assets/Roboto/Roboto-Medium.ttf");
+
 type ShaderProgressBarProps = {
     progress: number
+    text?: string
+    fontSize?: number
 };
 
-const ShaderProgressBar = (props: ShaderProgressBarProps) => {
+const ShaderProgressBar = ({
+    progress,
+    text = "",
+    fontSize = 12
+}: ShaderProgressBarProps) => {
     const clock = useClockValue();
     const canvasSize = useSharedValue<SkSize>(null);
+
+    const font = useFont(fontData, fontSize);
+    const fontHeight = font?.measureText(text).height ?? 0;
 
     const uniforms = useComputedValue(() => (
         {
             resolution: vec(canvasSize.value?.width ?? 0, canvasSize.value?.height ?? 0),
             time: clock.current,
-            progress: props.progress
-            // is_touched: isTouched.current ? 1 : 0,
-            // pointer: pointer.current
+            progress: progress
         }
-    ), [clock, canvasSize, props.progress]);
+    ), [clock, canvasSize, progress]);
 
     return (
         <View style={styles.view}>
@@ -51,6 +60,11 @@ const ShaderProgressBar = (props: ShaderProgressBarProps) => {
                 <RoundedRect x={0} y={0} width={canvasSize.value?.width ?? 0} height={canvasSize.value?.height ?? 0} r={10}>
                     <Shader source={source} uniforms={uniforms} />
                 </RoundedRect>
+                {
+                    font && text !== "" ? (
+                        <Text x={15} y={ (canvasSize.value?.height + fontHeight) / 2 } text={text} font={font} color={"white"} blendMode={"screen"} />
+                    ) : null 
+                }
             </Canvas>
         </View>
     )

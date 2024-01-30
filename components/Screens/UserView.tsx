@@ -53,7 +53,7 @@ const UserView = () => {
                         <Text style={{fontSize: 20}}>✨ Level <Text style={{fontWeight: 'bold'}}>1</Text></Text>
                     </View>
 
-                    <ShaderProgressBar progress={0.5} />
+                    <ShaderProgressBar text="EXP 50 / 100" progress={0.5} />
 
                     <View style={styles.stats}> 
                         <Button icon="calendar" mode="contained" style={{backgroundColor: theme.colors.secondary}}>

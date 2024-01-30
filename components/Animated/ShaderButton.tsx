@@ -1,4 +1,4 @@
-import { Skia, Canvas, Shader, Fill, useFont, Text, vec, useClockValue, useComputedValue, useValue, AnimatedProp, SkFont, RoundedRect } from "@shopify/react-native-skia";
+import { Skia, Canvas, Shader, useFont, Text, vec, useClockValue, useComputedValue, useValue, AnimatedProp, SkFont, RoundedRect } from "@shopify/react-native-skia";
 import { useEffect, useMemo } from "react";
 import { View, StyleSheet } from "react-native";
 import { Icon } from "react-native-paper";
@@ -118,7 +118,7 @@ const ShaderButton = ({
 
     const font = useFont(fontData, fontSize);
     
-    const textWidth = font?.getTextWidth(text);
+    const textWidth = font?.measureText(text).width;
     const buttonWidth = textWidth + paddingLeft + paddingRight + (icon ? iconSize : 0);
     const buttonHeight = fontSize + paddingTop + paddingBottom;
 
