@@ -4,19 +4,18 @@ import { Avatar, Button, Card, ProgressBar, Text, useTheme } from "react-native-
 
 import auth from "@react-native-firebase/auth";
 
-import { UserAPI, UserContext } from "../../util/UserContext";
+import { UserAPI, UserContext, UserProgressData } from "../../util/UserContext";
 import ShaderProgressBar from "../Animated/ShaderProgressBar";
 
 const UserView = () => {
     const userContext = useContext(UserContext); 
     const theme = useTheme();
 
-    const [streak, setStreak] = useState(0);
-    const [combo, setCombo] = useState(0);
+    const [progressData, setProgressData] = useState<UserProgressData>(null);
 
     const loadFromAPI = useCallback(async () => {
-        setStreak(await UserAPI.getStreak(userContext));
-        setCombo(await UserAPI.getCombo(userContext));
+        const data = await UserAPI.getProgress(userContext);
+        setProgressData(data);
     }, [userContext]);
 
     useEffect(() => {
@@ -50,17 +49,17 @@ const UserView = () => {
 
                 <Card.Content style={styles.content}>
                     <View>
-                        <Text style={{fontSize: 20}}>✨ Level <Text style={{fontWeight: 'bold'}}>1</Text></Text>
+                        <Text style={{fontSize: 20}}>✨ Level <Text style={{fontWeight: 'bold'}}>{progressData?.level ?? 1}</Text></Text>
                     </View>
 
-                    <ShaderProgressBar text="EXP 50 / 100" progress={0.5} />
+                    <ShaderProgressBar text={`EXP ${progressData?.exp ?? 0} / ${progressData?.maxExp ?? 100}`} progress={progressData.exp / progressData.maxExp} />
 
                     <View style={styles.stats}> 
                         <Button icon="calendar" mode="contained" style={{backgroundColor: theme.colors.secondary}}>
-                            Streak  |  {streak}
+                            Streak  |  {progressData?.streak ?? 0}
                         </Button>
                         <Button icon="fire" mode="contained" style={{backgroundColor: theme.colors.secondary}}>
-                            Combo  |  {combo}
+                            Combo  |  {progressData?.combo ?? 0}
                         </Button>
                     </View>
                 </Card.Content>

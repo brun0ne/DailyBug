@@ -113,7 +113,7 @@ const HomeView = () => {
                 color: "#20612c"
             });
 
-            UserAPI.incrementCombo(userContext);
+            UserAPI.correct(userContext);
 
             playSound(correctSound);
         }
@@ -127,7 +127,7 @@ const HomeView = () => {
                 color: "#a13e28"
             });
 
-            UserAPI.resetCombo(userContext);
+            UserAPI.wrong(userContext);
 
             playSound(wrongSound);
         }
@@ -179,7 +179,7 @@ const HomeView = () => {
                 { (!bug || isLoading) ? (
                     <ActivityIndicator />
                 ) : (
-                <CodeView codeString={bug.body} codeLanguage={bug.language.toLowerCase()} wrapLines={false} callback={codeViewPressCallback} linesToHighlight={linesToHighlight} />)}
+                <CodeView codeString={bug.body} codeLanguage={bug.language?.toLowerCase()} wrapLines={false} callback={codeViewPressCallback} linesToHighlight={linesToHighlight} />)}
             </View>
             
             <View style={styles.bottomWrapper}>

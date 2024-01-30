@@ -11,6 +11,15 @@ export const UserContext = createContext<{user: FirebaseAuthTypes.User, updated:
 
 type UserContextValue = ContextType<typeof UserContext>;
 
+export type UserProgressData = {
+    streak: number
+    combo: number
+
+    level: number
+    exp: number
+    maxExp: number
+}
+
 export class UserAPI {
     private static async doRequest(user: FirebaseAuthTypes.User, endpoint: string, method: string, reqData: any) {
         const idToken = await user.getIdToken(true);
@@ -35,33 +44,28 @@ export class UserAPI {
         }
     }
 
-    static async getStreak(context: UserContextValue) {
-        const data = await UserAPI.doRequest(context.user, "user/streak", "GET", {});
-        return data.streak as number;
+    static async getProgress(context: UserContextValue) {
+        const data = await UserAPI.doRequest(context.user, "user/progress", "GET", {});
+        return data as UserProgressData;
     }
 
-    static async getCombo(context: UserContextValue) {
-        const data = await UserAPI.doRequest(context.user, "user/combo", "GET", {});
-        return data.combo as number;
-    }
-
-    static async incrementCombo(context: UserContextValue) {
+    static async bugDone(context: UserContextValue, correct: boolean) {
         const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        const combo = await UserAPI.getCombo(context);
 
-        await UserAPI.doRequest(context.user, "user/combo", "POST", {
-            combo: combo + 1,
+        await UserAPI.doRequest(context.user, "user/done", "POST", {
             /* this is used to calculate a new Streak value */
-            timezone: timezone
+            timezone: timezone,
+            correct: correct
         });
         context.setUpdated(true);
     }
 
-    static async resetCombo(context: UserContextValue) {
-        await UserAPI.doRequest(context.user, "user/combo", "POST", {
-            combo: 0
-        });
-        context.setUpdated(true);
+    static async correct(context: UserContextValue) {
+        await UserAPI.bugDone(context, true);
+    }
+
+    static async wrong(context: UserContextValue) {
+        await UserAPI.bugDone(context, false);
     }
 
     static async init(user: FirebaseAuthTypes.User) {
