@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { View, StyleSheet } from "react-native";
-import { Avatar, Button, Card, Text, useTheme } from "react-native-paper";
+import { Avatar, Button, Card, ProgressBar, Text, useTheme } from "react-native-paper";
 
 import auth from "@react-native-firebase/auth";
 
@@ -48,12 +48,20 @@ const UserView = () => {
                 />
 
                 <Card.Content style={styles.content}>
-                    <Button icon="calendar" mode="contained" style={{backgroundColor: theme.colors.secondary}} onPress={() => {}}>
-                        Streak  |  {streak}
-                    </Button>
-                    <Button icon="chart-timeline-variant-shimmer" mode="contained" style={{backgroundColor: theme.colors.secondary}} onPress={() => {}}>
-                        Combo  |  {combo}
-                    </Button>
+                    <View>
+                        <Text style={{fontSize: 20}}>✨ Level <Text style={{fontWeight: 'bold'}}>1</Text></Text>
+                    </View>
+
+                    <ProgressBar progress={0.5} color={theme.colors.primary} style={{height: 15, borderRadius: 10}} />
+
+                    <View style={styles.stats}> 
+                        <Button icon="calendar" mode="contained" style={{backgroundColor: theme.colors.secondary}}>
+                            Streak  |  {streak}
+                        </Button>
+                        <Button icon="fire" mode="contained" style={{backgroundColor: theme.colors.secondary}}>
+                            Combo  |  {combo}
+                        </Button>
+                    </View>
                 </Card.Content>
             </Card>
             <View style={styles.bottom}>
@@ -68,6 +76,9 @@ const styles = StyleSheet.create({
         padding: 20
     },
     content: {
+        gap: 15,
+    },
+    stats: {
         flexDirection: "row",
         gap: 10,
         marginTop: 5
