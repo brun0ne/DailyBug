@@ -52,7 +52,7 @@ const UserView = () => {
                         <Text style={{fontSize: 20}}>✨ Level <Text style={{fontWeight: 'bold'}}>{progressData?.level ?? 1}</Text></Text>
                     </View>
 
-                    <ShaderProgressBar text={`EXP ${progressData?.exp ?? 0} / ${progressData?.maxExp ?? 100}`} progress={progressData.exp / progressData.maxExp} />
+                    <ShaderProgressBar text={`EXP ${progressData?.exp ?? 0} / ${progressData?.maxExp ?? 100}`} progress={(progressData?.exp ?? 0) / (progressData?.maxExp ?? 1)} />
 
                     <View style={styles.stats}> 
                         <Button icon="calendar" mode="contained" style={{backgroundColor: theme.colors.secondary}}>
