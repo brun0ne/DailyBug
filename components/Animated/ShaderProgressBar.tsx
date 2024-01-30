@@ -1,6 +1,7 @@
-import { Canvas, Fill, RoundedRect, Shader, SkSize, Skia, Text, useClockValue, useComputedValue, useFont, vec } from '@shopify/react-native-skia';
+import { Canvas, RoundedRect, Shader, SkSize, Skia, Text, useClockValue, useComputedValue, useFont, vec } from '@shopify/react-native-skia';
+import { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSharedValue } from 'react-native-reanimated';
+import { useSharedValue, withTiming } from 'react-native-reanimated';
 
 const source = Skia.RuntimeEffect.Make(`
 uniform vec2 resolution;
@@ -46,13 +47,21 @@ const ShaderProgressBar = ({
     const font = useFont(fontData, fontSize);
     const fontHeight = font?.measureText(text).height ?? 0;
 
+    const interpolatedProgress = useSharedValue(0);
+
+    useEffect(() => {
+        interpolatedProgress.value = withTiming(progress, {
+            duration: 1000
+        });
+    }, [progress]);
+
     const uniforms = useComputedValue(() => (
         {
             resolution: vec(canvasSize.value?.width ?? 0, canvasSize.value?.height ?? 0),
             time: clock.current,
-            progress: progress
+            progress: interpolatedProgress.value
         }
-    ), [clock, canvasSize, progress]);
+    ), [clock, canvasSize, interpolatedProgress]);
 
     return (
         <View style={styles.view}>
