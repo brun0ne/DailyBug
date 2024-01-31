@@ -1,16 +1,32 @@
-import { useCallback, memo } from "react";
+import { useCallback, memo, useEffect } from "react";
 import { View } from "react-native";
-import { Avatar, Card, IconButton, useTheme, Text } from "react-native-paper";
+import { Avatar, Card, IconButton, useTheme, Text, Button } from "react-native-paper";
+import Animated, { useSharedValue, withDelay, withTiming } from "react-native-reanimated";
 
 export type HomeHeaderProps = {
     explanation: string
     showExplanation: boolean
+    rewardText?: string
+    showReward: boolean
 
     hintCallback: () => any
 }
 
 const HomeHeader = (props: HomeHeaderProps) => {
     const theme = useTheme();
+
+    const rewardOpacity = useSharedValue(0);
+
+    useEffect(() => {
+        if (!props.showReward) {
+            rewardOpacity.value = 0;
+        }
+        else if (props.rewardText) {
+            rewardOpacity.value = withDelay(10, withTiming(1, {
+                duration: 300
+            }));
+        }
+    }, [rewardOpacity, props.showReward, props.rewardText]);
 
     const leftCallback = useCallback((left_props) => (
         <Avatar.Icon
@@ -21,11 +37,21 @@ const HomeHeader = (props: HomeHeaderProps) => {
     ), [props.showExplanation]);
 
     const rightCallback = useCallback((right_props) => (
-        <View style={{flexDirection: "row"}}>
-            {/* hint button */}
-            <IconButton {...right_props} icon="head-question-outline" onPress={props.hintCallback} />
-        </View>
-    ), [props.hintCallback]);
+        <>
+            <Animated.View style={{flexDirection: "row", padding: 15, opacity: rewardOpacity, display: props.showReward ? "flex" : "none"}}>
+                {/* reward text */}
+                { props.rewardText ? <Button mode="contained-tonal">{props.rewardText}</Button> : <></> }
+            </Animated.View>
+            {
+                !props.showReward ? (
+                    <View style={{flexDirection: "row"}}>
+                        {/* hint button */}
+                        <IconButton {...right_props} icon="head-question-outline" onPress={props.hintCallback} />
+                    </View>
+                ) : null
+            }
+        </>
+    ), [props.hintCallback, props.showReward, props.rewardText, rewardOpacity]);
 
     let title: string | React.ReactElement;
     let subtitle: string;

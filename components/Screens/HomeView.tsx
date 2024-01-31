@@ -32,6 +32,7 @@ const HomeView = () => {
     const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
     const [selectedLine, setSelectedLine] = useState<LineToHighlight | null>(null);
     const [correctAnswerState, setCorrectAnswerState] = useState(false);
+    const [rewardText, setRewardText] = useState<string>(null);
 
     const userContext = useContext(UserContext);
 
@@ -113,9 +114,11 @@ const HomeView = () => {
                 color: "#20612c"
             });
 
-            UserAPI.correct(userContext);
-
             playSound(correctSound);
+
+            const {reward} = await UserAPI.correct(userContext);
+            if (reward.type === 'exp')
+                setRewardText(`+ ${reward.value} EXP`);
         }
         else {
             /* Incorrect answer */
@@ -141,6 +144,7 @@ const HomeView = () => {
         setCorrectAnswerState(false);
         setBug(null);
         setSelectedLine(null);
+        setRewardText(null);
     }, []);
 
     /* Hint callbacks */
@@ -172,7 +176,9 @@ const HomeView = () => {
             <HomeHeader
                 hintCallback={hintCallback}
                 explanation={(!bug || isLoading) ? "..." : bug.explanation}
+                rewardText={rewardText}
                 showExplanation={correctAnswerState}
+                showReward={correctAnswerState}
             />
 
             <View style={styles.topWrapper}>

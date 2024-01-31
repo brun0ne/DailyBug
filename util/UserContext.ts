@@ -52,16 +52,18 @@ export class UserAPI {
     static async bugDone(context: UserContextValue, correct: boolean) {
         const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-        await UserAPI.doRequest(context.user, "user/done", "POST", {
+        const data = await UserAPI.doRequest(context.user, "user/done", "POST", {
             /* this is used to calculate a new Streak value */
             timezone: timezone,
             correct: correct
         });
         context.setUpdated(true);
+
+        return data;
     }
 
     static async correct(context: UserContextValue) {
-        await UserAPI.bugDone(context, true);
+        return await UserAPI.bugDone(context, true) as {reward: {type: 'exp' | 'none', value: number}};
     }
 
     static async wrong(context: UserContextValue) {
