@@ -7,7 +7,7 @@ import auth from "@react-native-firebase/auth";
 import { UserAPI, UserContext, UserProgressData } from "../../util/UserContext";
 import ShaderProgressBar from "../Animated/ShaderProgressBar";
 import { Canvas, Fill, RoundedRect } from "@shopify/react-native-skia";
-import ShaderCurrencyDisplay from "../Animated/ShaderCurrencyDisplay";
+import ShaderFlatDisplay from "../Animated/ShaderFlatDisplay";
 
 const UserView = () => {
     const userContext = useContext(UserContext); 
@@ -68,7 +68,7 @@ const UserView = () => {
             </Card>
 
             <View style={styles.items}>
-                <ShaderCurrencyDisplay />
+                <ShaderFlatDisplay text="STORY POINTS" number={123} />
             </View>
 
             {/* <View style={styles.bottom}>

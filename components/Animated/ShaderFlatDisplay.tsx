@@ -1,6 +1,6 @@
 import { Canvas, Text, RoundedRect, Shader, SkSize, Skia, useClockValue, useComputedValue, vec, useFont } from "@shopify/react-native-skia";
 import { View } from "react-native";
-import { useSharedValue } from "react-native-reanimated";
+import { useDerivedValue, useSharedValue } from "react-native-reanimated";
 
 const sourceMain = Skia.RuntimeEffect.Make(`
 uniform vec2 resolution;
@@ -43,9 +43,40 @@ vec4 main(vec2 pos) {
 
 const fontData = require("../../assets/Roboto/Roboto-Medium.ttf");
 
-const ShaderCurrencyDisplay = () => {
+type ShaderFlatDisplayProps = {
+    text: string,
+    number: number,
+
+    fontSize?: number,
+    textColor?: string,
+
+    displayHeight?: number
+
+    leftRectWidth?: number
+    leftRectHeight?: number
+    gap?: number
+
+    borderRadius?: number
+    horizontalOffset?: number
+};
+
+const ShaderFlatDisplay = ({
+    text,
+    number,
+    fontSize = 20,
+    textColor = "white",
+    displayHeight = 75,
+    leftRectWidth = 80,
+    leftRectHeight = 35,
+    gap = 25,
+    borderRadius = 10,
+    horizontalOffset = -8
+}: ShaderFlatDisplayProps) => {
     const clock = useClockValue();
     const canvasSize = useSharedValue<SkSize>(null);
+
+    const canvasWidth = useDerivedValue(() => canvasSize.value?.width ?? 0, [canvasSize]);
+    const canvasHeight = useDerivedValue(() => canvasSize.value?.height ?? 0, [canvasSize]);
 
     const uniforms = useComputedValue(() => (
         {
@@ -54,27 +85,28 @@ const ShaderCurrencyDisplay = () => {
         }
     ), [clock, canvasSize]);
 
-    const text = "STORY POINTS";
-    const pointsText = "123";
-    const fontSize = 20;
+    const leftText = number.toString();
     const font = useFont(fontData, fontSize);
 
     const fontHeight = font?.measureText(text).height ?? 0;
-    const numbersWidth = font?.measureText(pointsText).height ?? 0;
+    const numbersWidth = font?.measureText(leftText).width ?? 0;
+    const mainTextWidth = font?.measureText(text).width ?? 0;
+
+    const marginLeft = (canvasWidth.value - leftRectWidth - gap - mainTextWidth) / 2 + horizontalOffset;
 
     return (
-        <View style={{flexGrow: 1, height: 75}}>
+        <View style={{flexGrow: 1, height: displayHeight}}>
             <Canvas style={{flexGrow: 1}} onSize={canvasSize}>
-                <RoundedRect x={0} y={0} width={canvasSize.value?.width ?? 0} height={canvasSize.value?.height ?? 0} r={10}>
+                <RoundedRect x={0} y={0} width={canvasWidth} height={canvasHeight} r={borderRadius}>
                     <Shader source={sourceMain} uniforms={uniforms} />
                 </RoundedRect>
-                <RoundedRect x={15} y={75/2 - 35/2} width={80} height={35} r={10}>
+                <RoundedRect x={marginLeft} y={displayHeight/2 - leftRectHeight/2} width={leftRectWidth} height={leftRectHeight} r={borderRadius}>
                     <Shader source={sourceNumberRect} uniforms={uniforms} />
                 </RoundedRect>
                 {
                     font ? <>
-                        <Text x={120} y={75/2 + fontHeight/2} font={font} text={text} color={"white"} />
-                        <Text x={15 + 80/2 - numbersWidth - 2} y={75/2 + fontHeight/2} font={font} text={pointsText} color={"white"} blendMode={"clear"} />
+                        <Text x={marginLeft + leftRectWidth + gap} y={displayHeight/2 + fontHeight/2} font={font} text={text} color={textColor} />
+                        <Text x={marginLeft + leftRectWidth/2 - numbersWidth / 2} y={displayHeight/2 + fontHeight/2} font={font} text={leftText} color={textColor} blendMode={"clear"} />
                     </> : null
                 }
             </Canvas>
@@ -82,4 +114,4 @@ const ShaderCurrencyDisplay = () => {
     );
 }
 
-export default ShaderCurrencyDisplay;
+export default ShaderFlatDisplay;
