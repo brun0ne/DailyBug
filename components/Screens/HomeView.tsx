@@ -113,6 +113,8 @@ const HomeView = () => {
         if (!selectedLine)
             return;
 
+        setSubmitButtonDisabled(true);
+
         if (isAnswerCorrect()) {
             /* Correct answer */
             confettiRef.current.start();
@@ -143,7 +145,6 @@ const HomeView = () => {
         else {
             /* Incorrect answer */
             setIncorrectPopupShown(true);
-            setSubmitButtonDisabled(true);
             
             setSelectedLine({
                 index: selectedLine.index,
@@ -205,7 +206,13 @@ const HomeView = () => {
                 { (!bug || isLoading) ? (
                     <ActivityIndicator />
                 ) : (
-                <CodeView codeString={bug.body} codeLanguage={bug.language?.toLowerCase()} wrapLines={false} callback={codeViewPressCallback} linesToHighlight={linesToHighlight} />)}
+                <CodeView
+                    codeString={bug.body}
+                    codeLanguage={bug.language?.toLowerCase()}
+                    wrapLines={false}
+                    callback={codeViewPressCallback}
+                    linesToHighlight={linesToHighlight}
+                />)}
             </View>
             
             <View style={styles.bottomWrapper}>
