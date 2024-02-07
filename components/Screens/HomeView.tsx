@@ -47,10 +47,20 @@ const HomeView = () => {
     /* Confetti is fired imperatively */
     const confettiRef = useRef<ConfettiHandle>(null);
 
+    let timeout = null;
     const loadBugFromAPI = async () => {
         try {
             const json = await UserAPI.getBug(userContext.user);
-            setBug(json);
+
+            if (json.success === false) {
+                console.log("Trying again...");
+                if (timeout)
+                    clearTimeout(timeout);
+                timeout = setTimeout(loadBugFromAPI, 1000);
+            }
+            else {
+                setBug(json);
+            }
         }
         catch (error) {
             console.error(error);

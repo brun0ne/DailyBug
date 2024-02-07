@@ -1,12 +1,11 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { View, StyleSheet } from "react-native";
-import { Avatar, Button, Card, ProgressBar, Text, useTheme } from "react-native-paper";
+import { Avatar, Button, Card, Text, useTheme } from "react-native-paper";
 
 import auth from "@react-native-firebase/auth";
 
 import { UserAPI, UserContext, UserProgressData } from "../../util/UserContext";
 import ShaderProgressBar from "../Animated/ShaderProgressBar";
-import { Canvas, Fill, RoundedRect } from "@shopify/react-native-skia";
 import ShaderFlatDisplay from "../Animated/ShaderFlatDisplay";
 
 const UserView = () => {
