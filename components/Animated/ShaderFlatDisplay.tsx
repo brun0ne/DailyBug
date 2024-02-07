@@ -1,6 +1,7 @@
 import { Canvas, Text, RoundedRect, Shader, SkSize, Skia, useClockValue, useComputedValue, vec, useFont } from "@shopify/react-native-skia";
+import { useEffect } from "react";
 import { View } from "react-native";
-import { useDerivedValue, useSharedValue } from "react-native-reanimated";
+import { useDerivedValue, useSharedValue, withTiming } from "react-native-reanimated";
 
 const sourceMain = Skia.RuntimeEffect.Make(`
 uniform vec2 resolution;
@@ -74,6 +75,7 @@ const ShaderFlatDisplay = ({
 }: ShaderFlatDisplayProps) => {
     const clock = useClockValue();
     const canvasSize = useSharedValue<SkSize>(null);
+    const displayedNumber = useSharedValue(0);
 
     const canvasWidth = useDerivedValue(() => canvasSize.value?.width ?? 0, [canvasSize]);
     const canvasHeight = useDerivedValue(() => canvasSize.value?.height ?? 0, [canvasSize]);
@@ -85,19 +87,30 @@ const ShaderFlatDisplay = ({
         }
     ), [clock, canvasSize]);
 
-    const leftText = number.toString();
+    const leftText = useDerivedValue(() => (
+        Math.round(displayedNumber.value).toString()
+    ), [displayedNumber]);
     const font = useFont(fontData, fontSize);
 
     const fontHeight = font?.measureText(text).height ?? 0;
-    const numbersWidth = font?.measureText(leftText).width ?? 0;
     const mainTextWidth = font?.measureText(text).width ?? 0;
+
+    const numbersWidth = useDerivedValue(() => (
+        font?.measureText(leftText.value).width ?? 0
+    ), [font, leftText]);;
 
     const marginLeft = useDerivedValue(() => (
         (canvasWidth.value - leftRectWidth - gap - mainTextWidth) / 2 + horizontalOffset
     ), [canvasWidth, mainTextWidth, text, number]);
 
     const mainTextX = useDerivedValue(() => marginLeft.value + leftRectWidth + gap, [marginLeft, text, number]);
-    const leftTextX = useDerivedValue(() => marginLeft.value + leftRectWidth/2 - numbersWidth / 2, [marginLeft, text, number]);
+    const leftTextX = useDerivedValue(() => marginLeft.value + leftRectWidth/2 - numbersWidth.value / 2, [marginLeft, numbersWidth, text, number]);
+
+    useEffect(() => {
+        displayedNumber.value = withTiming(number, {
+            duration: 500
+        });
+    });
 
     return (
         <View style={{flexGrow: 1, height: displayHeight}}>
