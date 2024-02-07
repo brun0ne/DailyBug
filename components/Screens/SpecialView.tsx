@@ -1,10 +1,12 @@
 import { View, StyleSheet } from "react-native";
 import { Icon, Text } from "react-native-paper";
+import { useContext } from "react";
+import { useIsFocused } from '@react-navigation/native';
+
 import ShaderButton from "../Animated/ShaderButton";
 import ShaderFlatDisplay from "../Animated/ShaderFlatDisplay";
-import { useContext } from "react";
+
 import { UserContext } from "../../util/UserContext";
-import { useIsFocused } from '@react-navigation/native';
 
 const SpecialView = () => {
     const userContext = useContext(UserContext);

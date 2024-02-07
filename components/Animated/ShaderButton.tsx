@@ -121,7 +121,7 @@ const ShaderButton = ({
 
     const font = useFont(fontData, fontSize);
     
-    const textWidth = font?.measureText(text).width;
+    const textWidth = font?.measureText(text).width ?? 0;
     const buttonWidth = textWidth + paddingLeft + paddingRight + (icon ? iconSize : 0);
     const buttonHeight = fontSize + paddingTop + paddingBottom;
 
@@ -153,7 +153,7 @@ const ShaderButton = ({
         { width: buttonWidth, height: buttonHeight }
     ), [buttonWidth, buttonHeight]);
     
-    if (!font) return <></>;
+    if (!font) return <View style={{width: buttonWidth, height: buttonHeight}}></View>;
     return (
         <View style={{width: buttonWidth, height: buttonHeight}} onTouchStart={onTouch.onStart} onTouchEnd={onTouch.onEnd} onTouchMove={onTouch.onActive}>
             <Canvas style={canvasStyles}>
