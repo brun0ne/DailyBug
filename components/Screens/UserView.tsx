@@ -6,6 +6,8 @@ import auth from "@react-native-firebase/auth";
 
 import { UserAPI, UserContext, UserProgressData } from "../../util/UserContext";
 import ShaderProgressBar from "../Animated/ShaderProgressBar";
+import { Canvas, Fill, RoundedRect } from "@shopify/react-native-skia";
+import ShaderCurrencyDisplay from "../Animated/ShaderCurrencyDisplay";
 
 const UserView = () => {
     const userContext = useContext(UserContext); 
@@ -64,9 +66,14 @@ const UserView = () => {
                     </View>
                 </Card.Content>
             </Card>
-            <View style={styles.bottom}>
-                <Button mode="contained-tonal" onPress={() => { auth().signOut() }}>Sign Out</Button>
+
+            <View style={styles.items}>
+                <ShaderCurrencyDisplay />
             </View>
+
+            {/* <View style={styles.bottom}>
+                <Button mode="contained-tonal" onPress={() => { auth().signOut() }}>Sign Out</Button>
+            </View> */}
         </View>
     );
 }
@@ -80,8 +87,14 @@ const styles = StyleSheet.create({
     },
     stats: {
         flexDirection: "row",
-        gap: 10,
+        justifyContent: "space-between",
         marginTop: 5
+    },
+    items: {
+        flexDirection: "column",
+        gap: 10,
+        marginTop: 20,
+        width: "100%"
     },
     bottom: {
         marginTop: 20,
