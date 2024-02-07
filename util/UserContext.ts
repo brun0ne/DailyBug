@@ -18,6 +18,8 @@ export type UserProgressData = {
     level: number
     exp: number
     maxExp: number
+
+    currency: number
 }
 
 export class UserAPI {
@@ -63,7 +65,7 @@ export class UserAPI {
     }
 
     static async correct(context: UserContextValue) {
-        return await UserAPI.bugDone(context, true) as {reward: {type: 'exp' | 'none', value: number}};
+        return await UserAPI.bugDone(context, true) as {reward: {type: 'exp' | 'currency' | 'none', value: number}};
     }
 
     static async wrong(context: UserContextValue) {

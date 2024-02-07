@@ -92,7 +92,12 @@ const ShaderFlatDisplay = ({
     const numbersWidth = font?.measureText(leftText).width ?? 0;
     const mainTextWidth = font?.measureText(text).width ?? 0;
 
-    const marginLeft = (canvasWidth.value - leftRectWidth - gap - mainTextWidth) / 2 + horizontalOffset;
+    const marginLeft = useDerivedValue(() => (
+        (canvasWidth.value - leftRectWidth - gap - mainTextWidth) / 2 + horizontalOffset
+    ), [canvasWidth, mainTextWidth, text, number]);
+
+    const mainTextX = useDerivedValue(() => marginLeft.value + leftRectWidth + gap, [marginLeft, text, number]);
+    const leftTextX = useDerivedValue(() => marginLeft.value + leftRectWidth/2 - numbersWidth / 2, [marginLeft, text, number]);
 
     return (
         <View style={{flexGrow: 1, height: displayHeight}}>
@@ -100,13 +105,28 @@ const ShaderFlatDisplay = ({
                 <RoundedRect x={0} y={0} width={canvasWidth} height={canvasHeight} r={borderRadius}>
                     <Shader source={sourceMain} uniforms={uniforms} />
                 </RoundedRect>
-                <RoundedRect x={marginLeft} y={displayHeight/2 - leftRectHeight/2} width={leftRectWidth} height={leftRectHeight} r={borderRadius}>
-                    <Shader source={sourceNumberRect} uniforms={uniforms} />
-                </RoundedRect>
                 {
                     font ? <>
-                        <Text x={marginLeft + leftRectWidth + gap} y={displayHeight/2 + fontHeight/2} font={font} text={text} color={textColor} />
-                        <Text x={marginLeft + leftRectWidth/2 - numbersWidth / 2} y={displayHeight/2 + fontHeight/2} font={font} text={leftText} color={textColor} blendMode={"clear"} />
+                        <RoundedRect x={marginLeft} y={displayHeight/2 - leftRectHeight/2} width={leftRectWidth} height={leftRectHeight} r={borderRadius}>
+                            <Shader source={sourceNumberRect} uniforms={uniforms} />
+                        </RoundedRect>
+
+                        <Text
+                            x={mainTextX}
+                            y={displayHeight/2 + fontHeight/2}
+                            font={font}
+                            text={text}
+                            color={textColor}
+                        />
+
+                        <Text
+                            x={leftTextX}
+                            y={displayHeight/2 + fontHeight/2}
+                            font={font}
+                            text={leftText}
+                            color={textColor}
+                            blendMode={"clear"}
+                        />
                     </> : null
                 }
             </Canvas>

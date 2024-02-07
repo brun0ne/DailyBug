@@ -67,7 +67,7 @@ const UserView = () => {
             </Card>
 
             <View style={styles.items}>
-                <ShaderFlatDisplay text="STORY POINTS" number={123} />
+                <ShaderFlatDisplay text="STORY POINTS" number={progressData?.currency ?? -1} />
             </View>
 
             {/* <View style={styles.bottom}>

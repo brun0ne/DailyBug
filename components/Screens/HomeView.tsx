@@ -127,8 +127,18 @@ const HomeView = () => {
             playSound(correctSound);
 
             const {reward} = await UserAPI.correct(userContext);
-            if (reward.type === 'exp')
-                setRewardText(`+ ${reward.value} EXP`);
+            if (reward && reward.type !== 'none') {
+                switch(reward.type) { 
+                    case 'exp': {
+                        setRewardText(`+ ${reward.value} EXP`);
+                        break;
+                    }
+                    case 'currency': {
+                        setRewardText(`+ ${reward.value} SP`);
+                        break;
+                    }
+                }
+            }
         }
         else {
             /* Incorrect answer */
