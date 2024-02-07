@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 
 import { NavigationContainer } from '@react-navigation/native';
@@ -9,9 +9,10 @@ import Header from "./Header";
 
 import HomeView from "./Screens/HomeView";
 import UserView from "./Screens/UserView";
+import SpecialView from "./Screens/SpecialView";
 
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
-import { UserAPI, UserContext } from "../util/UserContext";
+import { UserAPI, UserContext, UserProgressData } from "../util/UserContext";
 import { invokeGoogleSignIn } from "./GoogleSignIn";
 
 const Tab = createMaterialBottomTabNavigator();
@@ -19,18 +20,35 @@ const Tab = createMaterialBottomTabNavigator();
 const Main = () => {
     const [user, setUser] = useState<FirebaseAuthTypes.User>(null);
     const [updated, setUpdated] = useState(true);
+    const [progressData, setProgressData] = useState<UserProgressData>(null);
 
     const signedIn = useMemo(() => (
         !!user
     ), [user]);
 
+    const loadFromAPI = useCallback(async () => {
+        if (!user)
+            return;
+
+        const data = await UserAPI.getProgress({user, updated, setUpdated, progressData});
+        setProgressData(data);
+    }, [user, updated]);
+
+    useEffect(() => {
+        if (updated) {
+            loadFromAPI();
+            setUpdated(false);
+        }
+    }, [updated]);
+
     const context = useMemo(() => (
         { 
             user,
             updated,
+            progressData,
             setUpdated
         }
-    ), [user, updated, setUpdated]);
+    ), [user, updated, setUpdated, progressData]);
 
     useEffect(() => {
         const subscriber = auth().onAuthStateChanged((user) => {
@@ -57,7 +75,7 @@ const Main = () => {
                             <MaterialCommunityIcons name="home" color={color} size={26} />
                         ),
                     }} />
-                    <Tab.Screen name="Special" component={View} options={{
+                    <Tab.Screen name="Special" component={signedIn ? SpecialView : View} options={{
                         tabBarIcon:({color})=>(
                             <MaterialCommunityIcons name="creation" color={color} size={26} />
                         ),

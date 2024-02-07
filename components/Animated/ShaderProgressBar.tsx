@@ -1,7 +1,7 @@
 import { Canvas, RoundedRect, Shader, SkSize, Skia, Text, useClockValue, useComputedValue, useFont, vec } from '@shopify/react-native-skia';
 import { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSharedValue, withTiming } from 'react-native-reanimated';
+import { useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 
 const source = Skia.RuntimeEffect.Make(`
 uniform vec2 resolution;
@@ -42,10 +42,13 @@ const ShaderProgressBar = ({
     fontSize = 12
 }: ShaderProgressBarProps) => {
     const clock = useClockValue();
+    
     const canvasSize = useSharedValue<SkSize>(null);
+    const canvasWidth = useDerivedValue(() => canvasSize.value?.width ?? 0, [canvasSize]);
+    const canvasHeight = useDerivedValue(() => canvasSize.value?.height ?? 0, [canvasSize]);
 
     const font = useFont(fontData, fontSize);
-    const fontHeight = font?.measureText(text).height ?? 0;
+    const fontHeight = useDerivedValue(() => font?.measureText(text).height ?? 0, [font]);
 
     const interpolatedProgress = useSharedValue(0);
 
@@ -63,15 +66,24 @@ const ShaderProgressBar = ({
         }
     ), [clock, canvasSize, interpolatedProgress]);
 
+    const textY = useDerivedValue(() => (canvasHeight.value + fontHeight.value) / 2, [canvasHeight, fontHeight]);
+
     return (
         <View style={styles.view}>
             <Canvas style={styles.canvas} onSize={canvasSize}>
-                <RoundedRect x={0} y={0} width={canvasSize.value?.width ?? 0} height={canvasSize.value?.height ?? 0} r={10}>
+                <RoundedRect x={0} y={0} width={canvasWidth} height={canvasHeight} r={10}>
                     <Shader source={source} uniforms={uniforms} />
                 </RoundedRect>
                 {
                     font && text !== "" ? (
-                        <Text x={15} y={ (canvasSize.value?.height + fontHeight) / 2 } text={text} font={font} color={"white"} blendMode={"screen"} />
+                        <Text
+                            x={15}
+                            y={textY}
+                            text={text}
+                            font={font}
+                            color={"white"}
+                            blendMode={"screen"}
+                        />
                     ) : null 
                 }
             </Canvas>

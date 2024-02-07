@@ -94,6 +94,8 @@ export type ShaderButtonProps = {
     iconSize?: number
 
     borderRadius?: number
+
+    jumpingText?: boolean
 };
 
 const fontData = require("../../assets/Roboto/Roboto-Medium.ttf");
@@ -112,7 +114,8 @@ const ShaderButton = ({
     icon,
     iconSize = 20,
 
-    borderRadius = 15
+    borderRadius = 15,
+    jumpingText = true
 }: ShaderButtonProps) => {
     const clock = useClockValue();
 
@@ -173,6 +176,7 @@ const ShaderButton = ({
                                     text={c}
                                     font={font}
                                     color={"white"}
+                                    jumping={jumpingText}
                                 />
                             );
 

@@ -3,9 +3,15 @@ import { ContextType, createContext } from 'react';
 
 import AppConfig from '../util/AppConfig';
 
-export const UserContext = createContext<{user: FirebaseAuthTypes.User, updated: boolean, setUpdated: React.Dispatch<React.SetStateAction<boolean>>}>({
+export const UserContext = createContext<{
+    user: FirebaseAuthTypes.User
+    updated: boolean
+    setUpdated: React.Dispatch<React.SetStateAction<boolean>>
+    progressData: UserProgressData
+}>({
     user: null,
     updated: true,
+    progressData: null,
     setUpdated: () => {}
 });
 
