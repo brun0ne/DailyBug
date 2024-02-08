@@ -17,6 +17,13 @@ export const UserContext = createContext<{
 
 type UserContextValue = ContextType<typeof UserContext>;
 
+type Item = {
+    color: string
+    icon: string
+
+    amount: number
+};
+
 export type UserProgressData = {
     streak: number
     combo: number
@@ -26,6 +33,8 @@ export type UserProgressData = {
     maxExp: number
 
     currency: number
+
+    items: Record<string, Item>
 }
 
 export class UserAPI {

@@ -71,9 +71,11 @@ const UserView = () => {
                 <Text style={{fontSize: 25}}>Items</Text>
                 <Divider />
                 <View style={styles.itemsRow}>
-                    <Item name="Skip" amount={4} color="blue" icon="skip-next-circle-outline" />
-                    <Item name="Saver" amount={1} color="red" icon="fire" />
-                    <Item name="Cookie" amount={0} color="#fcc203" icon="cookie" />
+                    {
+                        Object.entries(userContext.progressData?.items).map(([name, item]) => (
+                            <Item key={`key_${name}_${item.amount}`} name={name} amount={item.amount} color={item.color} icon={item.icon} />
+                        ))
+                    }
                 </View>
             </View>
 
