@@ -1,14 +1,15 @@
 import { useContext, useMemo } from "react";
 import { View, StyleSheet } from "react-native";
-import { Avatar, Button, Card, Text, useTheme } from "react-native-paper";
+import { Avatar, Button, Card, Divider, Text, useTheme } from "react-native-paper";
 
 import auth from "@react-native-firebase/auth";
 
 import { useIsFocused } from '@react-navigation/native';
 
-import { UserAPI, UserContext, UserProgressData } from "../../util/UserContext";
+import { UserContext } from "../../util/UserContext";
 import ShaderProgressBar from "../Animated/ShaderProgressBar";
 import ShaderFlatDisplay from "../Animated/ShaderFlatDisplay";
+import Item from "../Item";
 
 const UserView = () => {
     const userContext = useContext(UserContext); 
@@ -62,8 +63,18 @@ const UserView = () => {
                 </Card.Content>
             </Card>
 
-            <View style={styles.items}>
+            <View style={styles.currency}>
                 <ShaderFlatDisplay text="STORY POINTS" number={userContext.progressData?.currency ?? 0} />
+            </View>
+
+            <View style={styles.items}>
+                <Text style={{fontSize: 25}}>Items</Text>
+                <Divider />
+                <View style={styles.itemsRow}>
+                    <Item name="Skip" amount={4} color="blue" icon="skip-next-circle-outline" />
+                    <Item name="Saver" amount={1} color="red" icon="fire" />
+                    <Item name="Cookie" amount={0} color="#fcc203" icon="cookie" />
+                </View>
             </View>
 
             {/* <View style={styles.bottom}>
@@ -85,11 +96,20 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         marginTop: 5
     },
-    items: {
+    currency: {
         flexDirection: "column",
         gap: 10,
         marginTop: 20,
         width: "100%"
+    },
+    items: {
+        marginTop: 20
+    },
+    itemsRow: {
+        flexDirection: "row",
+        gap: 10,
+        width: "100%",
+        paddingTop: 10
     },
     bottom: {
         marginTop: 20,
