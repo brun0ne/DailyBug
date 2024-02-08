@@ -78,6 +78,13 @@ export class UserAPI {
         await UserAPI.bugDone(context, false);
     }
 
+    static async doSprint(context: UserContextValue) {
+        const res = await UserAPI.doRequest(context.user, "special/sprint", "POST", {});
+
+        context.setUpdated(true);
+        return res;
+    }
+
     static async init(user: FirebaseAuthTypes.User) {
         const res = await UserAPI.doRequest(user, "user/init", "POST", {});
         console.log("INIT", res);

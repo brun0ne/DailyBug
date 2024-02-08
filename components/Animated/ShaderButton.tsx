@@ -1,7 +1,7 @@
-import { Skia, Canvas, Shader, useFont, Text, vec, useClockValue, useComputedValue, useValue, AnimatedProp, SkFont, RoundedRect } from "@shopify/react-native-skia";
+import { Skia, Canvas, Shader, useFont, Text, vec, useClockValue, useComputedValue, useValue, AnimatedProp, SkFont, RoundedRect, ColorShader } from "@shopify/react-native-skia";
 import { useEffect, useMemo } from "react";
 import { View, StyleSheet } from "react-native";
-import { Icon } from "react-native-paper";
+import { Icon, useTheme } from "react-native-paper";
 
 import {
     Easing,
@@ -96,6 +96,7 @@ export type ShaderButtonProps = {
     borderRadius?: number
 
     jumpingText?: boolean
+    disabled?: boolean
 };
 
 const fontData = require("../../assets/Roboto/Roboto-Medium.ttf");
@@ -115,11 +116,14 @@ const ShaderButton = ({
     iconSize = 20,
 
     borderRadius = 15,
-    jumpingText = true
+
+    jumpingText = true,
+    disabled = false
 }: ShaderButtonProps) => {
     const clock = useClockValue();
 
     const font = useFont(fontData, fontSize);
+    const theme = useTheme();
     
     const textWidth = font?.measureText(text).width ?? 0;
     const buttonWidth = textWidth + paddingLeft + paddingRight + (icon ? iconSize : 0);
@@ -158,7 +162,9 @@ const ShaderButton = ({
         <View style={{width: buttonWidth, height: buttonHeight}} onTouchStart={onTouch.onStart} onTouchEnd={onTouch.onEnd} onTouchMove={onTouch.onActive}>
             <Canvas style={canvasStyles}>
                 <RoundedRect x={0} y={0} width={buttonWidth} height={buttonHeight} r={borderRadius}>
-                    <Shader source={source} uniforms={uniforms} />
+                    { 
+                        !disabled ? <Shader source={source} uniforms={uniforms} /> : <ColorShader color={theme.colors.backdrop} />
+                    }
                 </RoundedRect>
                 {
                     ((array: string[]) => {
@@ -175,7 +181,7 @@ const ShaderButton = ({
                                     y={paddingTop + fontSize}
                                     text={c}
                                     font={font}
-                                    color={"white"}
+                                    color={!disabled ? "white" : theme.colors.onSurfaceDisabled}
                                     jumping={jumpingText}
                                 />
                             );

@@ -1,16 +1,22 @@
 import { View, StyleSheet } from "react-native";
 import { Icon, Text } from "react-native-paper";
-import { useContext } from "react";
+import { useCallback, useContext } from "react";
 import { useIsFocused } from '@react-navigation/native';
 
 import ShaderButton from "../Animated/ShaderButton";
 import ShaderFlatDisplay from "../Animated/ShaderFlatDisplay";
 
-import { UserContext } from "../../util/UserContext";
+import { UserAPI, UserContext } from "../../util/UserContext";
 
 const SpecialView = () => {
     const userContext = useContext(UserContext);
     const isFocused = useIsFocused();
+
+    const sprintCallback = useCallback(() => {
+        UserAPI.doSprint(userContext);
+
+        /* todo: display what was pulled */
+    }, [userContext]);
 
     if (!isFocused)
         return <></>;
@@ -25,7 +31,12 @@ const SpecialView = () => {
 
                 <Icon source="run-fast" size={50} />
 
-                <ShaderButton text={"Use 150 Story Points"} onPress={() => {}} jumpingText={false} />
+                <ShaderButton
+                    disabled={(userContext.progressData?.currency ?? 0) < 150}
+                    text={"Use 150 Story Points"}
+                    onPress={sprintCallback}
+                    jumpingText={false}
+                />
             </View>
         </>
     )

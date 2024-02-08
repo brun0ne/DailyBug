@@ -219,7 +219,10 @@ const HomeView = () => {
                 <View style={styles.buttonWrapper}>
                     { correctAnswerState ? 
                         <NextBugButton onPress={nextButtonCallback}></NextBugButton> :
-                        <AnswerButtons submitButtonDisabled={submitButtonDisabled} submitButtonCallback={submitButtonCallback} />
+                        <AnswerButtons
+                            submitButtonDisabled={submitButtonDisabled}
+                            submitButtonCallback={submitButtonCallback}
+                        />
                     }
                 </View>
             </View>
