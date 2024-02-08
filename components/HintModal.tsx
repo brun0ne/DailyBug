@@ -22,7 +22,7 @@ const HintModal = (props: HintModalProps) => {
                 { props.isLoading() ? (
                     <ActivityIndicator />
                 ) : (
-                    <Card>
+                    <Card style={{shadowColor: 'transparent'}}>
                         <Card.Title
                             title={<Text variant="titleLarge">{"Hint"}</Text>}
                             left={titleLeftCallback}
