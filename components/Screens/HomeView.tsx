@@ -17,6 +17,7 @@ import IncorrectPopup from "../IncorrectPopup";
 
 import { UserAPI, UserContext } from "../../util/UserContext";
 import NextBugButton from "../NextBugButtons";
+import SkipModal from "../SkipModal";
 
 const correctSound = require("../../assets/correct.mp3") as AVPlaybackSource;
 const wrongSound = require("../../assets/wrong.mp3") as AVPlaybackSource;
@@ -28,6 +29,7 @@ const HomeView = () => {
     const [sound, setSound] = useState<Audio.Sound>();
     
     const [hintModalShown, setHintModalShown] = useState(false); 
+    const [skipModalShown, setSkipModalShown] = useState(false);
     const [incorrectPopupShown, setIncorrectPopupShown] = useState(false);
     const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
     const [selectedLine, setSelectedLine] = useState<LineToHighlight | null>(null);
@@ -173,13 +175,32 @@ const HomeView = () => {
         setHintModalShown(false);
     }, []);
 
-    const hintCallback = useCallback(() => {
+    const hintModalCallback = useCallback(() => {
         setHintModalShown(true);
     }, []);
 
     const getHintTextCallback = useCallback(() => (
         bug ? bug.hint : "Error"
     ), [bug]);
+
+    /* Skip callbacks */
+
+    const hideSkipModal = useCallback(() => {
+        setSkipModalShown(false);
+    }, []);
+
+    const skipModalCallback = useCallback(() => {
+        setSkipModalShown(true);
+    }, []);
+
+    const doSkipCallback = useCallback(() => {
+        setCorrectAnswerState(false);
+        setBug(null);
+        setSelectedLine(null);
+        setRewardText(null);
+
+        UserAPI.doSkip(userContext);
+    }, []);
 
     /* Loading callback */
     const isLoadingCallback = useCallback(() => (
@@ -189,13 +210,15 @@ const HomeView = () => {
     return (
         <View style={styles.mainWrapper}>
             <HintModal visible={hintModalShown} hide={hideHindModal} getHintText={getHintTextCallback} isLoading={isLoadingCallback} />
+
+            <SkipModal visible={skipModalShown} hide={hideSkipModal} skip={doSkipCallback} />
             
             <Confetti ref={confettiRef} />
 
             <IncorrectPopup visible={incorrectPopupShown} hideCallback={hideIncorrectCallback} />
 
             <HomeHeader
-                hintCallback={hintCallback}
+                hintCallback={hintModalCallback}
                 explanation={(!bug || isLoading) ? "..." : bug.explanation}
                 rewardText={rewardText}
                 showExplanation={correctAnswerState}
@@ -222,6 +245,8 @@ const HomeView = () => {
                         <AnswerButtons
                             submitButtonDisabled={submitButtonDisabled}
                             submitButtonCallback={submitButtonCallback}
+
+                            skipButtonCallback={skipModalCallback}
                         />
                     }
                 </View>

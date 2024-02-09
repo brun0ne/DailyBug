@@ -38,7 +38,7 @@ export type UserProgressData = {
 }
 
 export class UserAPI {
-    private static async doRequest(user: FirebaseAuthTypes.User, endpoint: string, method: string, reqData: any) {
+    private static async doRequest(user: FirebaseAuthTypes.User, endpoint: string, method: "GET" | "POST", reqData: any) {
         const idToken = await user.getIdToken(true);
 
         const headers = {
@@ -89,6 +89,13 @@ export class UserAPI {
 
     static async doSprint(context: UserContextValue) {
         const res = await UserAPI.doRequest(context.user, "special/sprint", "POST", {});
+
+        context.setUpdated(true);
+        return res;
+    }
+
+    static async doSkip(context: UserContextValue) {
+        const res = await UserAPI.doRequest(context.user, "bugs/skip", "POST", {});
 
         context.setUpdated(true);
         return res;

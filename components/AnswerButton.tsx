@@ -4,7 +4,9 @@ import { Button, useTheme } from "react-native-paper";
 
 export type AnswerButtonsProps = {
     submitButtonDisabled: boolean;
-    submitButtonCallback: () => any;
+    submitButtonCallback: () => void;
+
+    skipButtonCallback: () => void;
 }
 
 const AnswerButtons = (props: AnswerButtonsProps) => {
@@ -18,7 +20,7 @@ const AnswerButtons = (props: AnswerButtonsProps) => {
                 icon="skip-next-circle-outline"
                 mode="contained"
                 style={{backgroundColor: theme.colors.error}}
-                // onPress={() => {}}
+                onPress={props.skipButtonCallback}
             >
                 Skip
             </Button>
