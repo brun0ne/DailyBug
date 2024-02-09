@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { View, StyleSheet, Pressable } from "react-native";
 import { useTheme, Text, Icon } from "react-native-paper";
 
@@ -22,19 +22,20 @@ const Item = (props: ItemProps) => {
     const theme = useTheme();
     const disabled = props.amount <= 0;
 
-    const [color, setColor] = useState(props.color);
+    const baseColor = useMemo(() => (!disabled ? props.color: theme.colors.backdrop), [disabled, theme]);
+    const [color, setColor] = useState(baseColor);
 
     const pressInCallback = useCallback(() => {
-        setColor(Color(props.color).lighten(0.4).toString())
-    }, [props.color]);
+        setColor(Color(baseColor).lighten(!disabled ? 0.4 : 1).toString())
+    }, [props.color, baseColor, disabled]);
 
     const pressOutCallback = useCallback(() => {
-        setColor(props.color);
-    }, [props.color]);
+        setColor(baseColor);
+    }, [props.color, baseColor]);
 
     return (
         <Pressable style={styles.main} disabled={!props.pressable} onPress={props.onPress} onPressIn={pressInCallback} onPressOut={pressOutCallback}>
-            <View style={[styles.rect, {backgroundColor: !disabled ? color : theme.colors.backdrop}]}>
+            <View style={[styles.rect, {backgroundColor: color}]}>
                 <Icon source={props.icon} size={HEIGHT - 20} color="white" />
 
                 <View style={styles.amount}>

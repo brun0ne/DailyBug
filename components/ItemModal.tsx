@@ -1,6 +1,7 @@
-import { Avatar, Button, Card, Modal, Portal, Text, useTheme } from "react-native-paper";
-import { StyleSheet } from "react-native";
-import { ReactNode, useCallback } from "react";
+import { Avatar, Button, Card, Divider, Modal, Portal, Text, useTheme } from "react-native-paper";
+import { ActivityIndicator, StyleSheet } from "react-native";
+import { ReactNode, useCallback, useContext, useEffect, useState } from "react";
+import { UserAPI, UserContext } from "../util/UserContext";
 
 type ItemModalProps = {
     visible: boolean
@@ -9,7 +10,10 @@ type ItemModalProps = {
     name: string
     icon: string
     color: string
+    amount: number
+    active: boolean
 
+    canBeActivated?: boolean
     actionButtons?: ReactNode
     
     children?: ReactNode
@@ -17,10 +21,18 @@ type ItemModalProps = {
 
 const ItemModal = (props: ItemModalProps) => {
     const theme = useTheme();
+    const userContext = useContext(UserContext);
 
     const titleLeftCallback = useCallback((callbackProps) => (
         <Avatar.Icon {...callbackProps} icon={props.icon} style={{ backgroundColor: props.color }} color="white" />
     ), [props.icon, props.color]);
+
+    const actionDisabled = (props.amount <= 0 ?? true) || props.active;
+    const [activating, setActivating] = useState(false);
+
+    useEffect(() => {
+        setActivating(false);
+    }, [props.active, userContext]);
 
     return (
         <Portal>
@@ -32,6 +44,14 @@ const ItemModal = (props: ItemModalProps) => {
                     />
 
                     <Card.Content>
+                        {
+                            props.active ? (
+                                <>
+                                    <Text style={{color: theme.colors.secondary, fontWeight: "bold"}}>Activated</Text>
+                                    <Divider style={{marginTop: 10, marginBottom: 10}} />
+                                </>
+                            ) : null
+                        }
                         <Text variant="bodyMedium">
                             {props.children}
                         </Text>
@@ -39,6 +59,21 @@ const ItemModal = (props: ItemModalProps) => {
 
                     <Card.Actions style={styles.buttons}>
                         {props.actionButtons}
+                        {
+                            props.canBeActivated ? (
+                                <Button disabled={actionDisabled} mode="outlined" onPress={() => {
+                                    UserAPI.doActivateItem(userContext, props.name);
+                                    setActivating(true);
+                                }}>
+                                    {
+                                        <Text style={{fontWeight: "bold", color: !actionDisabled ? theme.colors.primary : theme.colors.backdrop}}>
+                                            Activate {props.name} {!activating ? `(${props.amount ?? 0} left)`
+                                                : <ActivityIndicator color={theme.colors.primary} size={14} style={{paddingLeft: 5}} />}
+                                        </Text>
+                                    }
+                                </Button>
+                            ): null
+                        }
                         <Button textColor={theme.colors.secondary} mode="outlined" onPress={props.hide}>Close</Button>
                     </Card.Actions>
                 </Card>

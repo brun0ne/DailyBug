@@ -22,6 +22,7 @@ type Item = {
     icon: string
 
     amount: number
+    active?: boolean
 };
 
 export type UserProgressData = {
@@ -96,6 +97,15 @@ export class UserAPI {
 
     static async doSkip(context: UserContextValue) {
         const res = await UserAPI.doRequest(context.user, "bugs/skip", "POST", {});
+
+        context.setUpdated(true);
+        return res;
+    }
+
+    static async doActivateItem(context: UserContextValue, itemName: string) {
+        const res = await UserAPI.doRequest(context.user, "user/activate_item", "POST", {
+            itemName: itemName
+        });
 
         context.setUpdated(true);
         return res;

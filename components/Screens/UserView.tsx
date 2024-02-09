@@ -1,6 +1,6 @@
-import { ReactNode, useContext, useMemo, useState } from "react";
+import { ReactNode, useContext, useEffect, useMemo, useState, useTransition } from "react";
 import { View, StyleSheet } from "react-native";
-import { Avatar, Button, Card, Divider, Text, useTheme } from "react-native-paper";
+import { ActivityIndicator, Avatar, Button, Card, Divider, Text, useTheme } from "react-native-paper";
 
 import { Entries } from 'type-fest';
 
@@ -8,7 +8,7 @@ import auth from "@react-native-firebase/auth";
 
 import { useIsFocused } from '@react-navigation/native';
 
-import { UserContext } from "../../util/UserContext";
+import { UserAPI, UserContext } from "../../util/UserContext";
 import ShaderProgressBar from "../Animated/ShaderProgressBar";
 import ShaderFlatDisplay from "../Animated/ShaderFlatDisplay";
 import Item from "../Item";
@@ -36,18 +36,27 @@ const UserView = () => {
     const itemDescriptions = {
         "Skip": (
             <>It can be used for skipping bugs, keeping your <Text style={{fontWeight: "bold"}}>combo</Text> unaffected.</>
+        ),
+        "Saver": (
+            <>
+                When activated, protects you from loosing the <Text style={{fontWeight: "bold"}}>Streak</Text>.
+                It breaks and loses its power after saving you from <Text style={{fontWeight: "bold"}}>1 missed day</Text>.
+            </>
         )
     } satisfies Record<string, ReactNode>;
 
     const itemActions = {
-
-    } satisfies Record<string, ReactNode>;
+        "Saver": {
+            canBeActivated: true,
+            other: null
+        }
+    } satisfies Record<string, {canBeActivated: boolean, other?: ReactNode}>;
 
     const defaultModalState = useMemo(() => {
         let obj = {} as Record<keyof typeof itemDescriptions, boolean>;
 
         for (const [name, _] of Object.entries(itemDescriptions) as Entries<typeof itemDescriptions>) {
-            obj[name] = true;
+            obj[name] = false;
         }
 
         return obj;
@@ -131,16 +140,23 @@ const UserView = () => {
                     hasModal(name) ? (
                         <ItemModal
                             key={`modal_${name}`}
+
                             visible={itemModalsVisible[name]}
                             hide={() => { 
                                 hasModal(name) ?
                                     setItemModalVisible(name, false) :
                                     () => {}
                             }}
+
                             name={name}
                             color={item.color}
                             icon={item.icon}
-                            actionButtons={itemActions[name] ?? null}
+                            amount={item.amount}
+
+                            active={item.active ?? false}
+                            canBeActivated={itemActions[name]?.canBeActivated ?? false}
+
+                            actionButtons={itemActions[name]?.other ?? null}
                         >
                             {itemDescriptions[name]}
                         </ItemModal>
