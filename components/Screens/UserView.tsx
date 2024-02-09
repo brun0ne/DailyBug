@@ -1,6 +1,8 @@
-import { useContext, useMemo } from "react";
+import { ReactNode, useContext, useMemo, useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { Avatar, Button, Card, Divider, Text, useTheme } from "react-native-paper";
+
+import { Entries } from 'type-fest';
 
 import auth from "@react-native-firebase/auth";
 
@@ -10,6 +12,7 @@ import { UserContext } from "../../util/UserContext";
 import ShaderProgressBar from "../Animated/ShaderProgressBar";
 import ShaderFlatDisplay from "../Animated/ShaderFlatDisplay";
 import Item from "../Item";
+import ItemModal from "../ItemModal";
 
 const UserView = () => {
     const userContext = useContext(UserContext); 
@@ -29,6 +32,38 @@ const UserView = () => {
         }
     }, [userContext.user]);
 
+    /* items */
+    const itemDescriptions = {
+        "Skip": (
+            <>It can be used for skipping bugs, keeping your <Text style={{fontWeight: "bold"}}>combo</Text> unaffected.</>
+        )
+    } satisfies Record<string, ReactNode>;
+
+    const itemActions = {
+
+    } satisfies Record<string, ReactNode>;
+
+    const defaultModalState = useMemo(() => {
+        let obj = {} as Record<keyof typeof itemDescriptions, boolean>;
+
+        for (const [name, _] of Object.entries(itemDescriptions) as Entries<typeof itemDescriptions>) {
+            obj[name] = true;
+        }
+
+        return obj;
+    }, []);
+
+    const [itemModalsVisible, setItemModalsVisible] = useState<Record<keyof typeof itemDescriptions, boolean>>(defaultModalState);
+
+    const setItemModalVisible = (name: keyof typeof itemDescriptions, value: boolean) => {
+        setItemModalsVisible({...itemModalsVisible, [name]: value});
+    };
+
+    const hasModal = (s: string): s is keyof typeof itemDescriptions => {
+        return s in itemDescriptions;
+    };
+
+    /* render only if visible */
     if (!isFocused)
         return <></>;
 
@@ -73,11 +108,45 @@ const UserView = () => {
                 <View style={styles.itemsRow}>
                     {
                         Object.entries(userContext.progressData?.items).map(([name, item]) => (
-                            <Item key={`key_${name}_${item.amount}`} name={name} amount={item.amount} color={item.color} icon={item.icon} />
+                            <Item
+                                key={`key_${name}_${item.amount}`}
+                                name={name}
+                                amount={item.amount}
+                                color={item.color}
+                                icon={item.icon}
+                                pressable={hasModal(name)}
+                                onPress={() => {
+                                    hasModal(name) ?
+                                        setItemModalVisible(name, true) :
+                                        () => {}
+                                }}
+                            />
                         ))
                     }
                 </View>
             </View>
+
+            {
+                Object.entries(userContext.progressData?.items).map(([name, item]) => (
+                    hasModal(name) ? (
+                        <ItemModal
+                            key={`modal_${name}`}
+                            visible={itemModalsVisible[name]}
+                            hide={() => { 
+                                hasModal(name) ?
+                                    setItemModalVisible(name, false) :
+                                    () => {}
+                            }}
+                            name={name}
+                            color={item.color}
+                            icon={item.icon}
+                            actionButtons={itemActions[name] ?? null}
+                        >
+                            {itemDescriptions[name]}
+                        </ItemModal>
+                    ) : null
+                ))
+            }
 
             {/* <View style={styles.bottom}>
                 <Button mode="contained-tonal" onPress={() => { auth().signOut() }}>Sign Out</Button>

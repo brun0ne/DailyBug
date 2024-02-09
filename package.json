@@ -20,6 +20,7 @@
     "@react-navigation/native-stack": "^6.9.17",
     "@shopify/react-native-skia": "0.1.221",
     "@types/react": "~18.2.14",
+    "color": "^4.2.3",
     "css-to-react-native": "^3.2.0",
     "expo": "^50.0.3",
     "expo-av": "~13.10.4",
@@ -42,6 +43,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "@types/color": "^3.0.6",
     "@types/react-syntax-highlighter": "^15.5.11"
   },
   "private": true
