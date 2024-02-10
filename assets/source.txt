@@ -1,1 +1,4 @@
-Sounds: https://opengameart.org/content/level-up-power-up-coin-get-13-sounds
+Sounds:
+https://opengameart.org/content/level-up-power-up-coin-get-13-sounds
+https://opengameart.org/content/short-wind-sound
+https://opengameart.org/content/atmospheric-interaction-sound-pack

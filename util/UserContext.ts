@@ -20,8 +20,9 @@ type UserContextValue = ContextType<typeof UserContext>;
 type Item = {
     color: string
     icon: string
+    stars: 5 | 4 | 3
 
-    amount: number
+    amount?: number
     active?: boolean
 };
 
@@ -92,7 +93,7 @@ export class UserAPI {
         const res = await UserAPI.doRequest(context.user, "special/sprint", "POST", {});
 
         context.setUpdated(true);
-        return res;
+        return res as {success: boolean, reward: Item};
     }
 
     static async doSkip(context: UserContextValue) {
