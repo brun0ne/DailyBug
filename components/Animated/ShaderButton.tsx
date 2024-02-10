@@ -1,6 +1,6 @@
-import { Skia, Canvas, Shader, useFont, Text, vec, useClockValue, useComputedValue, useValue, AnimatedProp, SkFont, RoundedRect, ColorShader } from "@shopify/react-native-skia";
+import { Skia, Canvas, Shader, useFont, Text, vec, useClockValue, useComputedValue, useValue, AnimatedProp, SkFont, RoundedRect, ColorShader, matchFont } from "@shopify/react-native-skia";
 import { useEffect, useMemo } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Platform } from "react-native";
 import { Icon, useTheme } from "react-native-paper";
 
 import {
@@ -99,8 +99,6 @@ export type ShaderButtonProps = {
     disabled?: boolean
 };
 
-const fontData = require("../../assets/Roboto/Roboto-Medium.ttf");
-
 const ShaderButton = ({
     onPress,
 
@@ -122,7 +120,13 @@ const ShaderButton = ({
 }: ShaderButtonProps) => {
     const clock = useClockValue();
 
-    const font = useFont(fontData, fontSize);
+    const fontFamily = Platform.select({ default: "sans-serif" });
+    const fontStyle = {
+        fontFamily,
+        fontSize: fontSize
+    };
+
+    const font = matchFont(fontStyle);
     const theme = useTheme();
     
     const textWidth = font?.measureText(text).width ?? 0;
@@ -186,7 +190,7 @@ const ShaderButton = ({
                                 />
                             );
 
-                            offset += font.getTextWidth(c);
+                            offset += font.getGlyphWidths(font.getGlyphIDs(c))[0];
                         });
 
                         return acc;
