@@ -1,3 +1,4 @@
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Main from './components/Main';
 import { DefaultTheme, PaperProvider } from 'react-native-paper';
 
@@ -13,7 +14,9 @@ const theme = {
 export default function App() {
   return (
     <PaperProvider theme={theme}>
-      <Main />
+      <GestureHandlerRootView style={{flexGrow: 1}}>
+        <Main />
+      </GestureHandlerRootView>
     </PaperProvider>
   );
 };

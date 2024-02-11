@@ -8,7 +8,8 @@ import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
 import ShaderButton from "../Animated/ShaderButton";
 import ShaderFlatDisplay from "../Animated/ShaderFlatDisplay";
 
-import { UserAPI, UserContext } from "../../util/UserContext";
+import { ItemType, UserAPI, UserContext } from "../../util/UserContext";
+import SprintReward from "../Animated/SprintReward";
 
 const sprintGoldVid = require("../../assets/Sprint/gold1.mp4");
 const sprintPurpleVid = require("../../assets/Sprint/purple1.mp4");
@@ -18,7 +19,10 @@ const SpecialView = () => {
     const userContext = useContext(UserContext);
     const isFocused = useIsFocused();
 
+    const [rollingPending, setRollingPending] = useState(false);
     const [rolling, setRolling] = useState<5 | 4 | 3 | false>(false);
+    const [rolledItem, setRolledItem] = useState<ItemType & {itemName: string}>(null);
+    const [rewardVisible, setRewardVisible] = useState(false);
 
     const blackCoverOpacity = useSharedValue(0);
 
@@ -26,22 +30,26 @@ const SpecialView = () => {
         blackCoverOpacity.value = withTiming(1, {
             duration: 500
         });
+        setRollingPending(true);
 
         const res = await UserAPI.doSprint(userContext);
+        setRollingPending(false);
+        setRolledItem({itemName: res.itemName, ...res.reward});
 
-        setTimeout(() => {
-            if (!res.reward)
-                return;
+        if (!res.reward)
+            return;
 
-            setRolling(res.reward.stars);
-        }, 100);
-
-        /* todo: display what was pulled */
+        setRolling(res.reward.stars);
     }, [userContext]);
 
     const onSprintVideoEnd = useCallback(() => {
         setRolling(false);
-        
+    }, []);
+
+    const onClose = useCallback(() => {
+        setRewardVisible(false);
+        setRolledItem(null);
+
         blackCoverOpacity.value = withTiming(0, {
             duration: 300
         });
@@ -61,7 +69,7 @@ const SpecialView = () => {
                 <Icon source="run-fast" size={50} />
 
                 <ShaderButton
-                    disabled={(userContext.progressData?.currency ?? 0) < 150}
+                    disabled={(userContext.progressData?.currency ?? 0) < 150 || rollingPending || rolling !== false || rewardVisible}
                     text={"Use 150 Story Points"}
                     onPress={sprintCallback}
                     jumpingText={false}
@@ -83,7 +91,12 @@ const SpecialView = () => {
                             onError={(e) => {console.log(e)}}
                             style={styles.video}
                             resizeMode={ResizeMode.COVER}
+                            progressUpdateIntervalMillis={100}
                             onPlaybackStatusUpdate={(status) => {
+                                if ((status as any).positionMillis >= 4600 && !rewardVisible) {
+                                    setRewardVisible(true);
+                                }
+
                                 if((status as any).didJustFinish) {
                                     onSprintVideoEnd();
                                 }
@@ -95,6 +108,12 @@ const SpecialView = () => {
                 }
 
                 <Animated.View style={[{opacity: blackCoverOpacity}, styles.blackCover]} pointerEvents="none"></Animated.View>
+
+                <Animated.View style={{opacity: blackCoverOpacity, position: "absolute", zIndex: 20}}>
+                    {
+                        rewardVisible ? <SprintReward item={rolledItem} closeCallback={onClose} /> : null
+                    }
+                </Animated.View>
             </View>
         </>
     )

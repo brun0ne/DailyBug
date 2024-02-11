@@ -17,7 +17,7 @@ export const UserContext = createContext<{
 
 type UserContextValue = ContextType<typeof UserContext>;
 
-type Item = {
+export type ItemType = {
     color: string
     icon: string
     stars: 5 | 4 | 3
@@ -36,7 +36,7 @@ export type UserProgressData = {
 
     currency: number
 
-    items: Record<string, Item>
+    items: Record<string, ItemType>
 }
 
 export class UserAPI {
@@ -93,7 +93,7 @@ export class UserAPI {
         const res = await UserAPI.doRequest(context.user, "special/sprint", "POST", {});
 
         context.setUpdated(true);
-        return res as {success: boolean, reward: Item};
+        return res as {success: boolean, reward: ItemType, itemName: string};
     }
 
     static async doSkip(context: UserContextValue) {
