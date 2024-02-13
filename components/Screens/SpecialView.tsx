@@ -1,6 +1,6 @@
 import { View, StyleSheet } from "react-native";
 import { Icon, Text } from "react-native-paper";
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useIsFocused } from '@react-navigation/native';
 import { Video, ResizeMode } from "expo-av";
 import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
@@ -11,9 +11,9 @@ import ShaderFlatDisplay from "../Animated/ShaderFlatDisplay";
 import { ItemType, UserAPI, UserContext } from "../../util/UserContext";
 import SprintReward from "../Animated/SprintReward";
 
-const sprintGoldVid = require("../../assets/Sprint/gold1.mp4");
-const sprintPurpleVid = require("../../assets/Sprint/purple1.mp4");
-const sprintBlueVid = require("../../assets/Sprint/blue1.mp4");
+const sprintGoldVid = require("../../assets/Sprint/gold.mp4");
+const sprintPurpleVid = require("../../assets/Sprint/purple.mp4");
+const sprintBlueVid = require("../../assets/Sprint/blue.mp4");
 
 const SpecialView = () => {
     const userContext = useContext(UserContext);
@@ -54,6 +54,17 @@ const SpecialView = () => {
             duration: 300
         });
     }, []);
+
+    useEffect(() => {
+        if (isFocused) {
+            setRollingPending(false);
+            setRolling(false);
+            setRewardVisible(false);
+            setRolledItem(null);
+
+            blackCoverOpacity.value = withTiming(0);
+        }
+    }, [isFocused])
 
     if (!isFocused)
         return <></>;
