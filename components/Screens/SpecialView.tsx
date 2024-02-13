@@ -47,6 +47,7 @@ const SpecialView = () => {
     }, []);
 
     const onClose = useCallback(() => {
+        setRolling(false);
         setRewardVisible(false);
         setRolledItem(null);
 
@@ -104,7 +105,7 @@ const SpecialView = () => {
                             resizeMode={ResizeMode.COVER}
                             progressUpdateIntervalMillis={100}
                             onPlaybackStatusUpdate={(status) => {
-                                if ((status as any).positionMillis >= 4600 && !rewardVisible) {
+                                if ((status as any).positionMillis >= 4600 && !rewardVisible && rolledItem) {
                                     setRewardVisible(true);
                                 }
 

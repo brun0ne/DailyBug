@@ -24,6 +24,8 @@ export type ItemType = {
 
     amount?: number
     active?: boolean
+    
+    hiddenIfNotOwned?: boolean
 };
 
 export type UserProgressData = {

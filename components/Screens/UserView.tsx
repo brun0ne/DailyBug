@@ -1,6 +1,6 @@
-import { ReactNode, useContext, useEffect, useMemo, useState, useTransition } from "react";
+import { ReactNode, useContext, useMemo, useState } from "react";
 import { View, StyleSheet } from "react-native";
-import { ActivityIndicator, Avatar, Button, Card, Divider, Text, useTheme } from "react-native-paper";
+import { Avatar, Button, Card, Divider, Text, useTheme } from "react-native-paper";
 
 import { Entries } from 'type-fest';
 
@@ -42,6 +42,12 @@ const UserView = () => {
                 When activated, protects you from loosing the <Text style={{fontWeight: "bold"}}>Streak</Text>.
                 It breaks and loses its power after saving you from <Text style={{fontWeight: "bold"}}>1 missed day</Text>.
             </>
+        ),
+        "Cookie": (
+            <>Legends say that some people use them to enhance user experience.</>
+        ),
+        "Rubber Duck": (
+            <>Talking to <Text style={{fontWeight: "bold"}}>the Duck</Text> greatly impoves one's debugging capabilities.</>
         )
     } satisfies Record<string, ReactNode>;
 
@@ -116,21 +122,22 @@ const UserView = () => {
                 <Divider />
                 <View style={styles.itemsRow}>
                     {
-                        Object.entries(userContext.progressData?.items).map(([name, item]) => (
-                            <Item
-                                key={`key_${name}_${item.amount}`}
-                                name={name}
-                                amount={item.amount}
-                                color={item.color}
-                                icon={item.icon}
-                                pressable={hasModal(name)}
-                                onPress={() => {
-                                    hasModal(name) ?
-                                        setItemModalVisible(name, true) :
-                                        () => {}
-                                }}
-                            />
-                        ))
+                        Object.entries(userContext.progressData?.items)
+                            .filter(([name, item]) => item.amount > 0 || !item.hiddenIfNotOwned)
+                            .map(([name, item]) =>
+                            (
+                                <Item
+                                    key={`key_${name}_${item.amount}`}
+                                    name={name}
+                                    item={item}
+                                    pressable={hasModal(name)}
+                                    onPress={() => {
+                                        hasModal(name) ?
+                                            setItemModalVisible(name, true) :
+                                            () => {}
+                                    }}
+                                />
+                            ))
                     }
                 </View>
             </View>
@@ -149,11 +156,8 @@ const UserView = () => {
                             }}
 
                             name={name}
-                            color={item.color}
-                            icon={item.icon}
-                            amount={item.amount}
+                            item={item}
 
-                            active={item.active ?? false}
                             canBeActivated={itemActions[name]?.canBeActivated ?? false}
 
                             actionButtons={itemActions[name]?.other ?? null}
