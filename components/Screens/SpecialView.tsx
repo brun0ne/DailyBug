@@ -51,9 +51,7 @@ const SpecialView = () => {
         setRewardVisible(false);
         setRolledItem(null);
 
-        blackCoverOpacity.value = withTiming(0, {
-            duration: 300
-        });
+        blackCoverOpacity.value = withTiming(0);
     }, []);
 
     useEffect(() => {
@@ -119,7 +117,11 @@ const SpecialView = () => {
                         : null
                 }
 
-                <Animated.View style={[{opacity: blackCoverOpacity}, styles.blackCover]} pointerEvents="none"></Animated.View>
+                {
+                    rollingPending || rolling || rewardVisible ?
+                        <Animated.View style={[{opacity: blackCoverOpacity}, styles.blackCover]} pointerEvents="none"></Animated.View>
+                        : null
+                }
 
                 <Animated.View style={{opacity: blackCoverOpacity, position: "absolute", zIndex: 20}}>
                     {
