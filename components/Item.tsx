@@ -4,7 +4,20 @@ import { useTheme, Text, Icon } from "react-native-paper";
 
 import Color from "color";
 import { ItemType } from "../util/UserContext";
-import { Canvas, RadialGradient, RoundedRect, vec } from "@shopify/react-native-skia";
+import { Canvas, RadialGradient, RoundedRect, Shader, Skia, useClockValue, useComputedValue, vec } from "@shopify/react-native-skia";
+
+const source = Skia.RuntimeEffect.Make(`
+uniform vec2 resolution;
+uniform float time;
+
+vec4 main(vec2 pos) {
+    vec2 n = pos/resolution.xy;
+    vec4 color = vec4(n.x, n.y + sin(n.x * 0.8 - time/1000) * 0.3 - 0.3, 1, 1);
+
+    return color;
+}
+`)!;
+
 
 type ItemProps = {
     name: string
@@ -21,6 +34,8 @@ const Item = (props: ItemProps) => {
     const theme = useTheme();
     const disabled = props.item.amount <= 0;
 
+    const clock = useClockValue();
+
     const baseColor = useMemo(() => (!disabled ? props.item.color: theme.colors.backdrop), [disabled, theme]);
     const [color, setColor] = useState(baseColor);
 
@@ -32,6 +47,13 @@ const Item = (props: ItemProps) => {
         setColor(baseColor);
     }, [props.item, baseColor]);
 
+    const uniforms = useComputedValue(() => (
+        {
+            resolution: vec(WIDTH, HEIGHT),
+            time: clock.current,
+        }
+    ), [clock]);
+
     return (
         <Pressable style={styles.main} disabled={!props.pressable} onPress={props.onPress} onPressIn={pressInCallback} onPressOut={pressOutCallback}>
             <View style={[styles.rect, {backgroundColor: color}]}>
@@ -39,7 +61,7 @@ const Item = (props: ItemProps) => {
                     props.item.stars === 5 ? (
                         <Canvas style={{position: "absolute", top: 0, bottom: 0, left: 0, right: 0}}>
                             <RoundedRect x={0} y={0} width={WIDTH} height={HEIGHT} r={10}>
-                                <RadialGradient c={vec(WIDTH/2, HEIGHT/2)} r={WIDTH/2} colors={["cyan", "blue"]} />
+                                <Shader source={source} uniforms={uniforms} />
                             </RoundedRect>
                         </Canvas>
                     ) : null

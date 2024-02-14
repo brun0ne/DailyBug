@@ -1,4 +1,4 @@
-import { Skia, Canvas, Shader, useFont, Text, vec, useClockValue, useComputedValue, useValue, AnimatedProp, SkFont, RoundedRect, ColorShader, matchFont } from "@shopify/react-native-skia";
+import { Skia, Canvas, Shader, Text, vec, useClockValue, useComputedValue, useValue, AnimatedProp, SkFont, RoundedRect, ColorShader, matchFont } from "@shopify/react-native-skia";
 import { useEffect, useMemo } from "react";
 import { View, StyleSheet, Platform } from "react-native";
 import { Icon, useTheme } from "react-native-paper";
