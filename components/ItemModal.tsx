@@ -33,7 +33,7 @@ const ItemModal = (props: ItemModalProps) => {
 
     return (
         <Portal>
-            <Modal visible={props.visible} onDismiss={props.hide} contentContainerStyle={styles.container}>
+            <Modal visible={props.visible} onDismiss={props.hide} dismissable={false} contentContainerStyle={styles.container}>
                 <Card style={{shadowColor: 'transparent'}}>
                     <Card.Title
                         title={<Text variant="titleLarge">{props.name}</Text>}

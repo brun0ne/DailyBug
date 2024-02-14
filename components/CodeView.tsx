@@ -1,5 +1,6 @@
 import { memo } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { Text } from "react-native-paper";
 
 import CodeHighlighter, { type LineToHighlight } from "./CodeHighlighter";
 import { atomOneDarkReasonable } from "react-syntax-highlighter/dist/esm/styles/hljs";
@@ -14,23 +15,41 @@ export type CodeViewProps = {
 };
 
 const CodeView = (props: CodeViewProps) => {
+    const styles = stylesGen(props.wrapLines);
+
+    const prettyLanguage = (lang: string) => {
+        const m = {
+            "javascript": "JavaScript",
+            "typescript": "TypeScript"
+        };
+
+        return m[lang.toLowerCase()] ?? "???";
+    };
+
     return (
-        <CodeHighlighter
-            hljsStyle={atomOneDarkReasonable}
-            horizontalScrollViewProps={{ contentContainerStyle: styles(props.wrapLines).codeContainer }}
-            textStyle={styles(props.wrapLines).text}
-            language={props.codeLanguage}
-            showLineNumbers={true}
-            wrapLines={props.wrapLines ? true : undefined}
-            selectedLines={props.linesToHighlight}
-            onLinePress={props.callback}
-        >
-            {props.codeString}
-        </CodeHighlighter>
+        <View>
+            <View style={styles.languageView}><Text style={{color: "gray"}}>{prettyLanguage(props.codeLanguage)}</Text></View>
+            <CodeHighlighter
+                hljsStyle={atomOneDarkReasonable}
+                horizontalScrollViewProps={{ contentContainerStyle: styles.codeContainer }}
+                textStyle={styles.text}
+                language={props.codeLanguage}
+                showLineNumbers={true}
+                wrapLines={props.wrapLines ? true : undefined}
+                selectedLines={props.linesToHighlight}
+                onLinePress={props.callback}
+            >
+                {props.codeString}
+            </CodeHighlighter>
+        </View>
     );
 };
 
-const styles = (wrapLines: boolean) => StyleSheet.create({
+const stylesGen = (wrapLines: boolean) => StyleSheet.create({
+    languageView: {
+        padding: 10,
+        backgroundColor: "hsl(220, 13%, 18%)"
+    },
 	codeContainer: {
 		padding: 16,
         ...(wrapLines ? {width: "100%"} : {}),
