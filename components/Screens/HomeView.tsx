@@ -19,10 +19,14 @@ import { UserAPI, UserContext } from "../../util/UserContext";
 import NextBugButton from "../NextBugButtons";
 import SkipModal from "../SkipModal";
 
+import { useIsFocused } from '@react-navigation/native';
+
 const correctSound = require("../../assets/correct.mp3") as AVPlaybackSource;
 const wrongSound = require("../../assets/wrong.mp3") as AVPlaybackSource;
 
 const HomeView = () => {
+    const isFocused = useIsFocused();
+
     const [bug, setBug] = useState<Bug>(null);
     const [isLoading, setLoading] = useState(false);
 
@@ -206,6 +210,9 @@ const HomeView = () => {
     const isLoadingCallback = useCallback(() => (
         !bug || isLoading
     ), [bug, isLoading]);
+
+    if (!isFocused)
+        return <></>;
 
     return (
         <View style={styles.mainWrapper}>
