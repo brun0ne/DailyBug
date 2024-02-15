@@ -270,10 +270,11 @@ const styles = StyleSheet.create({
     topWrapper: {
         flex: 6,
         marginTop: 20,
-        // justifyContent: "center"
+        maxHeight: "50%"
     },
     bottomWrapper: {
-        margin: 10,
+        position: "absolute",
+        bottom: 20,
         justifyContent: "space-around",
         alignItems: "center",
         flex: 1,

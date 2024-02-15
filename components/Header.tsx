@@ -28,24 +28,22 @@ const Header = () => {
         setCombo(newCombo);
 
         if (streak === 0 && combo === 0) {
+            /* show logo */
             logoOffset.value = 0;
             statsOffset.value = -200;
 
             return;
         }
 
+        /* show stats */
         logoOffset.value = withTiming(-200);
         statsOffset.value = withTiming(0);
 
-        const logoInTimeout = setTimeout(() => {
+        setTimeout(() => {
+            /* show logo */
             logoOffset.value = withTiming(0);
             statsOffset.value = withTiming(-200);
         }, 2500);
-
-        return () => {
-            if (logoInTimeout)
-                clearTimeout(logoInTimeout);
-        };
     }, [userContext]);
 
     return (
