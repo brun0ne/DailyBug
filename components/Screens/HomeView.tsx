@@ -20,6 +20,7 @@ import NextBugButton from "../NextBugButtons";
 import SkipModal from "../SkipModal";
 
 import { useIsFocused } from '@react-navigation/native';
+import { usePostHog } from "posthog-react-native";
 
 const correctSound = require("../../assets/correct.mp3") as AVPlaybackSource;
 const wrongSound = require("../../assets/wrong.mp3") as AVPlaybackSource;
@@ -41,6 +42,9 @@ const HomeView = () => {
     const [rewardText, setRewardText] = useState<string>(null);
 
     const userContext = useContext(UserContext);
+
+    const posthog = usePostHog(); // analytics
+    const [identified, setIdentified] = useState(false);
 
     /* Sound */
     const playSound = useCallback(async (s: AVPlaybackSource) => {
@@ -95,6 +99,14 @@ const HomeView = () => {
         }
     }, [sound]);
 
+    useEffect(() => {
+        if (userContext.user && posthog && !identified) {
+            /* Analytics */
+            posthog.identify(userContext.user.uid);
+            setIdentified(true);
+        }
+    }, [userContext, posthog, identified]);
+
     /* Core callbacks */
     const isAnswerCorrect = useCallback(() => (
         bug && selectedLine && !submitButtonDisabled && (bug.answer - 1) == selectedLine.index
@@ -134,6 +146,10 @@ const HomeView = () => {
 
             playSound(correctSound);
 
+            posthog.capture("bug_answered", {
+                correct: true
+            });
+
             const {reward} = await UserAPI.correct(userContext);
             if (reward && reward.type !== 'none') {
                 switch(reward.type) { 
@@ -160,8 +176,12 @@ const HomeView = () => {
             UserAPI.wrong(userContext);
 
             playSound(wrongSound);
+
+            posthog.capture("bug_answered", {
+                correct: false
+            });
         }
-    }, [confettiRef, isAnswerCorrect]);
+    }, [confettiRef, isAnswerCorrect, posthog]);
 
     const hideIncorrectCallback = useCallback(() => {
         setIncorrectPopupShown(false)
@@ -204,7 +224,11 @@ const HomeView = () => {
         setRewardText(null);
 
         UserAPI.doSkip(userContext);
-    }, []);
+
+        posthog.capture("skipped", {
+            skips_left: userContext.progressData?.items["Skip"].amount ?? 0
+        });
+    }, [posthog]);
 
     /* Loading callback */
     const isLoadingCallback = useCallback(() => (

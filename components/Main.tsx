@@ -14,6 +14,7 @@ import SpecialView from "./Screens/SpecialView";
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { UserAPI, UserContext, UserProgressData } from "../util/UserContext";
 import { invokeGoogleSignIn } from "./GoogleSignIn";
+import { PostHogProvider, usePostHog } from "posthog-react-native";
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -68,24 +69,26 @@ const Main = () => {
     return (
         <UserContext.Provider value={context}>
             <NavigationContainer>
-                <Header />
-                <Tab.Navigator>
-                    <Tab.Screen name="Home" component={signedIn ? HomeView : View} options={{
-                        tabBarIcon:({color})=>(
-                            <MaterialCommunityIcons name="home" color={color} size={26} />
-                        ),
-                    }} />
-                    <Tab.Screen name="Special" component={signedIn ? SpecialView : View} options={{
-                        tabBarIcon:({color})=>(
-                            <MaterialCommunityIcons name="creation" color={color} size={26} />
-                        ),
-                    }} />
-                    <Tab.Screen name="Profile" component={signedIn ? UserView: View} options={{
-                        tabBarIcon:({color})=>(
-                            <MaterialCommunityIcons name="account" color={color} size={26} />
-                        ),
-                    }} />
-                </Tab.Navigator>
+                <PostHogProvider apiKey="phc_PsM7WSvjoGaIfEzYTsNSGxgfgfhghBZjwQ0Z2wtx6YZ" options={{ host: 'https://eu.posthog.com' }}>
+                    <Header />
+                    <Tab.Navigator>
+                        <Tab.Screen name="Home" component={signedIn ? HomeView : View} options={{
+                            tabBarIcon:({color})=>(
+                                <MaterialCommunityIcons name="home" color={color} size={26} />
+                            ),
+                        }} />
+                        <Tab.Screen name="Special" component={signedIn ? SpecialView : View} options={{
+                            tabBarIcon:({color})=>(
+                                <MaterialCommunityIcons name="creation" color={color} size={26} />
+                            ),
+                        }} />
+                        <Tab.Screen name="Profile" component={signedIn ? UserView: View} options={{
+                            tabBarIcon:({color})=>(
+                                <MaterialCommunityIcons name="account" color={color} size={26} />
+                            ),
+                        }} />
+                    </Tab.Navigator>
+                </PostHogProvider>
             </NavigationContainer>
         </UserContext.Provider>
     );

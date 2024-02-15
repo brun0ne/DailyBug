@@ -1,6 +1,7 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import Main from './components/Main';
 import { DefaultTheme, PaperProvider } from 'react-native-paper';
+
+import Main from './components/Main';
 
 const theme = {
   ...DefaultTheme,

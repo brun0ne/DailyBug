@@ -20,7 +20,12 @@ const Header = () => {
         const newStreak = userContext.progressData?.streak ?? 0;
         const newCombo = userContext.progressData?.combo ?? 0;
 
-        if (newStreak === streak && newCombo === combo) {
+        if (!(
+            (newStreak !== streak) ||
+            (combo === 0 && newCombo === 1) ||
+            (newCombo !== combo && newCombo % 10 === 0) ||
+            (newStreak !== 0 && combo !== 0 && newCombo === 0)
+        )) {
             return;
         }
 
