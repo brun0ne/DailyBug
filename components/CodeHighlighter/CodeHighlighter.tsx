@@ -1,23 +1,25 @@
 import { type FunctionComponent, type ReactNode, useMemo } from "react";
+
 import {
 	ScrollView,
 	type ScrollViewProps,
 	type StyleProp,
 	StyleSheet,
-	Text,
 	type TextStyle,
 	View,
 } from "react-native";
-import SyntaxHighlighter, { SyntaxHighlighterProps,
-} from "react-syntax-highlighter";
+
+import SyntaxHighlighter, { SyntaxHighlighterProps } from "react-syntax-highlighter";
 import { trimNewlines } from "trim-newlines";
+
 import {
 	type HighlighterStyleSheet,
 	type ReactStyle,
 	getRNStylesFromHljsStyle,
 	styles
 } from "./styles";
-import { TouchableRipple } from "react-native-paper";
+
+import { TouchableRipple, Text } from "react-native-paper";
 
 export type LineToHighlight = {
     index: number,
@@ -71,7 +73,7 @@ export const CodeHighlighter: FunctionComponent<CodeHighlighterProps> = ({
 				if (rest.showLineNumbers && index == 0 && node.children[0].value) {
 					acc.push(
 						<View style={{ flexDirection: "row", flex: 1 }} key={`${keyPrefixWithIndex}_view`}>
-							<Text style={styles.lineNumberStyles} key={`${keyPrefixWithIndex}_line_number_${node.children[0].value}`}>
+							<Text variant="bodyMedium" style={styles.lineNumberStyles} key={`${keyPrefixWithIndex}_line_number_${node.children[0].value}`}>
 								{node.children[0].value}
 							</Text>
 						</View>
@@ -89,6 +91,7 @@ export const CodeHighlighter: FunctionComponent<CodeHighlighterProps> = ({
 								<Text
 									style={[isSelected ? {backgroundColor: selectedBackgroundColor} : styles.line, nodeStyles]}
 									key={keyPrefixWithIndex}
+									variant="bodyMedium"
 								>
 									{renderNode(node.children, `${keyPrefixWithIndex}_child`)}
 								</Text>
@@ -98,7 +101,11 @@ export const CodeHighlighter: FunctionComponent<CodeHighlighterProps> = ({
 					else {
 						acc.push(
 							<View key={`${keyPrefixWithIndex}_view`}>
-								<Text style={nodeStyles} key={keyPrefixWithIndex}>
+								<Text
+									style={nodeStyles}
+									key={keyPrefixWithIndex}
+									variant="bodyMedium"
+								>
 									{renderNode(node.children, `${keyPrefixWithIndex}_child`)}
 								</Text>
 							</View>

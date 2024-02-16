@@ -14,7 +14,7 @@ import SpecialView from "./Screens/SpecialView";
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { UserAPI, UserContext, UserProgressData } from "../util/UserContext";
 import { invokeGoogleSignIn } from "./GoogleSignIn";
-import { PostHogProvider, usePostHog } from "posthog-react-native";
+import { PostHogProvider } from "posthog-react-native";
 
 const Tab = createMaterialBottomTabNavigator();
 

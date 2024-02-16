@@ -86,7 +86,7 @@ const UserView = () => {
         <View style={styles.containter}>
             <Card>
                 <Card.Title
-                    title={<Text variant="titleLarge">{displayName}</Text>}
+                    title={<Text variant="titleMedium" style={{fontSize: 22, lineHeight: 40}}>{displayName}</Text>}
                     left={(props) => (
                         <Avatar.Image {...props} source={{uri: userContext.user.photoURL}} />
                     )}

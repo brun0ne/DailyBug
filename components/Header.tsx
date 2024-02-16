@@ -56,10 +56,10 @@ const Header = () => {
             <View>
                 <Animated.View style={[{top: statsOffset, left: 0}, styles.stats]}> 
                     <Button icon="calendar" mode="outlined" textColor="black">
-                        Streak | {streak}
+                        {streak}
                     </Button>
                     <Button icon="fire" mode="outlined" textColor="black">
-                        Combo | {combo}
+                        {combo}
                     </Button>
                 </Animated.View>
 

@@ -1,16 +1,8 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { DefaultTheme, PaperProvider } from 'react-native-paper';
+import { PaperProvider } from 'react-native-paper';
 
 import Main from './components/Main';
-
-const theme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    primary: 'tomato',
-    secondary: 'green',
-  },
-};
+import { theme } from './util/Theme';
 
 export default function App() {
   return (
