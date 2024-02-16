@@ -200,7 +200,8 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         gap: 10,
         width: "100%",
-        paddingTop: 10
+        paddingTop: 10,
+        flexWrap: "wrap"
     },
     bottom: {
         marginTop: 20,
