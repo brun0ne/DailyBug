@@ -21,9 +21,13 @@ import SkipModal from "../SkipModal";
 
 import { useIsFocused } from '@react-navigation/native';
 import { usePostHog } from "posthog-react-native";
+import { AdEventType, InterstitialAd, TestIds } from "react-native-google-mobile-ads";
 
 const correctSound = require("../../assets/correct.mp3") as AVPlaybackSource;
 const wrongSound = require("../../assets/wrong.mp3") as AVPlaybackSource;
+
+/* todo: replace with real admob ID */
+const afterNextAd = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL);
 
 const HomeView = () => {
     const isFocused = useIsFocused();
@@ -45,6 +49,22 @@ const HomeView = () => {
 
     const posthog = usePostHog(); // analytics
     const [identified, setIdentified] = useState(false);
+
+    /* Ads */
+    const [bugsServedThisSession, setBugsServedThisSession] = useState(0);
+
+    const loadAd = useCallback(() => {
+        const unsubscribeClosed = afterNextAd.addAdEventListener(AdEventType.CLOSED, () => {
+            afterNextAd.load();
+        });
+        afterNextAd.load();
+
+        return unsubscribeClosed;
+    }, []);
+
+    useEffect(() => {
+        return loadAd();
+    }, []);
 
     /* Sound */
     const playSound = useCallback(async (s: AVPlaybackSource) => {
@@ -192,7 +212,13 @@ const HomeView = () => {
         setBug(null);
         setSelectedLine(null);
         setRewardText(null);
-    }, []);
+
+        /* show an ad */
+        if (afterNextAd.loaded && (bugsServedThisSession === 0 || bugsServedThisSession % 4 === 0))
+            afterNextAd.show();
+
+        setBugsServedThisSession(bugsServedThisSession + 1);
+    }, [afterNextAd, bugsServedThisSession]);
 
     /* Hint callbacks */
     const hideHindModal = useCallback(() => {

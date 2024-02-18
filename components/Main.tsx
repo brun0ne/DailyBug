@@ -10,11 +10,13 @@ import Header from "./Header";
 import HomeView from "./Screens/HomeView";
 import UserView from "./Screens/UserView";
 import SpecialView from "./Screens/SpecialView";
+import { UserAPI, UserContext, UserProgressData } from "../util/UserContext";
 
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
-import { UserAPI, UserContext, UserProgressData } from "../util/UserContext";
 import { invokeGoogleSignIn } from "./GoogleSignIn";
 import { PostHogProvider } from "posthog-react-native";
+
+import mobileAds from "react-native-google-mobile-ads";
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -64,6 +66,16 @@ const Main = () => {
             }
         });
         return subscriber; /* unsubscribe on unmount */
+    }, []);
+
+    /* todo: do this after user consent */
+    useEffect(() => {
+        mobileAds()
+            .initialize()
+            .then(adapterStatuses => {
+                console.log("Ads initialization complete!");
+                console.log(adapterStatuses);
+            });
     }, []);
 
     return (
