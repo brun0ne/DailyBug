@@ -27,7 +27,9 @@ const correctSound = require("../../assets/correct.mp3") as AVPlaybackSource;
 const wrongSound = require("../../assets/wrong.mp3") as AVPlaybackSource;
 
 /* todo: replace with real admob ID */
-const afterNextAd = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL);
+const afterNextAd = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL, {
+    requestNonPersonalizedAdsOnly: true /* todo: move to personalized ads */
+});
 
 const HomeView = () => {
     const isFocused = useIsFocused();

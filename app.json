@@ -40,7 +40,7 @@
       [
         "expo-updates",
         {
-          "username": "account-username"
+          "username": "YOUR_EXPO_USERNAME"
         }
       ],
       "@react-native-google-signin/google-signin",

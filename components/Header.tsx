@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Appbar, Button, useTheme } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Animated, { useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { UserContext } from '../util/UserContext';
 
@@ -34,8 +34,8 @@ const Header = () => {
 
         if (streak === 0 && combo === 0) {
             /* show logo */
-            logoOffset.value = 0;
-            statsOffset.value = -200;
+            logoOffset.value = withTiming(0);
+            statsOffset.value = withTiming(-200);
 
             return;
         }
@@ -51,10 +51,22 @@ const Header = () => {
         }, 2500);
     }, [userContext]);
 
+    const statsStyles = useAnimatedStyle(() => {
+        return {
+            top: statsOffset.value
+        };
+    }, [statsOffset]);
+
+    const logoStyles = useAnimatedStyle(() => {
+        return {
+            marginLeft: logoOffset.value
+        };
+    }, [logoOffset])
+
     return (
         <Appbar.Header elevated>
             <View>
-                <Animated.View style={[{top: statsOffset, left: 0}, styles.stats]}> 
+                <Animated.View style={[statsStyles, styles.stats]}> 
                     <Button icon="calendar" mode="outlined" textColor="black">
                         {streak}
                     </Button>
@@ -63,7 +75,7 @@ const Header = () => {
                     </Button>
                 </Animated.View>
 
-                <Animated.View style={{marginLeft: logoOffset, flexDirection: "row", justifyContent: "center", alignItems: "center", width: "100%"}}>
+                <Animated.View style={[logoStyles, styles.logo]}>
                     <MaterialCommunityIcons name="bug-check" color={theme.colors.primary} size={35} style={{ margin: 10 }}/>
                     <Appbar.Content title="Daily Bug" />
                 </Animated.View>
@@ -78,7 +90,15 @@ const styles = StyleSheet.create({
         position: "absolute",
         flexDirection: "row",
         gap: 10,
-        padding: 10
+        padding: 10,
+
+        left: 0
+    },
+    logo: {
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        width: "100%"
     }
 });
 
