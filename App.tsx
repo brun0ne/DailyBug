@@ -6,7 +6,7 @@ import { theme } from './util/Theme';
 
 import { useCallback, useEffect, useState } from 'react';
 import ConsentView from './components/Screens/ConsentView';
-import { View } from 'react-native';
+import { Platform, StatusBar, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import * as SplashScreen from 'expo-splash-screen';
@@ -17,19 +17,26 @@ export default function App() {
   const [consent, setConsent] = useState(false);
   const [consentLoading, setConsentLoading] = useState(true);
 
+  StatusBar.setBarStyle("dark-content");
+
+  if (Platform.OS === "android") {
+    StatusBar.setTranslucent(true);
+    StatusBar.setBackgroundColor("transparent");
+  }
+
   const loadConsent = async () => {
-      try {
-          const value = await AsyncStorage.getItem("user_consent");
-          if (value !== null) {
-              setConsent(JSON.parse(value));
-          }
+    try {
+      const value = await AsyncStorage.getItem("user_consent");
+      if (value !== null) {
+        setConsent(JSON.parse(value));
       }
-      catch (e) {
-          console.error(e);
-      }
-      finally {
-        setConsentLoading(false);
-      }
+    }
+    catch (e) {
+      console.error(e);
+    }
+    finally {
+      setConsentLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -47,8 +54,8 @@ export default function App() {
   }
 
   return (
-    <View style={{ flexGrow: 1 }} onLayout={onLayoutRootView}>
-      <PaperProvider theme={theme}>
+    <PaperProvider theme={theme}>
+      <View style={{ flexGrow: 1, backgroundColor: theme.colors.elevation.level2 }} onLayout={onLayoutRootView}>
         {
           consent ? (
             <GestureHandlerRootView style={{ flexGrow: 1 }}>
@@ -60,7 +67,7 @@ export default function App() {
             </View>
           )
         }
-      </PaperProvider>
-    </View>
+      </View>
+    </PaperProvider>
   );
 };
