@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Image } from 'react-native';
 import { Appbar, Button, useTheme } from 'react-native-paper';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { UserContext } from '../util/UserContext';
@@ -76,7 +75,7 @@ const Header = () => {
                 </Animated.View>
 
                 <Animated.View style={[logoStyles, styles.logo]}>
-                    <MaterialCommunityIcons name="bug-check" color={theme.colors.primary} size={35} style={{ margin: 10 }}/>
+                    <Image source={require("../assets/adaptive-icon.png")} style={{ width: 60, height: 60, margin: 10 }} />
                     <Appbar.Content title="Daily Bug" />
                 </Animated.View>
             </View>
@@ -92,7 +91,8 @@ const styles = StyleSheet.create({
         gap: 10,
         padding: 10,
 
-        left: 0
+        left: 0,
+        marginTop: 10
     },
     logo: {
         flexDirection: "row",
