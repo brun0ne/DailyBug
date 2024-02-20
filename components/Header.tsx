@@ -85,7 +85,9 @@ const Header = () => {
                 </Animated.View>
 
                 <Animated.View style={[logoStyles, styles.logo]}>
-                    <Image source={require("../assets/adaptive-icon.png")} style={{ width: 60, height: 60, margin: 10 }} />
+                    {/* <View style={{ margin: 10, justifyContent: "center", alignItems: "center" }}>
+                        <Image source={require("../assets/adaptive-icon.png")} style={{ width: 60, height: 60, marginTop: 5 }} />
+                    </View> */}
                     <Appbar.Content title="Daily Bug" />
                 </Animated.View>
 
@@ -117,7 +119,9 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
-        width: "100%"
+        width: "100%",
+
+        padding: 10
     }
 });
 
