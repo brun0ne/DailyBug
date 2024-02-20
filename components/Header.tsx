@@ -1,6 +1,6 @@
-import { useContext, useEffect, useState } from 'react';
-import { View, StyleSheet, Image } from 'react-native';
-import { Appbar, Button, useTheme } from 'react-native-paper';
+import { useCallback, useContext, useEffect, useState } from 'react';
+import { View, StyleSheet, Image, Linking } from 'react-native';
+import { Appbar, Button, Menu, useTheme } from 'react-native-paper';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { UserContext } from '../util/UserContext';
@@ -11,6 +11,8 @@ const Header = () => {
 
     const [streak, setStreak] = useState(0);
     const [combo, setCombo] = useState(0);
+
+    const [moreOptionsVisible, setMoreOptionsVisible] = useState(false);
 
     const statsOffset = useSharedValue(-200);
     const logoOffset = useSharedValue(0);
@@ -60,7 +62,15 @@ const Header = () => {
         return {
             marginLeft: logoOffset.value
         };
-    }, [logoOffset])
+    }, [logoOffset]);
+
+    const privacyPolicyCallback = useCallback(() => {
+        Linking.openURL('https://dailybug.app/privacy');
+    }, []);
+
+    const contactCallback = useCallback(() => {
+        Linking.openURL('mailto:brunonblok@gmail.com');
+    }, []);
 
     return (
         <Appbar.Header elevated>
@@ -78,8 +88,17 @@ const Header = () => {
                     <Image source={require("../assets/adaptive-icon.png")} style={{ width: 60, height: 60, margin: 10 }} />
                     <Appbar.Content title="Daily Bug" />
                 </Animated.View>
+
+                <Menu
+                    visible={moreOptionsVisible}
+                    onDismiss={() => {setMoreOptionsVisible(false)}}
+                    anchor={{x: 800, y: 100}}
+                >
+                    <Menu.Item onPress={privacyPolicyCallback} title="Privacy Policy" />
+                    <Menu.Item onPress={contactCallback} title="Contact us" />
+                </Menu>
             </View>
-            <Appbar.Action style={{position: "absolute", right: 0}} icon="dots-vertical" onPress={() => {}} />
+            <Appbar.Action style={{position: "absolute", right: 0}} icon="dots-vertical" onPress={() => {setMoreOptionsVisible(true)}} />
         </Appbar.Header>
     )
 };

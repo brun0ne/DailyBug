@@ -12,11 +12,11 @@ const ConsentView = ({ consentGivenCallback, consent }: { consentGivenCallback: 
     ), []);
 
     const termsCallback = useCallback(() => {
-        Linking.openURL('https://example.com');
+        Linking.openURL('https://dailybug.app/terms');
     }, []);
 
     const privacyPolicyCallback = useCallback(() => {
-        Linking.openURL('https://example.com');
+        Linking.openURL('https://dailybug.app/privacy');
     }, []);
 
     const [agreeSwitch, setAgreeSwitch] = useState(false);
