@@ -22,6 +22,7 @@ import SkipModal from "../SkipModal";
 import { useIsFocused } from '@react-navigation/native';
 import { usePostHog } from "posthog-react-native";
 import { AdEventType, InterstitialAd, TestIds } from "react-native-google-mobile-ads";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const correctSound = require("../../assets/correct.mp3") as AVPlaybackSource;
 const wrongSound = require("../../assets/wrong.mp3") as AVPlaybackSource;
@@ -36,6 +37,7 @@ const HomeView = () => {
 
     const [bug, setBug] = useState<Bug>(null);
     const [isLoading, setLoading] = useState(false);
+    const [firstTimeLoaded, setFirstTimeLoaded] = useState(false);
 
     const [sound, setSound] = useState<Audio.Sound>();
     
@@ -93,6 +95,7 @@ const HomeView = () => {
             }
             else {
                 setBug(json);
+                AsyncStorage.setItem("previous-bug", JSON.stringify(json));
             }
         }
         catch (error) {
@@ -106,12 +109,29 @@ const HomeView = () => {
 
     /* Effects */
     useEffect(() => {
-        /* Serving Bugs */
-        if (!bug && !isLoading) {
+        if (!firstTimeLoaded && !bug && !isLoading) {
+            /* Serving Bugs */            
+            setLoading(true);
+
+            (async () => {
+                const previous = await AsyncStorage.getItem("previous-bug");
+
+                if (previous) {
+                    setBug(JSON.parse(previous));
+                    setLoading(false);
+                }
+                else {
+                    loadBugFromAPI();
+                }
+
+                setFirstTimeLoaded(true);
+            })();
+        }
+        else if (firstTimeLoaded && !bug && !isLoading) {
             setLoading(true);
             loadBugFromAPI();
         }
-    });
+    }, [firstTimeLoaded, bug, isLoading]);
 
     useEffect(() => {
         /* Cleanup */
