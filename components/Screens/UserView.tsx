@@ -15,6 +15,8 @@ import Item from "../Item";
 import ItemModal from "../ItemModal";
 import { GoogleButton, invokeGoogleSignIn } from "../SignInModal";
 
+import { itemImages } from "../../util/ItemImages";
+
 const UserView = () => {
     const userContext = useContext(UserContext); 
     const theme = useTheme();
@@ -45,7 +47,7 @@ const UserView = () => {
             <>Legends say that some people use them to enhance user experience.</>
         ),
         "Rubber Duck": (
-            <>Talking to <Text style={{fontWeight: "bold"}}>the Duck</Text> greatly impoves one's debugging capabilities.</>
+            <>Talking to the <Text style={{fontWeight: "bold"}}>Rubber Duck</Text> greatly impoves one's debugging capabilities.</>
         )
     } satisfies Record<string, ReactNode>;
 
@@ -136,6 +138,7 @@ const UserView = () => {
                                             setItemModalVisible(name, true) :
                                             () => {}
                                     }}
+                                    image={itemImages[name] ?? null}
                                 />
                             ))
                     }
@@ -157,6 +160,7 @@ const UserView = () => {
 
                             name={name}
                             item={item}
+                            image={itemImages[name] ?? null}
 
                             canBeActivated={itemActions[name]?.canBeActivated ?? false}
 

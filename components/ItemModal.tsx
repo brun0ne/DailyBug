@@ -1,5 +1,5 @@
 import { Avatar, Button, Card, Divider, Icon, Modal, Portal, Text, useTheme } from "react-native-paper";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { ActivityIndicator, StyleSheet, View, Image } from "react-native";
 import { ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { ItemType, UserAPI, UserContext } from "../util/UserContext";
 
@@ -9,6 +9,7 @@ type ItemModalProps = {
 
     name: string
     item: ItemType
+    image?: any
 
     canBeActivated?: boolean
     actionButtons?: ReactNode
@@ -21,7 +22,11 @@ const ItemModal = (props: ItemModalProps) => {
     const userContext = useContext(UserContext);
 
     const titleLeftCallback = useCallback((callbackProps) => (
-        <Avatar.Icon {...callbackProps} icon={props.item.icon} style={{ backgroundColor: props.item.stars !== 5 ? props.item.color : "blue" }} color="white" />
+        props.image ? (
+            <Avatar.Image source={props.image} size={45} />    
+        ) : (
+            <Avatar.Icon {...callbackProps} icon={props.item.icon} style={{ backgroundColor: props.item.stars !== 5 ? props.item.color : "blue" }} color="white" />
+        )
     ), [props.item]);
 
     const actionDisabled = (props.item.amount <= 0 ?? true) || props.item.active;

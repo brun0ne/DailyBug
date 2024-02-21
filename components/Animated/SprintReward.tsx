@@ -1,10 +1,11 @@
 import { BlurMask, Canvas, Extrapolate, RoundedRect, Shader, Skia, useClockValue, useComputedValue, vec } from "@shopify/react-native-skia";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Image } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import { Button, Icon, Text } from "react-native-paper";
+import { Avatar, Button, Icon, Text } from "react-native-paper";
 import Animated, { interpolate, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 import { SprintRewardType } from "../../util/UserContext";
+import { itemImages } from "../../util/ItemImages";
 
 const source = Skia.RuntimeEffect.Make(`
 uniform vec2 resolution;
@@ -106,7 +107,13 @@ const SprintReward = (props: SprintRewardProps) => {
                                 })
                             }
                         </View>
-                        <Icon source={props.reward?.reward.icon ?? "progress-question"} size={80} color={props.reward?.reward.color ?? "white"} />
+                        {
+                            itemImages[props.reward?.itemName ?? ""] ? (
+                                <Avatar.Image source={itemImages[props.reward?.itemName]} size={80} />
+                            ) : (
+                                <Icon source={props.reward?.reward.icon ?? "progress-question"} size={80} color={props.reward?.reward.color ?? "white"} />
+                            )
+                        }
                         <Text style={styles.name}>{props.reward?.itemName ?? ""}</Text>
                     </View>
                 </Animated.View>

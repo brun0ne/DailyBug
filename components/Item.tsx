@@ -1,10 +1,10 @@
 import { useCallback, useMemo, useState } from "react";
-import { View, StyleSheet, Pressable } from "react-native";
+import { View, StyleSheet, Pressable, Image } from "react-native";
 import { useTheme, Text, Icon } from "react-native-paper";
 
 import Color from "color";
 import { ItemType } from "../util/UserContext";
-import { Canvas, RadialGradient, RoundedRect, Shader, Skia, useClockValue, useComputedValue, vec } from "@shopify/react-native-skia";
+import { Canvas, RoundedRect, Shader, Skia, useClockValue, useComputedValue, vec } from "@shopify/react-native-skia";
 
 const source = Skia.RuntimeEffect.Make(`
 uniform vec2 resolution;
@@ -23,12 +23,14 @@ type ItemProps = {
     name: string
     item: ItemType
 
+    image?: any
+
     pressable: boolean
     onPress?: () => void
 };
 
 const WIDTH = 80;
-const HEIGHT = 60;
+const HEIGHT = 70;
 
 const Item = (props: ItemProps) => {
     const theme = useTheme();
@@ -68,6 +70,12 @@ const Item = (props: ItemProps) => {
                 }
                 
                 <Icon source={props.item.icon} size={HEIGHT - 20} color="white" />
+
+                {
+                    props.image ? (
+                        <Image source={props.image} style={{width: WIDTH, height: HEIGHT, position: "absolute", borderRadius: 10}} resizeMode={"cover"} />
+                    ) : null
+                }
 
                 {
                     !props.item.maxOne ? (
