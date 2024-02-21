@@ -40,6 +40,8 @@ export type UserProgressData = {
     currency: number
 
     items: Record<string, ItemType>
+
+    chances: {5: number, 4: number}
 };
 
 export type SprintRewardType = {

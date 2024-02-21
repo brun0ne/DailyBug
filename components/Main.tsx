@@ -92,7 +92,7 @@ const Main = () => {
                                 <MaterialCommunityIcons name="home" color={color} size={26} />
                             ),
                         }} />
-                        <Tab.Screen name="Special" component={signedIn ? SpecialView : View} options={{
+                        <Tab.Screen name="Sprint" component={signedIn ? SpecialView : View} options={{
                             tabBarIcon:({color})=>(
                                 <MaterialCommunityIcons name="creation" color={color} size={26} />
                             ),

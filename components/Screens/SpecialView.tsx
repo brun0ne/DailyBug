@@ -1,5 +1,5 @@
 import { View, StyleSheet } from "react-native";
-import { Icon, Text } from "react-native-paper";
+import { Button, Icon, IconButton, Text } from "react-native-paper";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useIsFocused } from '@react-navigation/native';
 import { Video, ResizeMode } from "expo-av";
@@ -12,6 +12,7 @@ import { SprintRewardType, UserAPI, UserContext } from "../../util/UserContext";
 import SprintReward from "../Animated/SprintReward";
 
 import { usePostHog } from "posthog-react-native";
+import ChancesModal from "../ChancesModal";
 
 const sprintGoldVid = require("../../assets/Sprint/gold.mp4");
 const sprintPurpleVid = require("../../assets/Sprint/purple.mp4");
@@ -25,6 +26,8 @@ const SpecialView = () => {
     const [rolling, setRolling] = useState<5 | 4 | 3 | false>(false);
     const [rolledItem, setRolledItem] = useState<SprintRewardType>(null);
     const [rewardVisible, setRewardVisible] = useState(false);
+
+    const [chancesViewVisible, setChancesViewVisible] = useState(false);
 
     const blackCoverOpacity = useSharedValue(0);
 
@@ -72,7 +75,16 @@ const SpecialView = () => {
 
             blackCoverOpacity.value = withTiming(0);
         }
-    }, [isFocused])
+    }, [isFocused]);
+
+    /* chances */
+    const showChances = useCallback(() => {
+        setChancesViewVisible(true);
+    }, []);
+
+    const hideChances = useCallback(() => {
+        setChancesViewVisible(false);
+    }, []);
 
     if (!isFocused)
         return <></>;
@@ -86,6 +98,8 @@ const SpecialView = () => {
                 <Text style={{fontSize: 25}}>SPRINT</Text>
 
                 <Icon source="run-fast" size={50} />
+
+                <Button style={{position: "absolute", top: 120, left: 20}} mode="elevated" textColor="black" onPress={showChances}>Help</Button>
 
                 <ShaderButton
                     disabled={(userContext.progressData?.currency ?? 0) < 150 || rollingPending || rolling !== false || rewardVisible}
@@ -138,6 +152,8 @@ const SpecialView = () => {
                     }
                 </Animated.View>
             </View>
+
+            <ChancesModal visible={chancesViewVisible} hide={hideChances} />
         </>
     )
 };
