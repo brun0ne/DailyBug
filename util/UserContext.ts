@@ -26,6 +26,7 @@ export type ItemType = {
     active?: boolean
     
     hiddenIfNotOwned?: boolean
+    maxOne?: boolean
 };
 
 export type UserProgressData = {
@@ -39,7 +40,14 @@ export type UserProgressData = {
     currency: number
 
     items: Record<string, ItemType>
-}
+};
+
+export type SprintRewardType = {
+    success: boolean,
+    reward: ItemType,
+    itemName: string,
+    converted: false | number
+};
 
 export class UserAPI {
     private static async doRequest(user: FirebaseAuthTypes.User, endpoint: string, method: "GET" | "POST", reqData: any) {
@@ -95,7 +103,7 @@ export class UserAPI {
         const res = await UserAPI.doRequest(context.user, "special/sprint", "POST", {});
 
         context.setUpdated(true);
-        return res as {success: boolean, reward: ItemType, itemName: string};
+        return res as SprintRewardType;
     }
 
     static async doSkip(context: UserContextValue) {

@@ -1,10 +1,10 @@
 import { BlurMask, Canvas, Extrapolate, RoundedRect, Shader, Skia, useClockValue, useComputedValue, vec } from "@shopify/react-native-skia";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import { Button, Icon } from "react-native-paper";
+import { Button, Icon, Text } from "react-native-paper";
 import Animated, { interpolate, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
-import { ItemType } from "../../util/UserContext";
+import { SprintRewardType } from "../../util/UserContext";
 
 const source = Skia.RuntimeEffect.Make(`
 uniform vec2 resolution;
@@ -20,7 +20,7 @@ vec4 main(vec2 pos) {
 `)!;
 
 type SprintRewardProps = {
-    item?: ItemType & {itemName: string}
+    reward?: SprintRewardType
 
     closeCallback: () => void
 };
@@ -101,16 +101,26 @@ const SprintReward = (props: SprintRewardProps) => {
                     <View style={styles.content}>
                         <View style={{flexDirection: "row", gap: 0}}>
                             {
-                                [...Array(props.item?.stars ?? 0)].map((_, i) => {
+                                [...Array(props.reward?.reward.stars ?? 0)].map((_, i) => {
                                     return <Icon key={`star_${i}`} source={"star"} size={20} color={"white"} />;
                                 })
                             }
                         </View>
-                        <Icon source={props.item?.icon ?? "progress-question"} size={80} color={props.item?.color ?? "white"} />
-                        <Text style={styles.name}>{props.item?.itemName ?? ""}</Text>
+                        <Icon source={props.reward?.reward.icon ?? "progress-question"} size={80} color={props.reward?.reward.color ?? "white"} />
+                        <Text style={styles.name}>{props.reward?.itemName ?? ""}</Text>
                     </View>
                 </Animated.View>
             </GestureDetector>
+
+            {
+                props.reward?.converted ? (
+                    <View style={styles.converted}>
+                        <Text variant="bodyMedium" style={{color: "white"}}>Duplicate! Converted to
+                            <Text variant="bodyMedium" style={{fontWeight: "bold", color: "white"}}> 500 SP</Text>.
+                        </Text>
+                    </View>
+                ) : null
+            }
 
             <Button style={styles.closeButton} mode={"outlined"} buttonColor="white" textColor="black" onPress={props.closeCallback}>Close</Button>
         </View>
@@ -150,6 +160,10 @@ const styles = StyleSheet.create({
         color: "white",
         fontWeight: "bold",
         fontSize: 20
+    },
+    converted: {
+        position: "absolute",
+        top: -160
     },
     closeButton: {
         position: "absolute",

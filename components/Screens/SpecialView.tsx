@@ -8,7 +8,7 @@ import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
 import ShaderButton from "../Animated/ShaderButton";
 import ShaderFlatDisplay from "../Animated/ShaderFlatDisplay";
 
-import { ItemType, UserAPI, UserContext } from "../../util/UserContext";
+import { SprintRewardType, UserAPI, UserContext } from "../../util/UserContext";
 import SprintReward from "../Animated/SprintReward";
 
 import { usePostHog } from "posthog-react-native";
@@ -23,7 +23,7 @@ const SpecialView = () => {
 
     const [rollingPending, setRollingPending] = useState(false);
     const [rolling, setRolling] = useState<5 | 4 | 3 | false>(false);
-    const [rolledItem, setRolledItem] = useState<ItemType & {itemName: string}>(null);
+    const [rolledItem, setRolledItem] = useState<SprintRewardType>(null);
     const [rewardVisible, setRewardVisible] = useState(false);
 
     const blackCoverOpacity = useSharedValue(0);
@@ -38,7 +38,7 @@ const SpecialView = () => {
 
         const res = await UserAPI.doSprint(userContext);
         setRollingPending(false);
-        setRolledItem({itemName: res.itemName, ...res.reward});
+        setRolledItem(res);
 
         if (!res.reward)
             return;
@@ -134,7 +134,7 @@ const SpecialView = () => {
 
                 <Animated.View style={{opacity: blackCoverOpacity, position: "absolute", zIndex: 20}}>
                     {
-                        rewardVisible ? <SprintReward item={rolledItem} closeCallback={onClose} /> : null
+                        rewardVisible ? <SprintReward reward={rolledItem} closeCallback={onClose} /> : null
                     }
                 </Animated.View>
             </View>

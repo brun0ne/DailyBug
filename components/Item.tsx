@@ -70,7 +70,7 @@ const Item = (props: ItemProps) => {
                 <Icon source={props.item.icon} size={HEIGHT - 20} color="white" />
 
                 {
-                    !props.item.hiddenIfNotOwned ? (
+                    !props.item.maxOne ? (
                         <View style={styles.amount}>
                             <Text style={{fontSize: 11}}>{props.item.amount.toString()}</Text>
                         </View>
