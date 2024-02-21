@@ -1,4 +1,4 @@
-import { View, StyleSheet } from "react-native";
+import { Image, View, StyleSheet } from "react-native";
 import { Button, Icon, IconButton, Text } from "react-native-paper";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useIsFocused } from '@react-navigation/native';
@@ -17,6 +17,8 @@ import ChancesModal from "../ChancesModal";
 const sprintGoldVid = require("../../assets/Sprint/gold.mp4");
 const sprintPurpleVid = require("../../assets/Sprint/purple.mp4");
 const sprintBlueVid = require("../../assets/Sprint/blue.mp4");
+
+const banner = require("../../assets/duck_banner.png");
 
 const SpecialView = () => {
     const userContext = useContext(UserContext);
@@ -90,16 +92,21 @@ const SpecialView = () => {
         return <></>;
 
     return (
-        <>
-            <View style={styles.top}>
-                <ShaderFlatDisplay text="STORY POINTS" number={userContext.progressData?.currency ?? 0} />
+        <View style={{flexGrow: 1, backgroundColor: "black"}}>
+            <View style={{width: "100%", height: "auto", justifyContent: "flex-start"}}>
+                <Image source={banner} style={{width: "100%", height: undefined, aspectRatio: 1.21}} />
             </View>
+            
+            <View style={styles.top}>
+                <ShaderFlatDisplay showBackground={false} text="STORY POINTS" number={userContext.progressData?.currency ?? 0} />
+            </View>
+
+            <IconButton icon={"help"} style={{position: "absolute", top: 10, left: 10}} mode={"contained-tonal"} onPress={showChances} />
+            
             <View style={styles.main}>
-                <Text style={{fontSize: 25}}>SPRINT</Text>
+                <Text variant={"titleLarge"} style={{fontSize: 25, color: "white"}}>SPRINT</Text>
 
-                <Icon source="run-fast" size={50} />
-
-                <Button style={{position: "absolute", top: 120, left: 20}} mode="elevated" textColor="black" onPress={showChances}>Help</Button>
+                <Icon source="run-fast" color="white" size={50} />
 
                 <ShaderButton
                     disabled={(userContext.progressData?.currency ?? 0) < 150 || rollingPending || rolling !== false || rewardVisible}
@@ -154,24 +161,29 @@ const SpecialView = () => {
             </View>
 
             <ChancesModal visible={chancesViewVisible} hide={hideChances} />
-        </>
+        </View>
     )
 };
 
 const styles = StyleSheet.create({
     top: {
-        padding: 20
+        position: "absolute",
+        
+        bottom: 0,
+        left: 0,
+        padding: 20,
+
+        width: "100%"
     },
     main: {
         padding: 10,
+        marginTop: -30,
+        
         justifyContent: "center",
         alignItems: "center",
         gap: 20,
-        width: "100%",
-        height: "100%",
-        
-        position: "absolute",
-        top: 0
+
+        width: "100%"
     },
     blackCover: {
         position: "absolute",

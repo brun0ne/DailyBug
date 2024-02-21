@@ -59,19 +59,27 @@ type ShaderFlatDisplayProps = {
 
     borderRadius?: number
     horizontalOffset?: number
+
+    showBackground?: boolean
 };
 
 const ShaderFlatDisplay = ({
     text,
     number,
+
     fontSize = 20,
     textColor = "white",
+
     displayHeight = 75,
+
     leftRectWidth = 80,
     leftRectHeight = 35,
     gap = 25,
+
     borderRadius = 10,
-    horizontalOffset = -8
+    horizontalOffset = -8,
+
+    showBackground = true
 }: ShaderFlatDisplayProps) => {
     const clock = useClockValue();
     const canvasSize = useSharedValue<SkSize>(null);
@@ -115,9 +123,14 @@ const ShaderFlatDisplay = ({
     return (
         <View style={{flexGrow: 1, height: displayHeight}}>
             <Canvas style={{flexGrow: 1}} onSize={canvasSize}>
-                <RoundedRect x={0} y={0} width={canvasWidth} height={canvasHeight} r={borderRadius}>
-                    <Shader source={sourceMain} uniforms={uniforms} />
-                </RoundedRect>
+                {
+                    showBackground ? (
+                        <RoundedRect x={0} y={0} width={canvasWidth} height={canvasHeight} r={borderRadius}>
+                            <Shader source={sourceMain} uniforms={uniforms} />
+                        </RoundedRect> 
+                    ) : null
+                }
+                
                 {
                     font ? <>
                         <RoundedRect x={marginLeft} y={displayHeight/2 - leftRectHeight/2} width={leftRectWidth} height={leftRectHeight} r={borderRadius}>
@@ -138,7 +151,6 @@ const ShaderFlatDisplay = ({
                             font={font}
                             text={leftText}
                             color={textColor}
-                            blendMode={"clear"}
                         />
                     </> : null
                 }
