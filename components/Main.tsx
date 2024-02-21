@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 
 import { NavigationContainer } from '@react-navigation/native';
@@ -13,7 +13,7 @@ import SpecialView from "./Screens/SpecialView";
 import { UserAPI, UserContext, UserProgressData } from "../util/UserContext";
 
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
-import { invokeGoogleSignIn } from "./GoogleSignIn";
+import SignInModal from "./SignInModal";
 import { PostHogProvider } from "posthog-react-native";
 
 import mobileAds from "react-native-google-mobile-ads";
@@ -24,6 +24,8 @@ const Main = () => {
     const [user, setUser] = useState<FirebaseAuthTypes.User>(null);
     const [updated, setUpdated] = useState(true);
     const [progressData, setProgressData] = useState<UserProgressData>(null);
+
+    const [loginVisible, setLoginVisible] = useState(false);
 
     const signedIn = useMemo(() => (
         !!user
@@ -59,10 +61,11 @@ const Main = () => {
             setUpdated(true);
 
             if (!user) {
-                invokeGoogleSignIn();
+                setLoginVisible(true);
             }
             else {
                 UserAPI.init(user);
+                setLoginVisible(false);
             }
         });
         return subscriber; /* unsubscribe on unmount */
@@ -100,6 +103,7 @@ const Main = () => {
                             ),
                         }} />
                     </Tab.Navigator>
+                    <SignInModal visible={loginVisible} hide={() => {setLoginVisible(false)}} />
                 </PostHogProvider>
             </NavigationContainer>
         </UserContext.Provider>

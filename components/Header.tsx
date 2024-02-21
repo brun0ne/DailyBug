@@ -110,10 +110,10 @@ const styles = StyleSheet.create({
         position: "absolute",
         flexDirection: "row",
         gap: 10,
-        padding: 10,
+        paddingLeft: 10,
+        paddingTop: 5,
 
-        left: 0,
-        marginTop: 10
+        left: 0
     },
     logo: {
         flexDirection: "row",
@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         width: "100%",
 
-        padding: 10
+        padding: 15
     }
 });
 

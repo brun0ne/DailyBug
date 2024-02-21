@@ -1,6 +1,6 @@
 import { ReactNode, useContext, useMemo, useState } from "react";
-import { View, StyleSheet } from "react-native";
-import { Avatar, Button, Card, Divider, Text, useTheme } from "react-native-paper";
+import { View, StyleSheet, ScrollView } from "react-native";
+import { Avatar, Button, Card, Divider, Icon, Text, useTheme } from "react-native-paper";
 
 import { Entries } from 'type-fest';
 
@@ -8,11 +8,12 @@ import auth from "@react-native-firebase/auth";
 
 import { useIsFocused } from '@react-navigation/native';
 
-import { UserAPI, UserContext } from "../../util/UserContext";
+import { UserContext } from "../../util/UserContext";
 import ShaderProgressBar from "../Animated/ShaderProgressBar";
 import ShaderFlatDisplay from "../Animated/ShaderFlatDisplay";
 import Item from "../Item";
 import ItemModal from "../ItemModal";
+import { GoogleButton, invokeGoogleSignIn } from "../SignInModal";
 
 const UserView = () => {
     const userContext = useContext(UserContext); 
@@ -21,14 +22,11 @@ const UserView = () => {
     const isFocused = useIsFocused();
 
     const displayName = useMemo(() => {
-        if (!userContext.user)
-            return "Anonymous";
-
-        if (userContext.user.displayName.includes(" ")) {
+        if ((userContext.user.displayName ?? "").includes(" ")) {
             return userContext.user.displayName.split(" ")[0];
         }
         else {
-            return userContext.user.displayName;
+            return userContext.user.displayName ?? "Anonymous";
         }
     }, [userContext.user]);
 
@@ -83,12 +81,14 @@ const UserView = () => {
         return <></>;
 
     return (
-        <View style={styles.containter}>
+        <ScrollView style={styles.containter} contentContainerStyle={{padding: 20}}>
             <Card>
                 <Card.Title
                     title={<Text variant="titleMedium" style={{fontSize: 22, lineHeight: 40}}>{displayName}</Text>}
                     left={(props) => (
-                        <Avatar.Image {...props} source={{uri: userContext.user.photoURL}} />
+                            userContext.user.photoURL ?
+                                <Avatar.Image {...props} source={{uri: userContext.user.photoURL}} /> :
+                                <Avatar.Icon {...props} icon="account" style={{ backgroundColor: theme.colors.secondary }} />
                     )}
                 />
 
@@ -122,7 +122,7 @@ const UserView = () => {
                 <Divider />
                 <View style={styles.itemsRow}>
                     {
-                        Object.entries(userContext.progressData?.items)
+                        Object.entries(userContext.progressData?.items ?? {})
                             .filter(([name, item]) => item.amount > 0 || !item.hiddenIfNotOwned)
                             .map(([name, item]) =>
                             (
@@ -143,7 +143,7 @@ const UserView = () => {
             </View>
 
             {
-                Object.entries(userContext.progressData?.items).map(([name, item]) => (
+                Object.entries(userContext.progressData?.items ?? {}).map(([name, item]) => (
                     hasModal(name) ? (
                         <ItemModal
                             key={`modal_${name}`}
@@ -168,16 +168,27 @@ const UserView = () => {
                 ))
             }
 
+            {
+                userContext.user.isAnonymous ? (
+                    <View style={{marginTop: 20}}>
+                        <GoogleButton onPress={() => { invokeGoogleSignIn(true) }} color="black" backgroundColor="white" disabled={false}>
+                            <Text style={{fontWeight: "bold"}}>Sign in with Google</Text>
+                        </GoogleButton>
+                    </View>
+                ) : <></>
+            }
+
             {/* <View style={styles.bottom}>
                 <Button mode="contained-tonal" onPress={() => { auth().signOut() }}>Sign Out</Button>
             </View> */}
-        </View>
+        </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
     containter: {
-        padding: 20
+        height: "100%",
+        overflow: "visible"
     },
     content: {
         gap: 15,

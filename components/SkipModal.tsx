@@ -19,7 +19,7 @@ const SkipModal = (props: SkipModalProps) => {
     ), [theme]);
 
     const userContext = useContext(UserContext);
-    const skipItemsAmount = userContext.progressData?.items["Skip"]?.amount ?? 0;
+    const skipItemsAmount = (userContext.progressData?.items ?? {})["Skip"]?.amount ?? 0;
     const disabled = skipItemsAmount <= 0;
     
     const skipCallback = useCallback(() => {
