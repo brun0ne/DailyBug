@@ -24,7 +24,7 @@ const AnswerButtons = (props: AnswerButtonsProps) => {
                     <Button
                         icon="skip-next-circle-outline"
                         mode="contained"
-                        style={{backgroundColor: "blue"}}
+                        style={{backgroundColor: "#464299"}}
                         onPress={props.nextButtonCallback}
                     >
                         Next
