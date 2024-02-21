@@ -42,6 +42,7 @@ const HomeView = () => {
     const [hintModalShown, setHintModalShown] = useState(false); 
     const [skipModalShown, setSkipModalShown] = useState(false);
     const [incorrectPopupShown, setIncorrectPopupShown] = useState(false);
+    const [nextAfterWrongUnlocked, setNextAfterWrongUnlocked] = useState(false);
     const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
     const [selectedLine, setSelectedLine] = useState<LineToHighlight | null>(null);
     const [correctAnswerState, setCorrectAnswerState] = useState(false);
@@ -189,6 +190,7 @@ const HomeView = () => {
         else {
             /* Incorrect answer */
             setIncorrectPopupShown(true);
+            setNextAfterWrongUnlocked(true);
             
             setSelectedLine({
                 index: selectedLine.index,
@@ -206,7 +208,7 @@ const HomeView = () => {
     }, [confettiRef, isAnswerCorrect, posthog]);
 
     const hideIncorrectCallback = useCallback(() => {
-        setIncorrectPopupShown(false)
+        setIncorrectPopupShown(false);
     }, []);
 
     const nextButtonCallback = useCallback(() => {
@@ -214,6 +216,7 @@ const HomeView = () => {
         setBug(null);
         setSelectedLine(null);
         setRewardText(null);
+        setNextAfterWrongUnlocked(false);
 
         /* show an ad */
         if (afterNextAd.loaded && (bugsServedThisSession === 0 || bugsServedThisSession % 4 === 0))
@@ -305,7 +308,10 @@ const HomeView = () => {
                             submitButtonDisabled={submitButtonDisabled}
                             submitButtonCallback={submitButtonCallback}
 
+                            nextAfterWrongUnlocked={nextAfterWrongUnlocked}
+
                             skipButtonCallback={skipModalCallback}
+                            nextButtonCallback={nextButtonCallback}
                         />
                     }
                 </View>
