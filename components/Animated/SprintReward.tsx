@@ -170,11 +170,11 @@ const styles = StyleSheet.create({
     },
     converted: {
         position: "absolute",
-        top: -160
+        bottom: 130
     },
     closeButton: {
         position: "absolute",
-        top: 150
+        bottom: 50
     }
 });
 

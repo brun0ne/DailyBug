@@ -167,7 +167,7 @@ const ShaderButton = ({
             <Canvas style={canvasStyles}>
                 <RoundedRect x={0} y={0} width={buttonWidth} height={buttonHeight} r={borderRadius}>
                     { 
-                        !disabled ? <Shader source={source} uniforms={uniforms} /> : <ColorShader color={theme.colors.backdrop} />
+                        !disabled ? <Shader source={source} uniforms={uniforms} /> : <ColorShader color={"gray"} />
                     }
                 </RoundedRect>
                 {

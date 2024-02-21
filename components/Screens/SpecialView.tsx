@@ -114,51 +114,51 @@ const SpecialView = () => {
                     onPress={sprintCallback}
                     jumpingText={false}
                 />
-
-                {
-                    rolling !== false ? (
-                        <Video
-                            source={(() => {
-                                switch (rolling) {
-                                    case 5:
-                                        return sprintGoldVid;
-                                    case 4:
-                                        return sprintPurpleVid;
-                                    default:
-                                        return sprintBlueVid;
-                                }
-                            })()}
-                            onError={(e) => {console.log(e)}}
-                            style={styles.video}
-                            resizeMode={ResizeMode.COVER}
-                            progressUpdateIntervalMillis={100}
-                            onPlaybackStatusUpdate={(status) => {
-                                if ((status as any).positionMillis >= 4600 && !rewardVisible && rolledItem) {
-                                    setRewardVisible(true);
-                                }
-
-                                if((status as any).didJustFinish) {
-                                    onSprintVideoEnd();
-                                }
-                            }}
-                            shouldPlay={true}
-                        />
-                        )
-                        : null
-                }
-
-                {
-                    rollingPending || rolling || rewardVisible ?
-                        <Animated.View style={[{opacity: blackCoverOpacity}, styles.blackCover]} pointerEvents="none"></Animated.View>
-                        : null
-                }
-
-                <Animated.View style={{opacity: blackCoverOpacity, position: "absolute", zIndex: 20}}>
-                    {
-                        rewardVisible ? <SprintReward reward={rolledItem} closeCallback={onClose} /> : null
-                    }
-                </Animated.View>
             </View>
+
+            {
+                rolling !== false ? (
+                    <Video
+                        source={(() => {
+                            switch (rolling) {
+                                case 5:
+                                    return sprintGoldVid;
+                                case 4:
+                                    return sprintPurpleVid;
+                                default:
+                                    return sprintBlueVid;
+                            }
+                        })()}
+                        onError={(e) => {console.log(e)}}
+                        style={styles.video}
+                        resizeMode={ResizeMode.COVER}
+                        progressUpdateIntervalMillis={100}
+                        onPlaybackStatusUpdate={(status) => {
+                            if ((status as any).positionMillis >= 4600 && !rewardVisible && rolledItem) {
+                                setRewardVisible(true);
+                            }
+
+                            if((status as any).didJustFinish) {
+                                onSprintVideoEnd();
+                            }
+                        }}
+                        shouldPlay={true}
+                    />
+                    )
+                    : null
+            }
+
+            {
+                rollingPending || rolling || rewardVisible ?
+                    <Animated.View style={[{opacity: blackCoverOpacity}, styles.blackCover]} pointerEvents="none"></Animated.View>
+                    : null
+            }
+
+            <Animated.View style={{opacity: blackCoverOpacity, position: "absolute", zIndex: 20, left: 0, top: 0, width: "100%", height: "100%"}} pointerEvents={"box-none"}>
+                {
+                    rewardVisible ? <SprintReward reward={rolledItem} closeCallback={onClose} /> : null
+                }
+            </Animated.View>
 
             <ChancesModal visible={chancesViewVisible} hide={hideChances} />
         </View>
