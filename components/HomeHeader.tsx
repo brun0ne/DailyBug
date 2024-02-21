@@ -1,7 +1,7 @@
 import { useCallback, memo, useEffect } from "react";
 import { View } from "react-native";
 import { Avatar, Card, IconButton, useTheme, Text, Button } from "react-native-paper";
-import Animated, { useSharedValue, withDelay, withTiming } from "react-native-reanimated";
+import Animated, { useAnimatedStyle, useSharedValue, withDelay, withTiming } from "react-native-reanimated";
 
 export type HomeHeaderProps = {
     explanation: string
@@ -28,6 +28,12 @@ const HomeHeader = (props: HomeHeaderProps) => {
         }
     }, [rewardOpacity, props.showReward, props.rewardText]);
 
+    const rewardStyles = useAnimatedStyle(() => {
+        return {
+            opacity: rewardOpacity.value
+        }
+    }, [rewardOpacity]);
+
     const leftCallback = useCallback((left_props) => (
         <Avatar.Icon
             {...left_props}
@@ -38,7 +44,7 @@ const HomeHeader = (props: HomeHeaderProps) => {
 
     const rightCallback = useCallback((right_props) => (
         <>
-            <Animated.View style={{flexDirection: "row", padding: 15, opacity: rewardOpacity, display: props.showReward ? "flex" : "none"}}>
+            <Animated.View style={[rewardStyles, {flexDirection: "row", padding: 15, display: props.showReward ? "flex" : "none"}]}>
                 {/* reward text */}
                 { props.rewardText ? <Button mode="contained-tonal">{props.rewardText}</Button> : <></> }
             </Animated.View>
