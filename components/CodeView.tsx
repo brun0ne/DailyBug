@@ -20,10 +20,14 @@ const CodeView = (props: CodeViewProps) => {
     const prettyLanguage = (lang: string) => {
         const m = {
             "javascript": "JavaScript",
-            "typescript": "TypeScript"
+            "typescript": "TypeScript",
+            "cpp": "C++",
+            "c": "C",
+            "ocaml": "OCaml",
+            "java": "Java"
         };
 
-        return m[lang.toLowerCase()] ?? "???";
+        return m[lang.toLowerCase()] ?? lang;
     };
 
     return (

@@ -239,7 +239,7 @@ const HomeView = () => {
         setNextAfterWrongUnlocked(false);
 
         /* show an ad */
-        if (afterNextAd.loaded && (bugsServedThisSession === 0 || bugsServedThisSession % 4 === 0))
+        if (afterNextAd.loaded && (/*bugsServedThisSession === 0 || */ bugsServedThisSession % 10 === 0))
             afterNextAd.show();
 
         setBugsServedThisSession(bugsServedThisSession + 1);
