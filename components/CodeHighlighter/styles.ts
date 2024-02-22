@@ -35,12 +35,8 @@ export const cleanStyle = (style: CSSProperties) => {
 
 export const styles = StyleSheet.create({
 	lineNumberStyles: {
-		marginRight: 12,
 		color: "gray",
 		marginLeft: "auto",
-		minWidth: 15,
-		alignSelf: 'flex-start',
-		textAlign: 'right',
 		opacity: 0.5
 	},
 	line: {}

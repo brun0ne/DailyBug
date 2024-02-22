@@ -63,20 +63,18 @@ export const CodeHighlighter: FunctionComponent<CodeHighlighterProps> = ({
 		nodes.reduce<ReactNode[]>((acc, node, index) => {
 			const keyPrefixWithIndex = `${keyPrefix}_${index}`;
 
-			if (node.children) {
-				const nodeStyles = StyleSheet.flatten([
-					textStyle,
-					{ color: stylesheet.hljs?.color },
-					getStylesForNode(node)
-				]);
+			const nodeStyles = StyleSheet.flatten([
+				textStyle,
+				{ color: stylesheet.hljs?.color },
+				getStylesForNode(node)
+			]);
 
+			if (node.children) {
 				if (rest.showLineNumbers && index == 0 && node.children[0].value) {
 					acc.push(
-						<View style={{ flexDirection: "row", flex: 1 }} key={`${keyPrefixWithIndex}_view`}>
-							<Text variant="bodyMedium" style={styles.lineNumberStyles} key={`${keyPrefixWithIndex}_line_number_${node.children[0].value}`}>
-								{node.children[0].value}
-							</Text>
-						</View>
+						<Text variant="bodyMedium" style={[nodeStyles, styles.lineNumberStyles]} key={`${keyPrefixWithIndex}_line_number_${node.children[0].value}`}>
+							{node.children[0].value + "\t" + "\t".repeat(4 - node.children[0].value.toString().length)}
+						</Text>
 					);
 				}
 				else {
@@ -100,15 +98,13 @@ export const CodeHighlighter: FunctionComponent<CodeHighlighterProps> = ({
 					}
 					else {
 						acc.push(
-							<View key={`${keyPrefixWithIndex}_view`}>
-								<Text
-									style={nodeStyles}
-									key={keyPrefixWithIndex}
-									variant="bodyMedium"
-								>
-									{renderNode(node.children, `${keyPrefixWithIndex}_child`)}
-								</Text>
-							</View>
+							<Text
+								style={[nodeStyles]}
+								key={keyPrefixWithIndex}
+								variant="bodyMedium"
+							>
+								{renderNode(node.children, `${keyPrefixWithIndex}_child`)}
+							</Text>
 						);
 					}
 				}
