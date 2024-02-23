@@ -52,7 +52,7 @@ const HomeHeader = (props: HomeHeaderProps) => {
                 !props.showReward ? (
                     <View style={{flexDirection: "row"}}>
                         {/* hint button */}
-                        <IconButton {...right_props} icon="head-question-outline" onPress={props.hintCallback} />
+                        <IconButton {...right_props} icon="head-question-outline" onPress={props.hintCallback} size={28} />
                     </View>
                 ) : null
             }

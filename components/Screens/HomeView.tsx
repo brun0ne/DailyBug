@@ -53,7 +53,6 @@ const HomeView = () => {
     const userContext = useContext(UserContext);
 
     const posthog = usePostHog(); // analytics
-    const [identified, setIdentified] = useState(false);
 
     /* Ads */
     const [bugsServedThisSession, setBugsServedThisSession] = useState(0);
@@ -143,12 +142,11 @@ const HomeView = () => {
     }, [sound]);
 
     useEffect(() => {
-        if (userContext.user && posthog && !identified) {
+        if (userContext.user && posthog) {
             /* Analytics */
             posthog.identify(userContext.user.uid);
-            setIdentified(true);
         }
-    }, [userContext, posthog, identified]);
+    }, [userContext.user, posthog]);
 
     /* Core callbacks */
     const isAnswerCorrect = useCallback(() => (

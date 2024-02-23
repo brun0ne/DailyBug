@@ -17,6 +17,11 @@ export const UserContext = createContext<{
 
 type UserContextValue = ContextType<typeof UserContext>;
 
+type DuckProps = {
+    level: number
+    last_fed: Date
+};
+
 export type ItemType = {
     color: string
     icon: string
@@ -27,6 +32,8 @@ export type ItemType = {
     
     hiddenIfNotOwned?: boolean
     maxOne?: boolean
+
+    special?: null | DuckProps
 };
 
 export type UserProgressData = {
@@ -40,8 +47,11 @@ export type UserProgressData = {
     currency: number
 
     items: Record<string, ItemType>
-
     chances: {5: number, 4: number}
+
+    other: {
+        canFeedDuck: boolean
+    }
 };
 
 export type SprintRewardType = {
@@ -116,7 +126,11 @@ export class UserAPI {
     }
 
     static async doActivateItem(context: UserContextValue, itemName: string) {
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
         const res = await UserAPI.doRequest(context.user, "user/activate_item", "POST", {
+            /* some items need to calculate user's time */
+            timezone: timezone,
             itemName: itemName
         });
 

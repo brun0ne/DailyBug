@@ -2,7 +2,7 @@
   "expo": {
     "name": "Daily Bug",
     "slug": "DailyBug",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -23,7 +23,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.brun0ne.DailyBug"
+      "package": "com.brun0ne.DailyBug",
+      "blockedPermissions": ["android.permission.RECORD_AUDIO"]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -56,7 +57,13 @@
             "assets/fonts/Inter-Thin.ttf"
           ]
         }
-      ]
+      ],
+      [
+        "expo-av",
+        {
+           "microphonePermission": false
+        }
+     ]
     ],
     "runtimeVersion": {
       "policy": "appVersion"

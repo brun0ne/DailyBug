@@ -71,7 +71,12 @@ const Main = () => {
         return subscriber; /* unsubscribe on unmount */
     }, []);
 
-    /* todo: do this after user consent */
+    useEffect(() => {
+        if (!user && !loginVisible) {
+            setLoginVisible(true);
+        }
+    });
+
     useEffect(() => {
         mobileAds()
             .initialize()

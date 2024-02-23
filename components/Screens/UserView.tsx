@@ -8,7 +8,7 @@ import auth from "@react-native-firebase/auth";
 
 import { useIsFocused } from '@react-navigation/native';
 
-import { UserContext } from "../../util/UserContext";
+import { ItemType, UserAPI, UserContext } from "../../util/UserContext";
 import ShaderProgressBar from "../Animated/ShaderProgressBar";
 import ShaderFlatDisplay from "../Animated/ShaderFlatDisplay";
 import Item from "../Item";
@@ -16,6 +16,8 @@ import ItemModal from "../ItemModal";
 import { GoogleButton, invokeGoogleSignIn } from "../SignInModal";
 
 import { itemImages } from "../../util/ItemImages";
+import DuckModal from "../CustomItemModals/DuckModal";
+import { CustomItemModal } from "../CustomItemModals/CustomItemModal";
 
 const UserView = () => {
     const userContext = useContext(UserContext); 
@@ -67,6 +69,28 @@ const UserView = () => {
 
         return obj;
     }, []);
+
+    const customModals: Record<string, (name: string, item: ItemType) => React.JSX.Element> = {
+        "Rubber Duck": (
+            (name: string, item: ItemType) => (
+                <DuckModal
+                    key={`modal_${name}`}
+
+                    visible={itemModalsVisible[name]}
+                    hide={() => { 
+                        hasModal(name) ?
+                            setItemModalVisible(name, false) :
+                            () => {}
+                    }}
+                    
+                    item={item}
+                    image={itemImages[name]}
+                >
+                    {itemDescriptions[name]}
+                </DuckModal>
+            )
+        )
+    };
 
     const [itemModalsVisible, setItemModalsVisible] = useState<Record<keyof typeof itemDescriptions, boolean>>(defaultModalState);
 
@@ -148,26 +172,30 @@ const UserView = () => {
             {
                 Object.entries(userContext.progressData?.items ?? {}).map(([name, item]) => (
                     hasModal(name) ? (
-                        <ItemModal
-                            key={`modal_${name}`}
+                        customModals[name] ? (
+                            customModals[name](name, item)
+                        ) : (
+                            <ItemModal
+                                key={`modal_${name}`}
 
-                            visible={itemModalsVisible[name]}
-                            hide={() => { 
-                                hasModal(name) ?
-                                    setItemModalVisible(name, false) :
-                                    () => {}
-                            }}
+                                visible={itemModalsVisible[name]}
+                                hide={() => { 
+                                    hasModal(name) ?
+                                        setItemModalVisible(name, false) :
+                                        () => {}
+                                }}
 
-                            name={name}
-                            item={item}
-                            image={itemImages[name] ?? null}
+                                name={name}
+                                item={item}
+                                image={itemImages[name] ?? null}
 
-                            canBeActivated={itemActions[name]?.canBeActivated ?? false}
+                                canBeActivated={itemActions[name]?.canBeActivated ?? false}
 
-                            actionButtons={itemActions[name]?.other ?? null}
-                        >
-                            {itemDescriptions[name]}
-                        </ItemModal>
+                                actionButtons={itemActions[name]?.other ?? null}
+                            >
+                                {itemDescriptions[name]}
+                            </ItemModal>
+                        )
                     ) : null
                 ))
             }
