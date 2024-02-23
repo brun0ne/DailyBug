@@ -32,8 +32,6 @@ const DuckModal: CustomItemModal = (props: ItemModalProps) => {
     const cookiesAmount = (userContext.progressData?.items["Cookie"] ?? {}).amount ?? 0;
     const duckLuckLevel = props.item.special?.level ?? 1;
 
-    console.log(userContext.progressData?.other.canFeedDuck);
-
     const actionDisabled = cookiesAmount <= 0 || !(userContext.progressData?.other.canFeedDuck);
     const [activating, setActivating] = useState(false);
 

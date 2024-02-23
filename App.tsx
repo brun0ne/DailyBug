@@ -10,6 +10,7 @@ import { Platform, StatusBar, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import * as SplashScreen from 'expo-splash-screen';
+import * as Updates from 'expo-updates';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -24,6 +25,23 @@ export default function App() {
     StatusBar.setBackgroundColor("transparent");
   }
 
+  /* Updates */
+  const onFetchUpdateAsync = async () => {
+    try {
+      const update = await Updates.checkForUpdateAsync();
+
+      if (update.isAvailable) {
+        await Updates.fetchUpdateAsync();
+        await Updates.reloadAsync();
+      }
+    } catch (error) {}
+  }
+
+  useEffect(() => {
+    onFetchUpdateAsync();
+  }, []);
+
+  /* Consent */
   const loadConsent = async () => {
     try {
       const value = await AsyncStorage.getItem("user_consent");
