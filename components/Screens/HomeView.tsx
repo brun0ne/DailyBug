@@ -121,7 +121,7 @@ const HomeView = () => {
                     setLoading(false);
                 }
                 else {
-                    loadBugFromAPI();
+                    await loadBugFromAPI();
                 }
 
                 setFirstTimeLoaded(true);

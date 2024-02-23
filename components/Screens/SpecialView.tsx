@@ -92,12 +92,12 @@ const SpecialView = () => {
         return <></>;
 
     return (
-        <View style={{flexGrow: 1, backgroundColor: "black"}}>
+        <View style={{flexGrow: 1, backgroundColor: "#170112"}}>
             <View style={{width: "100%", height: "auto", justifyContent: "flex-start"}}>
                 <Image source={banner} style={{width: "100%", height: undefined, aspectRatio: 1.21}} />
             </View>
             
-            <View style={styles.top}>
+            <View style={styles.storyPoints}>
                 <ShaderFlatDisplay showBackground={false} text="STORY POINTS" number={userContext.progressData?.currency ?? 0} />
             </View>
 
@@ -166,7 +166,7 @@ const SpecialView = () => {
 };
 
 const styles = StyleSheet.create({
-    top: {
+    storyPoints: {
         position: "absolute",
         
         bottom: 0,
@@ -177,13 +177,15 @@ const styles = StyleSheet.create({
     },
     main: {
         padding: 10,
-        marginTop: -30,
         
         justifyContent: "center",
         alignItems: "center",
         gap: 20,
 
-        width: "100%"
+        width: "100%",
+
+        position: "absolute",
+        bottom: 160
     },
     blackCover: {
         position: "absolute",

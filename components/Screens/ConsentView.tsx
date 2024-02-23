@@ -72,7 +72,7 @@ const ConsentView = ({ consentGivenCallback, consent }: { consentGivenCallback: 
 
                         <View style={styles.lower}>
                             <Text style={{ fontWeight: "bold" }}>I have read and agree to the terms</Text>
-                            <Switch value={agreeSwitch} onValueChange={(value) => { setAgreeSwitch(value) }} />
+                            <Switch value={agreeSwitch} onValueChange={(value) => { setAgreeSwitch(value) } } color={theme.colors.secondary} />
                         </View>
                     </Card.Content>
 
