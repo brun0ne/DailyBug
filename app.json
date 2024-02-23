@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "DailyBug",
+    "name": "Daily Bug",
     "slug": "DailyBug",
     "version": "1.0.2",
     "orientation": "portrait",
@@ -57,7 +57,13 @@
           ]
         }
       ]
-    ]
+    ],
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/YOUR_EAS_PROJECT_ID"
+    }
   },
   "react-native-google-mobile-ads": {
     "android_app_id": "ca-app-pub-8184565622286989~3824354426"
