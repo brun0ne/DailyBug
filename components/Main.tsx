@@ -97,12 +97,12 @@ const Main = () => {
                                 <MaterialCommunityIcons name="home" color={color} size={26} />
                             ),
                         }} />
-                        <Tab.Screen name="Sprint" component={signedIn ? SpecialView : View} options={{
+                        <Tab.Screen name="Sprint" component={signedIn && progressData ? SpecialView : View} options={{
                             tabBarIcon:({color})=>(
                                 <MaterialCommunityIcons name="creation" color={color} size={26} />
                             ),
                         }} />
-                        <Tab.Screen name="Profile" component={signedIn ? UserView: View} options={{
+                        <Tab.Screen name="Profile" component={signedIn && progressData ? UserView: View} options={{
                             tabBarIcon:({color})=>(
                                 <MaterialCommunityIcons name="account" color={color} size={26} />
                             ),
