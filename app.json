@@ -70,6 +70,10 @@
     },
     "updates": {
       "url": "https://u.expo.dev/YOUR_EAS_PROJECT_ID"
+    },
+    "notification": {
+      "icon": "./assets/notif-icon.png",
+      "color": "#fff"
     }
   },
   "react-native-google-mobile-ads": {

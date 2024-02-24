@@ -138,8 +138,10 @@ export class UserAPI {
         return res;
     }
 
-    static async init(user: FirebaseAuthTypes.User) {
-        const res = await UserAPI.doRequest(user, "user/init", "POST", {});
+    static async init(user: FirebaseAuthTypes.User, expoPushToken: string) {
+        const res = await UserAPI.doRequest(user, "user/init", "POST", {
+            expoPushToken
+        });
         console.log("INIT", res);
     }
 

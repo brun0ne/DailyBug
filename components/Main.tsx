@@ -20,6 +20,18 @@ import mobileAds from "react-native-google-mobile-ads";
 
 const Tab = createMaterialBottomTabNavigator();
 
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
+import { registerForPushNotificationsAsync } from '../util/PushNotifications';
+
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: false,
+        shouldSetBadge: false
+    }),
+});  
+
 const Main = () => {
     const [user, setUser] = useState<FirebaseAuthTypes.User>(null);
     const [updated, setUpdated] = useState(true);
@@ -31,6 +43,14 @@ const Main = () => {
         !!user
     ), [user]);
 
+    /* Notifications */
+    const [expoPushToken, setExpoPushToken] = useState('');
+
+    useEffect(() => {
+        registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+    }, []);
+
+    /* User & progress */
     const loadFromAPI = useCallback(async () => {
         if (!user)
             return;
@@ -64,12 +84,12 @@ const Main = () => {
                 setLoginVisible(true);
             }
             else {
-                UserAPI.init(user);
+                UserAPI.init(user, expoPushToken);
                 setLoginVisible(false);
             }
         });
         return subscriber; /* unsubscribe on unmount */
-    }, []);
+    }, [expoPushToken]);
 
     useEffect(() => {
         if (!user && !loginVisible) {
@@ -77,6 +97,7 @@ const Main = () => {
         }
     });
 
+    /* Ads */
     useEffect(() => {
         mobileAds()
             .initialize()
