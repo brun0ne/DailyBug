@@ -1,9 +1,9 @@
 import { Image, View, StyleSheet } from "react-native";
-import { Button, Icon, IconButton, Text } from "react-native-paper";
+import { Icon, IconButton, Text } from "react-native-paper";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useIsFocused } from '@react-navigation/native';
 import { Video, ResizeMode } from "expo-av";
-import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
 
 import ShaderButton from "../Animated/ShaderButton";
 import ShaderFlatDisplay from "../Animated/ShaderFlatDisplay";
@@ -18,7 +18,11 @@ const sprintGoldVid = require("../../assets/Sprint/gold.mp4");
 const sprintPurpleVid = require("../../assets/Sprint/purple.mp4");
 const sprintBlueVid = require("../../assets/Sprint/blue.mp4");
 
-const banner = require("../../assets/duck_banner.png");
+const bg = require("../../assets/banner/bg.png");
+const duck_only = require("../../assets/banner/duck_only.png");
+const duck_stars = require("../../assets/banner/duck_stars.png");
+const s4_only = require("../../assets/banner/s4_only.png");
+const s4_stars_only = require("../../assets/banner/s4_stars_only.png");
 
 const SpecialView = () => {
     const userContext = useContext(UserContext);
@@ -88,13 +92,48 @@ const SpecialView = () => {
         setChancesViewVisible(false);
     }, []);
 
+    /* animated styles */
+    const sine = useSharedValue(0);
+
+    useEffect(() => {
+        sine.value = 0;
+        sine.value = withRepeat(
+            withTiming(100, {
+                duration: 1000,
+                easing: Easing.bezier(0.5, 0.6, 0.7, 0.5)
+            }),
+            -1,
+            true
+        );
+    }, []);
+
+    const duckStyles = useAnimatedStyle(() => (
+        { marginTop: Math.sin(sine.value / 100 + 15) * 6 }
+    ), [sine]);
+
+    const duckStarsStyles = useAnimatedStyle(() => (
+        { marginTop: Math.sin(sine.value / 100 + 15) * 3 }
+    ), [sine]);
+
+    const s4Styles = useAnimatedStyle(() => (
+        { marginTop: Math.sin(sine.value / 100 + 15 + 3.14) * 4 }
+    ), [sine]);
+
+    const s4StarsStyles = useAnimatedStyle(() => (
+        { marginTop: Math.sin(sine.value / 100 + 15 + 3.14) * 2 }
+    ), [sine]);
+
     if (!isFocused)
         return <></>;
 
     return (
         <View style={{flexGrow: 1, backgroundColor: "#170112"}}>
             <View style={{width: "100%", height: "auto", justifyContent: "flex-start"}}>
-                <Image source={banner} style={{width: "100%", height: undefined, aspectRatio: 1.21}} />
+                <Image source={bg} style={styles.image} />
+                <Animated.Image source={duck_only} style={[duckStyles, styles.image]} />
+                <Animated.Image source={duck_stars} style={[duckStarsStyles, styles.image]} />
+                <Animated.Image source={s4_only} style={[s4Styles, styles.image]} />
+                <Animated.Image source={s4_stars_only} style={[s4StarsStyles, styles.image]} />
             </View>
             
             <View style={styles.storyPoints}>
@@ -206,6 +245,12 @@ const styles = StyleSheet.create({
         right: 0,
 
         zIndex: 10
+    },
+    image: {
+        width: "100%",
+        height: undefined,
+        aspectRatio: 1.21,
+        position: "absolute"
     }
 });
 
