@@ -81,20 +81,21 @@ const HomeView = () => {
     /* Confetti is fired imperatively */
     const confettiRef = useRef<ConfettiHandle>(null);
 
-    let timeout = null;
     const loadBugFromAPI = async () => {
+        console.log("LOADING");
+        if (isLoading)
+            return;
+
+        setLoading(true);
+
         try {
             const json = await UserAPI.getBug(userContext.user);
 
-            if (json.success === false) {
-                console.log("Trying again...");
-                if (timeout)
-                    clearTimeout(timeout);
-                timeout = setTimeout(loadBugFromAPI, 1000);
-            }
-            else {
+            if (json.success !== false) {
                 setBug(json);
-                AsyncStorage.setItem("previous-bug", JSON.stringify(json));
+                await AsyncStorage.setItem("previous-bug", JSON.stringify(json));
+
+                console.log("BUG from API loaded");
             }
         }
         catch (error) {
@@ -102,7 +103,6 @@ const HomeView = () => {
         }
         finally {
             setLoading(false);
-            console.log("BUG from API loaded");
         }
     };
 
@@ -127,7 +127,6 @@ const HomeView = () => {
             })();
         }
         else if (firstTimeLoaded && !bug && !isLoading) {
-            setLoading(true);
             loadBugFromAPI();
         }
     }, [firstTimeLoaded, bug, isLoading]);
