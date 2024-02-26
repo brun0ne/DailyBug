@@ -72,8 +72,8 @@ export const CodeHighlighter: FunctionComponent<CodeHighlighterProps> = ({
 			if (node.children) {
 				if (rest.showLineNumbers && index == 0 && node.children[0].value) {
 					acc.push(
-						<Text variant="bodyMedium" style={[nodeStyles, styles.lineNumberStyles]} key={`${keyPrefixWithIndex}_line_number_${node.children[0].value}`}>
-							{node.children[0].value + "\t" + "\t".repeat(4 - node.children[0].value.toString().length)}
+						<Text style={[nodeStyles, styles.lineNumberStyles]} key={`${keyPrefixWithIndex}_line_number_${node.children[0].value}`}>
+							{node.children[0].value + "  " + "  ".repeat(4 - node.children[0].value.toString().length)}
 						</Text>
 					);
 				}

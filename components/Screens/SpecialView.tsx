@@ -1,4 +1,4 @@
-import { Image, View, StyleSheet } from "react-native";
+import { Image, View, StyleSheet, useWindowDimensions } from "react-native";
 import { Icon, IconButton, Text } from "react-native-paper";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useIsFocused } from '@react-navigation/native';
@@ -92,6 +92,12 @@ const SpecialView = () => {
         setChancesViewVisible(false);
     }, []);
 
+    /* responsive */
+    const {height, width} = useWindowDimensions();
+
+    const ratio = width / height;
+    const tabletRatio = ratio > 0.70 ? true : false;
+
     /* animated styles */
     const sine = useSharedValue(0);
 
@@ -142,10 +148,12 @@ const SpecialView = () => {
 
             <IconButton icon={"help"} style={{position: "absolute", top: 10, left: 10}} mode={"contained-tonal"} onPress={showChances} />
             
-            <View style={styles.main}>
+            <View style={[styles.main, {bottom: !tabletRatio ? 160 : 100}]}>
                 <Text variant={"titleLarge"} style={{fontSize: 25, color: "white"}}>SPRINT</Text>
 
-                <Icon source="run-fast" color="white" size={50} />
+                {
+                    !tabletRatio ? <Icon source="run-fast" color="white" size={50} /> : null
+                }
 
                 <ShaderButton
                     disabled={(userContext.progressData?.currency ?? 0) < 150 || rollingPending || rolling !== false || rewardVisible}
@@ -223,8 +231,7 @@ const styles = StyleSheet.create({
 
         width: "100%",
 
-        position: "absolute",
-        bottom: 160
+        position: "absolute"
     },
     blackCover: {
         position: "absolute",
