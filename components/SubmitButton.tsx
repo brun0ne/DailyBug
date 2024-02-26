@@ -12,7 +12,7 @@ const SubmitButton = (props: SubmitButtonProps) => {
         <Button
             icon="check-circle"
             mode="contained"
-            style={{ backgroundColor: props.disabled ? theme.colors.backdrop : theme.colors.secondary }}
+            buttonColor={theme.colors.secondary}
             disabled={props.disabled}
             onPress={props.onPress}
         >

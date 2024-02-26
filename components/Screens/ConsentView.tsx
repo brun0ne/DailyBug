@@ -8,7 +8,7 @@ const ConsentView = ({ consentGivenCallback, consent }: { consentGivenCallback: 
     const theme = useTheme();
 
     const titleLeftCallback = useCallback((callbackProps) => (
-        <Avatar.Icon {...callbackProps} icon={"file-document-outline"} style={{ backgroundColor: theme.colors.secondary }} color="white" />
+        <Avatar.Icon {...callbackProps} icon={"file-document-outline"} theme={{colors: {primary: theme.colors.secondary}}} color="white" />
     ), []);
 
     const termsCallback = useCallback(() => {

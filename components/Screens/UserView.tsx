@@ -1,14 +1,12 @@
 import { ReactNode, useContext, useMemo, useState } from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
-import { Avatar, Button, Card, Divider, Icon, Text, useTheme } from "react-native-paper";
+import { Avatar, Button, Card, Divider, Text, useTheme } from "react-native-paper";
 
 import { Entries } from 'type-fest';
 
-import auth from "@react-native-firebase/auth";
-
 import { useIsFocused } from '@react-navigation/native';
 
-import { ItemType, UserAPI, UserContext } from "../../util/UserContext";
+import { ItemType, UserContext } from "../../util/UserContext";
 import ShaderProgressBar from "../Animated/ShaderProgressBar";
 import ShaderFlatDisplay from "../Animated/ShaderFlatDisplay";
 import Item from "../Item";
@@ -17,7 +15,6 @@ import { GoogleButton, invokeGoogleSignIn } from "../SignInModal";
 
 import { itemImages } from "../../util/ItemImages";
 import DuckModal from "../CustomItemModals/DuckModal";
-import { CustomItemModal } from "../CustomItemModals/CustomItemModal";
 
 const UserView = () => {
     const userContext = useContext(UserContext); 
@@ -114,7 +111,7 @@ const UserView = () => {
                     left={(props) => (
                             userContext.user.photoURL ?
                                 <Avatar.Image {...props} source={{uri: userContext.user.photoURL}} /> :
-                                <Avatar.Icon {...props} icon="account" style={{ backgroundColor: theme.colors.secondary }} />
+                                <Avatar.Icon {...props} icon="account" theme={{colors: {primary: theme.colors.secondary}}} />
                     )}
                 />
 
@@ -129,10 +126,10 @@ const UserView = () => {
                     />
 
                     <View style={styles.stats}> 
-                        <Button icon="calendar" mode="contained" style={{backgroundColor: theme.colors.secondary}}>
+                        <Button icon="calendar" mode="contained" buttonColor={theme.colors.secondary}>
                             Streak  |  {userContext.progressData?.streak ?? 0}
                         </Button>
-                        <Button icon="fire" mode="contained" style={{backgroundColor: theme.colors.secondary}}>
+                        <Button icon="fire" mode="contained" buttonColor={theme.colors.secondary}>
                             Combo  |  {userContext.progressData?.combo ?? 0}
                         </Button>
                     </View>

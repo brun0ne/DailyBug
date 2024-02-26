@@ -38,7 +38,7 @@ const HomeHeader = (props: HomeHeaderProps) => {
         <Avatar.Icon
             {...left_props}
             icon={props.showExplanation ? "party-popper" : "progress-question"}
-            style={{backgroundColor: theme.colors.secondary}}
+            theme={{colors: {primary: theme.colors.secondary}}}
         />
     ), [props.showExplanation]);
 

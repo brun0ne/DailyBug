@@ -24,7 +24,7 @@ const AnswerButtons = (props: AnswerButtonsProps) => {
                     <Button
                         icon="skip-next-circle-outline"
                         mode="contained"
-                        style={{backgroundColor: "#464299"}}
+                        buttonColor="#464299"
                         onPress={props.nextButtonCallback}
                     >
                         Next
@@ -33,7 +33,7 @@ const AnswerButtons = (props: AnswerButtonsProps) => {
                     <Button
                         icon="skip-next-circle-outline"
                         mode="contained"
-                        style={{backgroundColor: theme.colors.error}}
+                        buttonColor={theme.colors.error}
                         onPress={props.skipButtonCallback}
                     >
                         Skip

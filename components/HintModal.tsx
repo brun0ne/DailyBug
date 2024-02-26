@@ -13,7 +13,7 @@ const HintModal = (props: HintModalProps) => {
     const theme = useTheme();
 
     const titleLeftCallback = useCallback((props) => (
-        <Avatar.Icon {...props} icon="help-circle" style={{ backgroundColor: theme.colors.secondary }} />
+        <Avatar.Icon {...props} icon="help-circle" theme={{colors: {primary: theme.colors.secondary}}} />
     ), [theme]);
 
     return (

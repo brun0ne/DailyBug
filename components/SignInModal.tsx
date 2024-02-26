@@ -100,7 +100,7 @@ const SignInModal = (props: { visible: boolean, hide: () => void }) => {
     const theme = useTheme();
 
     const titleLeftCallback = useCallback((props) => (
-        <Avatar.Icon {...props} icon="account" style={{ backgroundColor: theme.colors.secondary }} />
+        <Avatar.Icon {...props} icon="account" theme={{colors: {primary: theme.colors.secondary}}} />
     ), [theme]);
 
     return (

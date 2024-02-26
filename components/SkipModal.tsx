@@ -15,7 +15,7 @@ const SkipModal = (props: SkipModalProps) => {
     const theme = useTheme();
     
     const titleLeftCallback = useCallback((props) => (
-        <Avatar.Icon {...props} icon="skip-next-circle-outline" style={{ backgroundColor: theme.colors.primary }} color="white" />
+        <Avatar.Icon {...props} icon="skip-next-circle-outline" theme={{colors: {primary: theme.colors.primary}}} color="white" />
     ), [theme]);
 
     const userContext = useContext(UserContext);

@@ -25,7 +25,7 @@ const DuckModal: CustomItemModal = (props: ItemModalProps) => {
         props.image ? (
             <Avatar.Image source={props.image} size={45} />    
         ) : (
-            <Avatar.Icon {...callbackProps} icon={props.item.icon} style={{ backgroundColor: props.item.stars !== 5 ? props.item.color : "blue" }} color="white" />
+            <Avatar.Icon {...callbackProps} icon={props.item.icon} theme={{colors: {primary: "orange"}}} color="white" />
         )
     ), [props.item]);
 
