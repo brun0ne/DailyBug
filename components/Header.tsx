@@ -72,6 +72,10 @@ const Header = () => {
         Linking.openURL('mailto:brunonblok@gmail.com');
     }, []);
 
+    const feedbackCallback = useCallback(() => {
+        Linking.openURL('https://dailybug.app/feedback');
+    }, []);
+
     return (
         <Appbar.Header elevated>
             <View>
@@ -98,6 +102,7 @@ const Header = () => {
                 >
                     <Menu.Item onPress={privacyPolicyCallback} title="Privacy Policy" />
                     <Menu.Item onPress={contactCallback} title="Contact us" />
+                    <Menu.Item onPress={feedbackCallback} title="Feedback" />
                 </Menu>
             </View>
             <Appbar.Action style={{position: "absolute", right: 0}} icon="dots-vertical" onPress={() => {setMoreOptionsVisible(true)}} />
