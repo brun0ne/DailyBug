@@ -43,7 +43,7 @@ const CodeView = (props: CodeViewProps) => {
                 selectedLines={props.linesToHighlight}
                 onLinePress={props.callback}
             >
-                {props.codeString}
+                {props.codeString.replaceAll("\t", "  ")}
             </CodeHighlighter>
         </View>
     );

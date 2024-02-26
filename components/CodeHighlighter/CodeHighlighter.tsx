@@ -54,7 +54,8 @@ export const CodeHighlighter: FunctionComponent<CodeHighlighterProps> = ({
 		const classes: string[] = node.properties?.className ?? [];
 		let mapped = classes
 			.map((c: string) => stylesheet[c])
-			.filter((c) => !!c) as TextStyle[];
+			.filter((c) => !!c)
+			.map(({fontStyle, ...c}) => c) as TextStyle[];
 
 		return mapped;
 	};
@@ -71,9 +72,15 @@ export const CodeHighlighter: FunctionComponent<CodeHighlighterProps> = ({
 
 			if (node.children) {
 				if (rest.showLineNumbers && index == 0 && node.children[0].value) {
+					const numLength = node.children[0].value.toString().length;
+					const leftPad = (2 - numLength) >= 0 ? (2 - numLength) : 0;
+
 					acc.push(
-						<Text style={[nodeStyles, styles.lineNumberStyles]} key={`${keyPrefixWithIndex}_line_number_${node.children[0].value}`}>
-							{node.children[0].value + "  " + "  ".repeat(4 - node.children[0].value.toString().length)}
+						<Text
+							style={[nodeStyles, styles.lineNumberStyles, {fontFamily: "CascadiaCode"}]}
+							key={`${keyPrefixWithIndex}_line_number_${node.children[0].value}`}
+						>
+							{" ".repeat(leftPad) + node.children[0].value + " ".repeat(2)}
 						</Text>
 					);
 				}

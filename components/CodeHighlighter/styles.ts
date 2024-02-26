@@ -35,9 +35,9 @@ export const cleanStyle = (style: CSSProperties) => {
 
 export const styles = StyleSheet.create({
 	lineNumberStyles: {
-		color: "gray",
+		color: "rgba(123,122,130,0.4)",
 		marginLeft: "auto",
-		opacity: 0.5
+		fontSize: 13
 	},
 	line: {}
 });
