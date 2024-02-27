@@ -9,7 +9,7 @@ export type AnswerButtonsProps = {
     nextAfterWrongUnlocked: boolean
 
     skipButtonCallback: () => void
-    nextButtonCallback: () => void
+    giveUpButtonCallback: () => void
 }
 
 const AnswerButtons = (props: AnswerButtonsProps) => {
@@ -25,9 +25,9 @@ const AnswerButtons = (props: AnswerButtonsProps) => {
                         icon="skip-next-circle-outline"
                         mode="contained"
                         buttonColor="#464299"
-                        onPress={props.nextButtonCallback}
+                        onPress={props.giveUpButtonCallback}
                     >
-                        Next
+                        Give up
                     </Button>
                 ) : (
                     <Button

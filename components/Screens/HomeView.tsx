@@ -44,14 +44,18 @@ const HomeView = () => {
     const [hintModalShown, setHintModalShown] = useState(false); 
     const [skipModalShown, setSkipModalShown] = useState(false);
     const [incorrectPopupShown, setIncorrectPopupShown] = useState(false);
+
     const [nextAfterWrongUnlocked, setNextAfterWrongUnlocked] = useState(false);
     const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
+
     const [selectedLine, setSelectedLine] = useState<LineToHighlight | null>(null);
-    const [correctAnswerState, setCorrectAnswerState] = useState(false);
+
+    const [resultScreenState, setResultScreenState] = useState(false);
+    const [gaveUpState, setGaveUpState] = useState(false);
+
     const [rewardText, setRewardText] = useState<string>(null);
 
     const userContext = useContext(UserContext);
-
     const posthog = usePostHog(); // analytics
 
     /* Ads */
@@ -153,7 +157,7 @@ const HomeView = () => {
     ), [bug, submitButtonDisabled, selectedLine]);
 
     const codeViewPressCallback = useCallback((lineIndex: number) => {
-        if (correctAnswerState)
+        if (resultScreenState)
             return; /* disable line select */
 
         setSubmitButtonDisabled(false);
@@ -161,7 +165,7 @@ const HomeView = () => {
             index: lineIndex,
             color: "#555"
         });
-    }, [correctAnswerState]);
+    }, [resultScreenState]);
 
     const linesToHighlight = useMemo(() => (
         selectedLine ? [selectedLine] : []
@@ -178,7 +182,7 @@ const HomeView = () => {
             confettiRef.current.start();
 
             setIncorrectPopupShown(false);
-            setCorrectAnswerState(true);
+            setResultScreenState(true);
             setSelectedLine({
                 index: selectedLine.index,
                 color: "#20612c"
@@ -229,7 +233,8 @@ const HomeView = () => {
     }, []);
 
     const nextButtonCallback = useCallback(() => {
-        setCorrectAnswerState(false);
+        setGaveUpState(false);
+        setResultScreenState(false);
         setBug(null);
         setSelectedLine(null);
         setRewardText(null);
@@ -266,7 +271,7 @@ const HomeView = () => {
     }, []);
 
     const doSkipCallback = useCallback(() => {
-        setCorrectAnswerState(false);
+        setResultScreenState(false);
         setBug(null);
         setSelectedLine(null);
         setRewardText(null);
@@ -277,6 +282,20 @@ const HomeView = () => {
             skips_left: userContext.progressData?.items["Skip"].amount ?? 0
         });
     }, [posthog]);
+
+    const giveUpCallback = useCallback(() => {
+        setGaveUpState(true);
+        setIncorrectPopupShown(false);
+        setResultScreenState(true);
+        setSelectedLine({
+            index: bug.answer - 1,
+            color: "#20612c"
+        });
+
+        posthog.capture("give_up", {
+            bug_id: bug.id
+        });
+    }, [selectedLine]);
 
     /* Loading callback */
     const isLoadingCallback = useCallback(() => (
@@ -300,8 +319,9 @@ const HomeView = () => {
                 hintCallback={hintModalCallback}
                 explanation={(!bug || isLoading) ? "..." : bug.explanation}
                 rewardText={rewardText}
-                showExplanation={correctAnswerState}
-                showReward={correctAnswerState}
+                showExplanation={resultScreenState}
+                showReward={resultScreenState}
+                gaveUp={gaveUpState}
             />
 
             <View style={styles.topWrapper}>
@@ -314,12 +334,13 @@ const HomeView = () => {
                     wrapLines={false}
                     callback={codeViewPressCallback}
                     linesToHighlight={linesToHighlight}
+                    scrollToFirstHighlighted={gaveUpState}
                 />)}
             </View>
             
             <View style={styles.bottomWrapper}>
                 <View style={styles.buttonWrapper}>
-                    { correctAnswerState ? 
+                    { resultScreenState ? 
                         <NextBugButton onPress={nextButtonCallback}></NextBugButton> :
                         <AnswerButtons
                             submitButtonDisabled={submitButtonDisabled}
@@ -328,7 +349,7 @@ const HomeView = () => {
                             nextAfterWrongUnlocked={nextAfterWrongUnlocked}
 
                             skipButtonCallback={skipModalCallback}
-                            nextButtonCallback={nextButtonCallback}
+                            giveUpButtonCallback={giveUpCallback}
                         />
                     }
                 </View>

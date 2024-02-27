@@ -1,4 +1,4 @@
-import { type FunctionComponent, type ReactNode, useMemo } from "react";
+import { type FunctionComponent, type ReactNode, useMemo, useRef } from "react";
 
 import {
 	ScrollView,
@@ -32,6 +32,7 @@ export interface CodeHighlighterProps extends SyntaxHighlighterProps {
 	verticalScrollViewProps?: ScrollViewProps;
 	horizontalScrollViewProps?: ScrollViewProps;
 	selectedLines?: Array<LineToHighlight>;
+	scrollToFirstSelected?: boolean;
 	onLinePress?: (lineIndex: number) => any
 }
 
@@ -42,6 +43,7 @@ export const CodeHighlighter: FunctionComponent<CodeHighlighterProps> = ({
 	horizontalScrollViewProps,
 	verticalScrollViewProps,
 	selectedLines,
+	scrollToFirstSelected,
 	onLinePress,
 	...rest
 }) => {
@@ -124,10 +126,20 @@ export const CodeHighlighter: FunctionComponent<CodeHighlighterProps> = ({
 			return acc;
 		}, []);
 
+	const scrollViewRef = useRef<ScrollView>(null);
+	const LINE_HEIGHT = 20;
+
+	if (scrollViewRef.current && scrollToFirstSelected) {
+		scrollViewRef.current.scrollTo({
+			x: 0,
+			y: LINE_HEIGHT * selectedLines[0].index
+		});
+	}
+
 	const renderer = (props: rendererProps) => {
 		const { rows } = props;
 		return (
-			<ScrollView {...verticalScrollViewProps} contentContainerStyle={verticalScrollViewProps?.contentContainerStyle}>
+			<ScrollView {...verticalScrollViewProps} ref={scrollViewRef} contentContainerStyle={verticalScrollViewProps?.contentContainerStyle}>
 				<ScrollView
 					{...horizontalScrollViewProps}
 					horizontal

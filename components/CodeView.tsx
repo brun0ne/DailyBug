@@ -11,6 +11,8 @@ export type CodeViewProps = {
 
     wrapLines: boolean;
     linesToHighlight?: Array<LineToHighlight>;
+    scrollToFirstHighlighted?: boolean;
+
     callback: (lineIndex: number) => any;
 };
 
@@ -41,6 +43,7 @@ const CodeView = (props: CodeViewProps) => {
                 showLineNumbers={true}
                 wrapLines={props.wrapLines ? true : undefined}
                 selectedLines={props.linesToHighlight}
+                scrollToFirstSelected={props.scrollToFirstHighlighted}
                 onLinePress={props.callback}
             >
                 {props.codeString.replaceAll("\t", "  ")}

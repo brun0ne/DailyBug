@@ -8,6 +8,7 @@ export type HomeHeaderProps = {
     showExplanation: boolean
     rewardText?: string
     showReward: boolean
+    gaveUp: boolean
 
     hintCallback: () => any
 }
@@ -37,10 +38,13 @@ const HomeHeader = (props: HomeHeaderProps) => {
     const leftCallback = useCallback((left_props) => (
         <Avatar.Icon
             {...left_props}
-            icon={props.showExplanation ? "party-popper" : "progress-question"}
+            icon={
+                props.gaveUp ? "flag" :
+                (props.showExplanation ? "party-popper" : "progress-question")
+            }
             theme={{colors: {primary: theme.colors.secondary}}}
         />
-    ), [props.showExplanation]);
+    ), [props]);
 
     const rightCallback = useCallback((right_props) => (
         <>
@@ -57,13 +61,13 @@ const HomeHeader = (props: HomeHeaderProps) => {
                 ) : null
             }
         </>
-    ), [props.hintCallback, props.showReward, props.rewardText, rewardOpacity]);
+    ), [props, rewardOpacity]);
 
     let title: string | React.ReactElement;
     let subtitle: string;
 
     if (props.showExplanation) {
-        title = <Text style={{fontSize: 18, fontWeight: "bold"}}>Correct!</Text>;
+        title = <Text style={{fontSize: 18, fontWeight: "bold"}}>{!props.gaveUp ? "Correct!" : "Almost!"}</Text>;
         subtitle = props.explanation;
     }
     else {
