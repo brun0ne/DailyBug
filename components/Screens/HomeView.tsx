@@ -26,6 +26,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const correctSound = require("../../assets/correct.mp3") as AVPlaybackSource;
 const wrongSound = require("../../assets/wrong.mp3") as AVPlaybackSource;
+const gaveUpSound = require("../../assets/gave_up.mp3") as AVPlaybackSource;
 
 /* todo: replace with real admob ID */
 const afterNextAd = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL, {
@@ -291,6 +292,8 @@ const HomeView = () => {
             index: bug.answer - 1,
             color: "#20612c"
         });
+
+        playSound(gaveUpSound);
 
         posthog.capture("give_up", {
             bug_id: bug.id
