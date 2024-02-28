@@ -191,7 +191,7 @@ const HomeView = () => {
 
             playSound(correctSound);
 
-            posthog.capture("bug_answered", {
+            posthog?.capture("bug_answered", {
                 correct: true
             });
 
@@ -223,7 +223,7 @@ const HomeView = () => {
 
             playSound(wrongSound);
 
-            posthog.capture("bug_answered", {
+            posthog?.capture("bug_answered", {
                 correct: false
             });
         }
@@ -272,6 +272,7 @@ const HomeView = () => {
     }, []);
 
     const doSkipCallback = useCallback(() => {
+        setGaveUpState(false);
         setResultScreenState(false);
         setBug(null);
         setSelectedLine(null);
@@ -279,7 +280,7 @@ const HomeView = () => {
 
         UserAPI.doSkip(userContext);
 
-        posthog.capture("skipped", {
+        posthog?.capture("skipped", {
             skips_left: userContext.progressData?.items["Skip"].amount ?? 0
         });
     }, [posthog]);
@@ -295,10 +296,10 @@ const HomeView = () => {
 
         playSound(gaveUpSound);
 
-        posthog.capture("give_up", {
+        posthog?.capture("give_up", {
             bug_id: bug.id
         });
-    }, [selectedLine]);
+    }, [selectedLine, posthog]);
 
     /* Loading callback */
     const isLoadingCallback = useCallback(() => (

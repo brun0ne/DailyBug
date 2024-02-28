@@ -54,7 +54,7 @@ const SpecialView = () => {
 
         setRolling(res.reward.stars);
 
-        posthog.capture("sprint", {
+        posthog?.capture("sprint", {
             reward: res.itemName,
             stars: res.reward.stars
         });
