@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { View } from "react-native";
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialBottomTabNavigator } from 'react-native-paper/react-navigation';
@@ -10,6 +9,7 @@ import Header from "./Header";
 import HomeView from "./Screens/HomeView";
 import UserView from "./Screens/UserView";
 import SpecialView from "./Screens/SpecialView";
+import LoadView from "./Screens/LoadView";
 import { UserAPI, UserContext, UserProgressData } from "../util/UserContext";
 
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
@@ -20,7 +20,6 @@ import mobileAds from "react-native-google-mobile-ads";
 
 const Tab = createMaterialBottomTabNavigator();
 
-import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { registerForPushNotificationsAsync } from '../util/PushNotifications';
 
@@ -77,25 +76,27 @@ const Main = () => {
 
     useEffect(() => {
         const subscriber = auth().onAuthStateChanged((user) => {
-            setUser(user);
-            setUpdated(true);
-
             if (!user) {
                 setLoginVisible(true);
             }
             else {
-                UserAPI.init(user, expoPushToken);
-                setLoginVisible(false);
+                (async () => {
+                    setLoginVisible(false);
+                    
+                    await UserAPI.init(user, expoPushToken);
+                    setUser(user);
+                    setUpdated(true);
+                })();
             }
         });
         return subscriber; /* unsubscribe on unmount */
     }, [expoPushToken]);
 
     useEffect(() => {
-        if (!user && !loginVisible) {
+        if (!user) {
             setLoginVisible(true);
         }
-    });
+    }, [user]);
 
     /* Ads */
     useEffect(() => {
@@ -113,17 +114,17 @@ const Main = () => {
                 <PostHogProvider apiKey="phc_PsM7WSvjoGaIfEzYTsNSGxgfgfhghBZjwQ0Z2wtx6YZ" options={{ host: 'https://eu.posthog.com' }}>
                     <Header />
                     <Tab.Navigator>
-                        <Tab.Screen name="Home" component={signedIn ? HomeView : View} options={{
+                        <Tab.Screen name="Home" component={signedIn ? HomeView : LoadView} options={{
                             tabBarIcon:({color})=>(
                                 <MaterialCommunityIcons name="home" color={color} size={26} />
                             ),
                         }} />
-                        <Tab.Screen name="Sprint" component={signedIn && progressData ? SpecialView : View} options={{
+                        <Tab.Screen name="Sprint" component={signedIn && progressData ? SpecialView : LoadView} options={{
                             tabBarIcon:({color})=>(
                                 <MaterialCommunityIcons name="creation" color={color} size={26} />
                             ),
                         }} />
-                        <Tab.Screen name="Profile" component={signedIn && progressData ? UserView: View} options={{
+                        <Tab.Screen name="Profile" component={signedIn && progressData ? UserView : LoadView} options={{
                             tabBarIcon:({color})=>(
                                 <MaterialCommunityIcons name="account" color={color} size={26} />
                             ),

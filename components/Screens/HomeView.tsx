@@ -28,6 +28,8 @@ const correctSound = require("../../assets/correct.mp3") as AVPlaybackSource;
 const wrongSound = require("../../assets/wrong.mp3") as AVPlaybackSource;
 const gaveUpSound = require("../../assets/gave_up.mp3") as AVPlaybackSource;
 
+import { AdsConsent } from 'react-native-google-mobile-ads';
+
 /* todo: replace with real admob ID */
 const afterNextAd = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL);
 
@@ -145,8 +147,21 @@ const HomeView = () => {
 
     useEffect(() => {
         if (userContext.user && posthog) {
-            /* Analytics */
-            posthog.identify(userContext.user.uid);
+            (async () => {
+                const {
+                    developAndImproveProducts,
+                    storeAndAccessInformationOnDevice,
+                } = await AdsConsent.getUserChoices();
+    
+                /* Analytics */
+                if (developAndImproveProducts && storeAndAccessInformationOnDevice) {
+                    posthog.identify(userContext.user.uid);
+                }
+                else {
+                    posthog.capture("cookies-opt-out");
+                    /* do not track this user using an UID */
+                }
+            })();
         }
     }, [userContext.user, posthog]);
 
