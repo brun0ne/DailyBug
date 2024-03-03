@@ -152,9 +152,11 @@ const HomeView = () => {
                     developAndImproveProducts,
                     storeAndAccessInformationOnDevice,
                 } = await AdsConsent.getUserChoices();
-    
+                
+                const gdpr = await AdsConsent.getGdprApplies();
+
                 /* Analytics */
-                if (developAndImproveProducts && storeAndAccessInformationOnDevice) {
+                if (!gdpr || (developAndImproveProducts && storeAndAccessInformationOnDevice)) {
                     posthog.identify(userContext.user.uid);
                 }
                 else {
