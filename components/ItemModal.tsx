@@ -63,9 +63,7 @@ const ItemModal = (props: ItemModalProps) => {
                             ) : null
                         }
 
-                        <Text variant="bodyMedium">
-                            {props.children}
-                        </Text>
+                        {props.children}
                     </Card.Content>
 
                     <Card.Actions style={styles.buttons}>

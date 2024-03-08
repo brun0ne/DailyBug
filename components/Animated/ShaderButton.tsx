@@ -141,7 +141,9 @@ const ShaderButton = ({
         },
         onEnd: () => {
             isTouched.current = false;
-            onPress();
+            if (!disabled) {
+                onPress();
+            }
         },
         onActive: (e) => {
             pointer.current = vec(e.nativeEvent.locationX, e.nativeEvent.locationY);

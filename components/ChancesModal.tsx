@@ -27,11 +27,11 @@ const ChancesModal = (props: ChancesModalProps) => {
 
                     <Card.Content>
                         <Text variant="bodyMedium">Current chances:</Text>
-                        <Text>
-                            - <Text style={{fontWeight: "bold"}}>{userContext.progressData?.chances[5].toFixed(3) ?? "err"} %</Text> for a 5-star item (guaranteed in <Text style={{fontWeight: "bold"}}>80</Text> tries)
+                        <Text variant="bodyMedium">
+                            - <Text style={{fontWeight: "bold"}}>{userContext.progressData?.chances[5].toFixed(3) ?? "err"} %</Text> for a 5-star item (guaranteed every <Text style={{fontWeight: "bold"}}>80</Text> tries)
                         </Text>
-                        <Text>
-                            - <Text style={{fontWeight: "bold"}}>{userContext.progressData?.chances[4].toFixed(3) ?? "err"} %</Text> for a 4-star item (guaranteed in <Text style={{fontWeight: "bold"}}>10</Text> tries)
+                        <Text variant="bodyMedium">
+                            - <Text style={{fontWeight: "bold"}}>{userContext.progressData?.chances[4].toFixed(3) ?? "err"} %</Text> for a 4-star item (guaranteed on the first sprint, and every <Text style={{fontWeight: "bold"}}>10</Text> tries)
                         </Text>
                         <Divider style={{marginTop: 15, marginBottom: 15}} />
                         <Text variant="bodySmall"><Text style={{fontWeight: "bold"}}>Formula for 5-star pull chance:</Text> 0.01 + ln(streak + 1) * 0.002 + ln(combo + 1) * 0.001 + luck</Text>

@@ -96,7 +96,7 @@ const DuckModal: CustomItemModal = (props: ItemModalProps) => {
                                     </Text>
                                 ) : (
                                     <Text style={{fontWeight: "bold", color: theme.colors.backdrop}}>
-                                        Feed (wait a day)
+                                        {duckLuckLevel >= 10 ? "Maximum reached" : "Feed (wait a day)" }
                                     </Text>
                                 )
                             }

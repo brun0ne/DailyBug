@@ -34,19 +34,25 @@ const UserView = () => {
     /* items */
     const itemDescriptions = {
         "Skip": (
-            <>It can be used for skipping bugs, keeping your <Text style={{fontWeight: "bold"}}>combo</Text> unaffected.</>
+            <Text variant="bodyMedium">
+                It can be used for skipping bugs, keeping your <Text style={{fontWeight: "bold"}}>combo</Text> unaffected.
+            </Text>
         ),
         "Saver": (
-            <>
+            <Text variant="bodyMedium">
                 When activated, protects you from loosing the <Text style={{fontWeight: "bold"}}>Streak</Text>.
                 It breaks and loses its power after saving you from <Text style={{fontWeight: "bold"}}>1 missed day</Text>.
-            </>
+            </Text>
         ),
         "Cookie": (
-            <>Legends say that some people use them to enhance user experience.</>
+            <View>
+                <Text variant="bodyMedium">Legends say that some people use them to enhance user experience.</Text>
+                <Divider style={{marginTop: 10, marginBottom: 10}} />
+                <Text variant="bodyMedium">Can be used to feed the <Text style={{fontWeight: "bold"}}>Rubber Duck</Text>!</Text>
+            </View>
         ),
         "Rubber Duck": (
-            <>Talking to the <Text style={{fontWeight: "bold"}}>Rubber Duck</Text> greatly impoves one's debugging capabilities.</>
+            <>Talking to the <Text style={{fontWeight: "bold"}}>Rubber Duck</Text> greatly improves one's debugging capabilities.</>
         )
     } satisfies Record<string, ReactNode>;
 
