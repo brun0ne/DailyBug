@@ -6,8 +6,10 @@ const theme = {
     ...DefaultTheme,
     colors: {
         ...DefaultTheme.colors,
-        primary: 'tomato',
-        secondary: 'green',
+        primary: '#be123c',
+        error: '#be123c',
+
+        secondary: '#4d7c0f'
     },
     fonts: configureFonts({
         config: {

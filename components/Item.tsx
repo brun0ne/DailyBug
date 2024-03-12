@@ -69,7 +69,11 @@ const Item = (props: ItemProps) => {
                     ) : null
                 }
                 
-                <Icon source={props.item.icon} size={HEIGHT - 20} color="white" />
+                {
+                    !props.image ? (
+                        <Icon source={props.item.icon} size={HEIGHT - 20} color="white" />
+                    ) : null
+                }
 
                 {
                     props.image ? (

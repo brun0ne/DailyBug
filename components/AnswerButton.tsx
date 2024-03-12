@@ -24,7 +24,7 @@ const AnswerButtons = (props: AnswerButtonsProps) => {
                     <Button
                         icon="skip-next-circle-outline"
                         mode="contained"
-                        buttonColor="#464299"
+                        buttonColor={theme.colors.error}
                         onPress={props.giveUpButtonCallback}
                     >
                         Give up
