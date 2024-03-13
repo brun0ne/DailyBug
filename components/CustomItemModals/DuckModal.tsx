@@ -1,11 +1,10 @@
 import { Avatar, Button, Card, Divider, Icon, Modal, Portal, Text, useTheme } from "react-native-paper";
-import { ActivityIndicator, StyleSheet, View, Image } from "react-native";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { ItemType, UserAPI, UserContext } from "../../util/UserContext";
 
 import { type CustomItemModal } from "./CustomItemModal";
-import { Canvas, Circle, Fill, Skia, SweepGradient, useClockValue, useComputedValue } from "@shopify/react-native-skia";
-import { useDerivedValue, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
+import { Canvas, Circle, Skia, SweepGradient } from "@shopify/react-native-skia";
 
 type ItemModalProps = {
     visible: boolean
