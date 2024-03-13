@@ -4,6 +4,8 @@ import { ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { ItemType, UserAPI, UserContext } from "../../util/UserContext";
 
 import { type CustomItemModal } from "./CustomItemModal";
+import { Canvas, Circle, Fill, Skia, SweepGradient, useClockValue, useComputedValue } from "@shopify/react-native-skia";
+import { useDerivedValue, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
 
 type ItemModalProps = {
     visible: boolean
@@ -23,7 +25,14 @@ const DuckModal: CustomItemModal = (props: ItemModalProps) => {
 
     const titleLeftCallback = useCallback((callbackProps) => (
         props.image ? (
-            <Avatar.Image source={props.image} size={45} />    
+            <>
+                <Canvas style={{width: 45, height: 45, position: "absolute"}}>
+                    <Circle cx={22.5} cy={22.5} r={22.5}>
+                        <SweepGradient c={Skia.Point(22.5, 22.5)} colors={["#7dbeff", "", "#7dbeff"]} />
+                    </Circle>
+                </Canvas>
+                <Avatar.Image source={props.image} style={{backgroundColor: "transparent"}} size={45} />    
+            </>
         ) : (
             <Avatar.Icon {...callbackProps} icon={props.item.icon} theme={{colors: {primary: "orange"}}} color="white" />
         )
