@@ -111,7 +111,7 @@ const Main = () => {
     return (
         <UserContext.Provider value={context}>
             <NavigationContainer>
-                <PostHogProvider apiKey="phc_PsM7WSvjoGaIfEzYTsNSGxgfgfhghBZjwQ0Z2wtx6YZ" options={{ host: 'https://eu.posthog.com' }}>
+                <PostHogProvider apiKey="phc_PsM7WSvjoGaIfEzYTsNSGxgfgfhghBZjwQ0Z2wtx6YZ" options={{ host: 'https://eu.posthog.com', persistence: "memory" }}>
                     <Header />
                     <Tab.Navigator>
                         <Tab.Screen name="Home" component={signedIn ? HomeView : LoadView} options={{
