@@ -206,6 +206,9 @@ const HomeView = () => {
 
             playSound(correctSound);
 
+            /* remove the bug from local storage */
+            AsyncStorage.removeItem("previous-bug");
+
             posthog?.capture("bug_answered", {
                 correct: true
             });
@@ -308,6 +311,9 @@ const HomeView = () => {
             index: bug.answer - 1,
             color: "#20612c"
         });
+
+        /* remove the bug from local storage */
+        AsyncStorage.removeItem("previous-bug");
 
         playSound(gaveUpSound);
 
