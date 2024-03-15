@@ -1,5 +1,5 @@
 import { Card, Modal, Portal, useTheme, Text, Avatar, Button } from "react-native-paper";
-import { StyleSheet, TouchableOpacity, Image, Pressable } from "react-native";
+import { StyleSheet, TouchableOpacity, Image } from "react-native";
 
 import auth from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
@@ -96,12 +96,32 @@ const GoogleButtonStyles = StyleSheet.create({
     },
 })
 
-const SignInModal = (props: { visible: boolean, hide: () => void }) => {
+const SignInModal = (props: { visible: boolean, show: () => void, hide: () => void }) => {
     const theme = useTheme();
 
     const titleLeftCallback = useCallback((props) => (
         <Avatar.Icon {...props} icon="account" theme={{colors: {primary: theme.colors.secondary}}} />
     ), [theme]);
+
+    const googleSingInCallback = useCallback(async () => {
+        try {
+            await invokeGoogleSignIn();
+            props.hide();
+        }
+        catch (e) {
+            props.show();
+        }
+    }, [props]);
+
+    const anonymousSingInCallback = useCallback(async () => {
+        try {
+            await invokeAnonymousSignIn();
+            props.hide();
+        }
+        catch (e) {
+            props.show();
+        }
+    }, [props]);
 
     return (
         <Portal>
@@ -113,17 +133,21 @@ const SignInModal = (props: { visible: boolean, hide: () => void }) => {
                     />
 
                     <Card.Content style={{gap: 30, marginTop: 10}}>
-                        <GoogleButton onPress={() => { invokeGoogleSignIn(); props.hide() }} color="black" backgroundColor="white" disabled={false}>
-                            <Text variant="bodyMedium" style={{fontWeight: "bold"}}>Sign in with Google</Text>
-                        </GoogleButton>
-                        <View style={{justifyContent: "center", alignItems: "center"}}>
-                            <Button
-                                onPress={() => { invokeAnonymousSignIn(); props.hide() }}
-                                mode={"elevated"}
-                            >
-                                <Text variant="bodySmall" style={{color: "gray"}} >Later (progress may be lost)</Text>
-                            </Button>
-                        </View>
+                        {
+                            props.visible ? <>
+                                <GoogleButton onPress={googleSingInCallback} color="black" backgroundColor="white" disabled={false}>
+                                    <Text variant="bodyMedium" style={{fontWeight: "bold"}}>Sign in with Google</Text>
+                                </GoogleButton>
+                                <View style={{justifyContent: "center", alignItems: "center"}}>
+                                    <Button
+                                        onPress={anonymousSingInCallback}
+                                        mode={"elevated"}
+                                    >
+                                        <Text variant="bodySmall" style={{color: "gray"}} >Later (progress may be lost)</Text>
+                                    </Button>
+                                </View>   
+                            </> : null
+                        }
                     </Card.Content>
                 </Card>
             </Modal>

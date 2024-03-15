@@ -130,7 +130,7 @@ const Main = () => {
                             ),
                         }} />
                     </Tab.Navigator>
-                    <SignInModal visible={loginVisible} hide={() => {setLoginVisible(false)}} />
+                    <SignInModal visible={loginVisible} show={() => {setLoginVisible(true)}} hide={() => {setLoginVisible(false)}} />
                 </PostHogProvider>
             </NavigationContainer>
         </UserContext.Provider>
