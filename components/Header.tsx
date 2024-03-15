@@ -69,7 +69,7 @@ const Header = () => {
     }, []);
 
     const contactCallback = useCallback(() => {
-        Linking.openURL('mailto:brunonblok@gmail.com');
+        Linking.openURL('mailto:contact@dailybug.app');
     }, []);
 
     const feedbackCallback = useCallback(() => {
