@@ -31,7 +31,7 @@ const gaveUpSound = require("../../assets/gave_up.mp3") as AVPlaybackSource;
 import { AdsConsent } from 'react-native-google-mobile-ads';
 
 /* todo: replace with real admob ID */
-const afterNextAd = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL);
+const afterNextAd = InterstitialAd.createForAdRequest(__DEV__ ? TestIds.INTERSTITIAL : "ca-app-pub-8184565622286989/8901421287");
 
 const HomeView = () => {
     const isFocused = useIsFocused();
