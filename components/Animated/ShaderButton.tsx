@@ -124,9 +124,10 @@ const ShaderButton = ({
 
     useEffect(() => {
         let frameId = 0;
+        const startTime = Date.now();
 
         const tick = () => {
-            time.current = Date.now();
+            time.current = Date.now() - startTime;
             frameId = requestAnimationFrame(tick);
         };
 
@@ -137,7 +138,7 @@ const ShaderButton = ({
         };
     }, [time]);
 
-    const fontFamily = Platform.select({ default: "sans-serif" });
+    const fontFamily = Platform.select({ default: "Inter-Bold" });
     const fontStyle = {
         fontFamily,
         fontSize: fontSize
@@ -247,8 +248,14 @@ const ShaderButton = ({
                 </Canvas>
                 {
                     !font && (
-                        <View pointerEvents="none" style={[styles.textView, {paddingLeft: paddingLeft + (icon ? iconSize + 5 : 5)}]}>
-                            <RNText style={{fontFamily, fontSize, color: !disabled ? "white" : theme.colors.onSurfaceDisabled}}>{text}</RNText>
+                        <View
+                            pointerEvents="none"
+                            style={[
+                                styles.textView,
+                                { paddingLeft: (paddingLeft - 15) + (icon ? iconSize + 5 : 0) }
+                            ]}
+                        >
+                            <RNText style={{fontFamily, fontSize, color: !disabled ? "white" : theme.colors.onSurfaceDisabled, textAlign: "center"}}>{text}</RNText>
                         </View>
                     )
                 }
@@ -269,8 +276,10 @@ const styles = StyleSheet.create({
     },
     textView: {
         position: "absolute",
+        width: "100%",
         height: "100%",
-        justifyContent: "center"
+        justifyContent: "center",
+        alignItems: "center"
     }
 });
 

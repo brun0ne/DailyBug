@@ -62,9 +62,10 @@ const ShaderProgressBar = ({
 
     useEffect(() => {
         let frameId = 0;
+        const startTime = Date.now();
 
         const tick = () => {
-            time.current = Date.now();
+            time.current = Date.now() - startTime;
             frameId = requestAnimationFrame(tick);
         };
 
@@ -125,7 +126,7 @@ const ShaderProgressBar = ({
             {
                 !font && text !== "" ? (
                     <View pointerEvents="none" style={styles.webTextOverlay}>
-                        <RNText style={{color: 'white', fontSize}}>{text}</RNText>
+                        <RNText style={{color: 'white', fontSize, fontFamily: "Roboto-Medium"}}>{text}</RNText>
                     </View>
                 ) : null
             }

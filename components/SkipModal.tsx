@@ -3,6 +3,7 @@ import { StyleSheet } from "react-native";
 import { memo, useCallback, useContext } from "react";
 
 import { UserContext } from "../util/UserContext";
+import { webModalContainerStyle } from "../util/Layout";
 
 type SkipModalProps = {
     visible: boolean
@@ -64,7 +65,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
         borderColor: 'transparent',
         shadowColor: 'transparent',
-        padding: 20
+        padding: 20,
+        ...webModalContainerStyle,
     },
     buttons: {
         marginTop: 10

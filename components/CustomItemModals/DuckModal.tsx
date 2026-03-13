@@ -5,6 +5,7 @@ import { ItemType, UserAPI, UserContext } from "../../util/UserContext";
 
 import { type CustomItemModal } from "./CustomItemModal";
 import { Canvas, Circle, Skia, SweepGradient } from "@shopify/react-native-skia";
+import { webModalContainerStyle } from "../../util/Layout";
 
 type ItemModalProps = {
     visible: boolean
@@ -123,7 +124,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
         borderColor: 'transparent',
         shadowColor: 'transparent',
-        padding: 20
+        padding: 20,
+        ...webModalContainerStyle,
     },
     buttons: {
         marginTop: 10

@@ -43,9 +43,10 @@ const SprintReward = (props: SprintRewardProps) => {
 
     useEffect(() => {
         let frameId = 0;
+        const startTime = Date.now();
 
         const tick = () => {
-            time.current = Date.now();
+            time.current = Date.now() - startTime;
             frameId = requestAnimationFrame(tick);
         };
 

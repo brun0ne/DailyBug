@@ -18,7 +18,16 @@ const CANVAS_KIT_BASE_URL = `https://cdn.jsdelivr.net/npm/canvaskit-wasm@${CANVA
 export default function App() {
   const [isSkiaReady, setIsSkiaReady] = useState(Platform.OS !== "web");
   const [MainComponent, setMainComponent] = useState<React.ComponentType | null>(null);
-  const [fontsLoaded] = useFonts(MaterialCommunityIcons.font);
+  const [fontsLoaded] = useFonts({
+    ...MaterialCommunityIcons.font,
+    "Inter-Regular": require("./assets/fonts/Inter-Regular.ttf"),
+    "Inter-Black": require("./assets/fonts/Inter-Black.ttf"),
+    "Inter-Bold": require("./assets/fonts/Inter-Bold.ttf"),
+    "Inter-Light": require("./assets/fonts/Inter-Light.ttf"),
+    "Inter-Thin": require("./assets/fonts/Inter-Thin.ttf"),
+    "CascadiaCode": require("./assets/fonts/CascadiaCode.ttf"),
+    "Roboto-Medium": require("./assets/Roboto/Roboto-Medium.ttf"),
+  });
 
   useEffect(() => {
     if (!isSkiaReady) {

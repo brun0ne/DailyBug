@@ -7,6 +7,7 @@ import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 import { View } from "react-native";
 import { ReactElement, useCallback } from "react";
+import { webModalContainerStyle } from "../util/Layout";
 
 export const invokeAnonymousSignIn = async () => {
     signInAnonymously(auth)
@@ -207,7 +208,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
         borderColor: 'transparent',
         shadowColor: 'transparent',
-        padding: 20
+        padding: 20,
+        ...webModalContainerStyle,
     },
     buttons: {
         marginTop: 10

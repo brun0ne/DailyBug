@@ -43,7 +43,7 @@ vec4 main(vec2 pos) {
 `;
 
 
-const fontData = require("../../assets/Roboto/Roboto-Medium.ttf");
+const fontData = require("../../assets/fonts/Inter-Bold.ttf");
 
 type ShaderFlatDisplayProps = {
     text: string,
@@ -92,9 +92,10 @@ const ShaderFlatDisplay = ({
 
     useEffect(() => {
         let frameId = 0;
+        const startTime = Date.now();
 
         const tick = () => {
-            time.current = Date.now();
+            time.current = Date.now() - startTime;
             frameId = requestAnimationFrame(tick);
         };
 
@@ -198,9 +199,9 @@ const ShaderFlatDisplay = ({
                     <View pointerEvents="none" style={styles.webTextOverlay}>
                         <View style={[styles.webTextRow, {transform: [{ translateX: horizontalOffset }]}]}>
                             <View style={[styles.webLeftTextBox, {width: leftRectWidth, marginRight: gap}]}> 
-                                <RNText style={{color: textColor, fontSize}}>{Math.round(number).toString()}</RNText>
+                                <RNText style={{color: textColor, fontSize, fontFamily: "Inter-Bold"}}>{Math.round(number).toString()}</RNText>
                             </View>
-                            <RNText style={{color: textColor, fontSize}}>{text}</RNText>
+                            <RNText style={{color: textColor, fontSize, fontFamily: "Inter-Bold"}}>{text}</RNText>
                         </View>
                     </View>
                 ) : null

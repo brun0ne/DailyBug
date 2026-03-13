@@ -2,6 +2,7 @@ import { Avatar, Button, Card, Divider, Modal, Portal, Text, useTheme } from "re
 import { StyleSheet } from "react-native";
 import { useCallback, useContext } from "react";
 import { UserContext } from "../util/UserContext";
+import { webModalContainerStyle } from "../util/Layout";
 
 type ChancesModalProps = {
     visible: boolean
@@ -52,7 +53,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
         borderColor: 'transparent',
         shadowColor: 'transparent',
-        padding: 20
+        padding: 20,
+        ...webModalContainerStyle,
     },
     buttons: {
         marginTop: 10

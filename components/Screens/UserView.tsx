@@ -15,6 +15,7 @@ import { GoogleButton, invokeGoogleSignIn } from "../SignInModal";
 
 import { itemImages } from "../../util/ItemImages";
 import DuckModal from "../CustomItemModals/DuckModal";
+import { webScreenContentStyle } from "../../util/Layout";
 
 const UserView = () => {
     const userContext = useContext(UserContext); 
@@ -110,7 +111,7 @@ const UserView = () => {
         return <></>;
 
     return (
-        <ScrollView style={styles.containter} contentContainerStyle={{padding: 20}}>
+        <ScrollView style={[styles.containter, webScreenContentStyle]} contentContainerStyle={styles.contentContainer}>
             <Card>
                 <Card.Title
                     title={<Text variant="titleMedium" style={{fontSize: 22, lineHeight: 40}}>{displayName}</Text>}
@@ -224,6 +225,9 @@ const styles = StyleSheet.create({
     containter: {
         height: "100%",
         overflow: "visible"
+    },
+    contentContainer: {
+        padding: 20,
     },
     content: {
         gap: 15,

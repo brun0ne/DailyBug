@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Platform } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
 
 import { AVPlaybackSource, Audio } from 'expo-av';
@@ -18,6 +18,7 @@ import IncorrectPopup from "../IncorrectPopup";
 import { UserAPI, UserContext } from "../../util/UserContext";
 import NextBugButton from "../NextBugButtons";
 import SkipModal from "../SkipModal";
+import { webScreenContentStyle } from "../../util/Layout";
 
 import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -321,7 +322,8 @@ const HomeView = () => {
 const styles = StyleSheet.create({
     mainWrapper: {
         paddingTop: 20,
-        flex: 1
+        flex: 1,
+        ...webScreenContentStyle,
     },
     topWrapper: {
         flex: 6,
@@ -331,16 +333,18 @@ const styles = StyleSheet.create({
     bottomWrapper: {
         position: "absolute",
         bottom: 20,
-        justifyContent: "space-around",
+        left: 0,
+        right: 0,
+        justifyContent: "center",
         alignItems: "center",
-        flex: 1,
-        flexDirection: "row"
+        flexDirection: "row",
+        width: "100%"
     },
     buttonWrapper: {
-        justifyContent: "space-around",
+        justifyContent: "center",
         alignItems: "center",
-        flex: 1,
-        flexDirection: "row"
+        flexDirection: "row",
+        ...(Platform.OS === "web" ? { width: "100%" } : {})
     }
 });
 
