@@ -1,10 +1,10 @@
-import { FirebaseAuthTypes } from '@react-native-firebase/auth';
+import { User } from 'firebase/auth';
 import { ContextType, createContext } from 'react';
 
 import AppConfig from '../util/AppConfig';
 
 export const UserContext = createContext<{
-    user: FirebaseAuthTypes.User
+    user: User | null
     updated: boolean
     setUpdated: React.Dispatch<React.SetStateAction<boolean>>
     progressData: UserProgressData
@@ -62,7 +62,7 @@ export type SprintRewardType = {
 };
 
 export class UserAPI {
-    private static async doRequest(user: FirebaseAuthTypes.User, endpoint: string, method: "GET" | "POST", reqData: any) {
+    private static async doRequest(user: User, endpoint: string, method: "GET" | "POST", reqData: any) {
         const idToken = await user.getIdToken(true);
 
         const headers = {
@@ -138,14 +138,14 @@ export class UserAPI {
         return res;
     }
 
-    static async init(user: FirebaseAuthTypes.User, expoPushToken: string) {
+    static async init(user: User, expoPushToken: string) {
         const res = await UserAPI.doRequest(user, "user/init", "POST", {
             expoPushToken
         });
         console.log("INIT", res);
     }
 
-    static async getBug(user: FirebaseAuthTypes.User) {
+    static async getBug(user: User) {
         return await UserAPI.doRequest(user, "bugs/request", "GET", {});
     }
 };

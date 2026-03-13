@@ -11,7 +11,6 @@ import ShaderFlatDisplay from "../Animated/ShaderFlatDisplay";
 import { SprintRewardType, UserAPI, UserContext } from "../../util/UserContext";
 import SprintReward from "../Animated/SprintReward";
 
-import { usePostHog } from "posthog-react-native";
 import ChancesModal from "../ChancesModal";
 
 const sprintGoldVid = require("../../assets/Sprint/gold.mp4");
@@ -37,8 +36,6 @@ const SpecialView = () => {
 
     const blackCoverOpacity = useSharedValue(0);
 
-    const posthog = usePostHog();
-
     const sprintCallback = useCallback(async () => {
         blackCoverOpacity.value = withTiming(1, {
             duration: 500
@@ -53,12 +50,7 @@ const SpecialView = () => {
             return;
 
         setRolling(res.reward.stars);
-
-        posthog?.capture("sprint", {
-            reward: res.itemName,
-            stars: res.reward.stars
-        });
-    }, [userContext, posthog]);
+    }, [userContext]);
 
     const onSprintVideoEnd = useCallback(() => {
         setRolling(false);

@@ -35,16 +35,12 @@
       }
     },
     "plugins": [
-      "@react-native-firebase/app",
-      "@react-native-firebase/perf",
-      "@react-native-firebase/auth",
       [
         "expo-updates",
         {
           "username": "YOUR_EXPO_USERNAME"
         }
       ],
-      "@react-native-google-signin/google-signin",
       "expo-localization",
       [
         "expo-font",
@@ -67,11 +63,7 @@
       ],
       [
         "expo-build-properties",
-        {
-          "android": {
-            "extraProguardRules": "-keep class com.google.android.gms.internal.consent_sdk.** { *; }"
-          }
-        }
+        {}
       ]
     ],
     "runtimeVersion": {
@@ -84,10 +76,5 @@
       "icon": "./assets/notif-icon.png",
       "color": "#fff"
     }
-  },
-  "react-native-google-mobile-ads": {
-    "android_app_id": "ca-app-pub-8184565622286989~3824354426",
-    "delay_app_measurement_init": true,
-    "user_tracking_usage_description": "This identifier will be used to deliver personalized ads to you."
   }
 }

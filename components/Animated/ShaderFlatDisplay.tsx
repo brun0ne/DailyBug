@@ -1,9 +1,10 @@
-import { Canvas, Text, RoundedRect, Shader, SkSize, Skia, useClockValue, useComputedValue, vec, useFont } from "@shopify/react-native-skia";
-import { useEffect } from "react";
-import { View } from "react-native";
+import { Canvas, Text, RoundedRect, Shader, useComputedValue, useValue, vec, useFont } from "@shopify/react-native-skia";
+import { useCallback, useEffect, useState } from "react";
+import { Platform, StyleSheet, Text as RNText, View } from "react-native";
 import { useDerivedValue, useSharedValue, withTiming } from "react-native-reanimated";
+import { useSkiaRuntimeEffect } from "../../util/SkiaRuntimeEffect";
 
-const sourceMain = Skia.RuntimeEffect.Make(`
+const sourceMainShader = `
 uniform vec2 resolution;
 uniform float time;
 
@@ -27,9 +28,9 @@ vec4 main(vec2 pos)
 
     return vec4(col, 1.0);
 }
-`)!;
+`;
 
-const sourceNumberRect = Skia.RuntimeEffect.Make(`
+const sourceNumberRectShader = `
 uniform vec2 resolution;
 uniform float time;
 
@@ -39,7 +40,7 @@ vec4 main(vec2 pos) {
 
     return color;
 }
-`)!;
+`;
 
 
 const fontData = require("../../assets/Roboto/Roboto-Medium.ttf");
@@ -81,65 +82,102 @@ const ShaderFlatDisplay = ({
 
     showBackground = true
 }: ShaderFlatDisplayProps) => {
-    const clock = useClockValue();
-    const canvasSize = useSharedValue<SkSize>(null);
+    const isWeb = Platform.OS === "web";
+    const time = useValue(0);
+    const sourceMain = useSkiaRuntimeEffect(sourceMainShader);
+    const sourceNumberRect = useSkiaRuntimeEffect(sourceNumberRectShader);
     const displayedNumber = useSharedValue(0);
+    const [layoutWidth, setLayoutWidth] = useState(0);
+    const renderHeight = displayHeight;
 
-    const canvasWidth = useDerivedValue(() => canvasSize.value?.width ?? 0, [canvasSize]);
-    const canvasHeight = useDerivedValue(() => canvasSize.value?.height ?? 0, [canvasSize]);
+    useEffect(() => {
+        let frameId = 0;
+
+        const tick = () => {
+            time.current = Date.now();
+            frameId = requestAnimationFrame(tick);
+        };
+
+        frameId = requestAnimationFrame(tick);
+
+        return () => {
+            cancelAnimationFrame(frameId);
+        };
+    }, [time]);
 
     const uniforms = useComputedValue(() => (
         {
-            resolution: vec(canvasSize.value?.width ?? 0, canvasSize.value?.height ?? 0),
-            time: clock.current
+            resolution: vec(layoutWidth || 1, renderHeight || 1),
+            time: time.current
         }
-    ), [clock, canvasSize]);
+    ), [time, layoutWidth, renderHeight]);
 
     const leftText = useDerivedValue(() => (
         Math.round(displayedNumber.value).toString()
     ), [displayedNumber]);
-    const font = useFont(fontData, fontSize);
+    const skiaFont = useFont(fontData, fontSize);
+    const font = isWeb ? null : skiaFont;
 
-    const fontHeight = font?.measureText(text).height ?? 0;
-    const mainTextWidth = font?.measureText(text).width ?? 0;
+    const estimatedCharWidth = fontSize * 0.6;
+    const fontHeight = font?.measureText(text).height ?? fontSize;
+    const mainTextWidth = font?.measureText(text).width ?? text.length * estimatedCharWidth;
 
     const numbersWidth = useDerivedValue(() => (
-        font?.measureText(leftText.value).width ?? 0
-    ), [font, leftText]);;
+        font?.measureText(leftText.value).width ?? leftText.value.length * estimatedCharWidth
+    ), [font, leftText, estimatedCharWidth]);
 
-    const marginLeft = useDerivedValue(() => (
-        (canvasWidth.value - leftRectWidth - gap - mainTextWidth) / 2 + horizontalOffset
-    ), [canvasWidth, mainTextWidth, text, number]);
+    const marginLeft = (layoutWidth - leftRectWidth - gap - mainTextWidth) / 2 + horizontalOffset;
+    const mainTextX = marginLeft + leftRectWidth + gap;
+    const leftTextX = useDerivedValue(() => marginLeft + leftRectWidth / 2 - numbersWidth.value / 2, [marginLeft, leftRectWidth, numbersWidth]);
 
-    const mainTextX = useDerivedValue(() => marginLeft.value + leftRectWidth + gap, [marginLeft, text, number]);
-    const leftTextX = useDerivedValue(() => marginLeft.value + leftRectWidth/2 - numbersWidth.value / 2, [marginLeft, numbersWidth, text, number]);
+    const onLayout = useCallback((event: any) => {
+        const { width } = event.nativeEvent.layout;
+
+        setLayoutWidth((current) => {
+            if (current === width) {
+                return current;
+            }
+
+            return width;
+        });
+    }, []);
 
     useEffect(() => {
         displayedNumber.value = withTiming(number, {
             duration: 500
         });
-    });
+    }, [displayedNumber, number]);
 
     return (
-        <View style={{flexGrow: 1, height: displayHeight}}>
-            <Canvas style={{flexGrow: 1}} onSize={canvasSize}>
+        <View style={{width: "100%", height: displayHeight, flexShrink: 0, position: "relative", overflow: "hidden"}} onLayout={onLayout}>
+            <Canvas style={{width: "100%", height: "100%"}}>
                 {
                     showBackground ? (
-                        <RoundedRect x={0} y={0} width={canvasWidth} height={canvasHeight} r={borderRadius}>
-                            <Shader source={sourceMain} uniforms={uniforms} />
-                        </RoundedRect> 
+                        sourceMain ? (
+                            <RoundedRect x={0} y={0} width={layoutWidth} height={renderHeight} r={borderRadius}>
+                                <Shader source={sourceMain} uniforms={uniforms} />
+                            </RoundedRect>
+                        ) : (
+                            <RoundedRect x={0} y={0} width={layoutWidth} height={renderHeight} r={borderRadius} color={"#2E3A57"} />
+                        )
                     ) : null
                 }
                 
                 {
-                    font ? <>
-                        <RoundedRect x={marginLeft} y={displayHeight/2 - leftRectHeight/2} width={leftRectWidth} height={leftRectHeight} r={borderRadius}>
+                    sourceNumberRect ? (
+                        <RoundedRect x={marginLeft} y={renderHeight / 2 - leftRectHeight / 2} width={leftRectWidth} height={leftRectHeight} r={borderRadius}>
                             <Shader source={sourceNumberRect} uniforms={uniforms} />
                         </RoundedRect>
+                    ) : (
+                        <RoundedRect x={marginLeft} y={renderHeight / 2 - leftRectHeight / 2} width={leftRectWidth} height={leftRectHeight} r={borderRadius} color={"#3C4A6E"} />
+                    )
+                }
 
+                {
+                    font ? <>
                         <Text
                             x={mainTextX}
-                            y={displayHeight/2 + fontHeight/2}
+                            y={renderHeight / 2 + fontHeight / 2}
                             font={font}
                             text={text}
                             color={textColor}
@@ -147,7 +185,7 @@ const ShaderFlatDisplay = ({
 
                         <Text
                             x={leftTextX}
-                            y={displayHeight/2 + fontHeight/2}
+                            y={renderHeight / 2 + fontHeight / 2}
                             font={font}
                             text={leftText}
                             color={textColor}
@@ -155,8 +193,39 @@ const ShaderFlatDisplay = ({
                     </> : null
                 }
             </Canvas>
+            {
+                !font ? (
+                    <View pointerEvents="none" style={styles.webTextOverlay}>
+                        <View style={[styles.webTextRow, {transform: [{ translateX: horizontalOffset }]}]}>
+                            <View style={[styles.webLeftTextBox, {width: leftRectWidth, marginRight: gap}]}> 
+                                <RNText style={{color: textColor, fontSize}}>{Math.round(number).toString()}</RNText>
+                            </View>
+                            <RNText style={{color: textColor, fontSize}}>{text}</RNText>
+                        </View>
+                    </View>
+                ) : null
+            }
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    webTextOverlay: {
+        position: "absolute",
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    webTextRow: {
+        flexDirection: "row",
+        alignItems: "center"
+    },
+    webLeftTextBox: {
+        alignItems: "center"
+    }
+});
 
 export default ShaderFlatDisplay;

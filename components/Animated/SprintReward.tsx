@@ -1,13 +1,15 @@
-import { BlurMask, Canvas, Extrapolate, RoundedRect, Shader, Skia, useClockValue, useComputedValue, vec } from "@shopify/react-native-skia";
+import { BlurMask, Canvas, Extrapolate, RoundedRect, Shader, useComputedValue, useValue, vec } from "@shopify/react-native-skia";
 import { StyleSheet, View, Image } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { Avatar, Button, Icon, Text } from "react-native-paper";
 import Animated, { interpolate, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import { useEffect } from "react";
 
 import { SprintRewardType } from "../../util/UserContext";
 import { itemImages } from "../../util/ItemImages";
+import { useSkiaRuntimeEffect } from "../../util/SkiaRuntimeEffect";
 
-const source = Skia.RuntimeEffect.Make(`
+const shaderSource = `
 uniform vec2 resolution;
 uniform float time;
 
@@ -18,7 +20,7 @@ vec4 main(vec2 pos) {
     return color;
 }
 
-`)!;
+`;
 
 type SprintRewardProps = {
     reward?: SprintRewardType
@@ -36,14 +38,30 @@ const SprintReward = (props: SprintRewardProps) => {
     const innerWidth = width - innerPadding;
     const innerHeight = height - innerPadding;
 
-    const clock = useClockValue();
+    const time = useValue(0);
+    const source = useSkiaRuntimeEffect(shaderSource);
+
+    useEffect(() => {
+        let frameId = 0;
+
+        const tick = () => {
+            time.current = Date.now();
+            frameId = requestAnimationFrame(tick);
+        };
+
+        frameId = requestAnimationFrame(tick);
+
+        return () => {
+            cancelAnimationFrame(frameId);
+        };
+    }, [time]);
 
     const uniforms = useComputedValue(() => (
         {
             resolution: vec(width, height),
-            time: clock.current,
+            time: time.current,
         }
-    ), [clock, width, height]);
+    ), [time, width, height]);
 
     const rotateX = useSharedValue(0);
     const rotateY = useSharedValue(0);
@@ -76,7 +94,7 @@ const SprintReward = (props: SprintRewardProps) => {
 
     return (
         <View style={styles.wrapper}>
-            <Canvas style={[styles.canvas, {width: width + canvasPadding, height: height + canvasPadding}]}>
+            <Canvas style={{width: width + canvasPadding, height: height + canvasPadding}}>
                 <RoundedRect
                     x={canvasPadding / 2}
                     y={canvasPadding / 2}
@@ -85,7 +103,9 @@ const SprintReward = (props: SprintRewardProps) => {
                     r={10}
                     color="white"
                 >
-                    <Shader source={source} uniforms={uniforms} />
+                    {
+                        source ? <Shader source={source} uniforms={uniforms} /> : null
+                    }
                 </RoundedRect>
                 <BlurMask blur={10} style="solid" />
             </Canvas>
@@ -146,7 +166,6 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center"
     },
-    canvas: {},
     inner: {
         position: "absolute",
         borderRadius: 10,

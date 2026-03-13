@@ -1,9 +1,10 @@
-import { Canvas, RoundedRect, Shader, SkSize, Skia, Text, useClockValue, useComputedValue, useFont, vec } from '@shopify/react-native-skia';
-import { useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
+import { Canvas, RoundedRect, Shader, Text, useComputedValue, useFont, useValue, vec } from '@shopify/react-native-skia';
+import { useCallback, useEffect, useState } from 'react';
+import { Platform, StyleSheet, Text as RNText, View } from 'react-native';
+import { useSharedValue, withTiming } from 'react-native-reanimated';
+import { useSkiaRuntimeEffect } from '../../util/SkiaRuntimeEffect';
 
-const source = Skia.RuntimeEffect.Make(`
+const shaderSource = `
 uniform vec2 resolution;
 uniform float time;
 
@@ -26,7 +27,7 @@ vec4 main(vec2 pos) {
 
     return color;
 }
-`)!;
+`;
 
 const fontData = require("../../assets/Roboto/Roboto-Medium.ttf");
 
@@ -41,14 +42,15 @@ const ShaderProgressBar = ({
     text = "",
     fontSize = 12
 }: ShaderProgressBarProps) => {
-    const clock = useClockValue();
+    const isWeb = Platform.OS === 'web';
+    const time = useValue(0);
+    const source = useSkiaRuntimeEffect(shaderSource);
     
-    const canvasSize = useSharedValue<SkSize>(null);
-    const canvasWidth = useDerivedValue(() => canvasSize.value?.width ?? 0, [canvasSize]);
-    const canvasHeight = useDerivedValue(() => canvasSize.value?.height ?? 0, [canvasSize]);
+    const [layoutSize, setLayoutSize] = useState({ width: 0, height: 25 });
 
-    const font = useFont(fontData, fontSize);
-    const fontHeight = useDerivedValue(() => font?.measureText(text).height ?? 0, [font]);
+    const skiaFont = useFont(fontData, fontSize);
+    const font = isWeb ? null : skiaFont;
+    const fontHeight = font?.measureText(text).height ?? fontSize;
 
     const interpolatedProgress = useSharedValue(0);
 
@@ -58,22 +60,55 @@ const ShaderProgressBar = ({
         });
     }, [progress]);
 
+    useEffect(() => {
+        let frameId = 0;
+
+        const tick = () => {
+            time.current = Date.now();
+            frameId = requestAnimationFrame(tick);
+        };
+
+        frameId = requestAnimationFrame(tick);
+
+        return () => {
+            cancelAnimationFrame(frameId);
+        };
+    }, [time]);
+
     const uniforms = useComputedValue(() => (
         {
-            resolution: vec(canvasSize.value?.width ?? 0, canvasSize.value?.height ?? 0),
-            time: clock.current,
+            resolution: vec(layoutSize.width || 1, layoutSize.height || 1),
+            time: time.current,
             progress: interpolatedProgress.value
         }
-    ), [clock, canvasSize, interpolatedProgress]);
+    ), [time, layoutSize.width, layoutSize.height, interpolatedProgress]);
 
-    const textY = useDerivedValue(() => (canvasHeight.value + fontHeight.value) / 2, [canvasHeight, fontHeight]);
+    const onLayout = useCallback((event: any) => {
+        const { width, height } = event.nativeEvent.layout;
+
+        setLayoutSize((current) => {
+            if (current.width === width && current.height === height) {
+                return current;
+            }
+
+            return { width, height };
+        });
+    }, []);
+
+    const textY = (layoutSize.height + fontHeight) / 2;
 
     return (
-        <View style={styles.view}>
-            <Canvas style={styles.canvas} onSize={canvasSize}>
-                <RoundedRect x={0} y={0} width={canvasWidth} height={canvasHeight} r={10}>
-                    <Shader source={source} uniforms={uniforms} />
-                </RoundedRect>
+        <View style={styles.view} onLayout={onLayout}>
+            <Canvas style={styles.canvas}>
+                {
+                    source ? (
+                        <RoundedRect x={0} y={0} width={layoutSize.width} height={layoutSize.height} r={10}>
+                            <Shader source={source} uniforms={uniforms} />
+                        </RoundedRect>
+                    ) : (
+                        <RoundedRect x={0} y={0} width={layoutSize.width} height={layoutSize.height} r={10} color={'#2E3A57'} />
+                    )
+                }
                 {
                     font && text !== "" ? (
                         <Text
@@ -87,17 +122,36 @@ const ShaderProgressBar = ({
                     ) : null 
                 }
             </Canvas>
+            {
+                !font && text !== "" ? (
+                    <View pointerEvents="none" style={styles.webTextOverlay}>
+                        <RNText style={{color: 'white', fontSize}}>{text}</RNText>
+                    </View>
+                ) : null
+            }
         </View>
     )
 };
 
 const styles = StyleSheet.create({
     view: {
-        flexGrow: 1,
-        height: 25
+        width: '100%',
+        height: 25,
+        flexShrink: 0,
+        position: 'relative',
+        overflow: 'hidden'
     },
     canvas: {
-        flexGrow: 1
+        width: '100%',
+        height: '100%'
+    },
+    webTextOverlay: {
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        left: 15,
+        right: 0,
+        justifyContent: 'center'
     }
 });
 

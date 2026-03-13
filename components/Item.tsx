@@ -1,12 +1,13 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { View, StyleSheet, Pressable, Image } from "react-native";
 import { useTheme, Text, Icon } from "react-native-paper";
 
 import Color from "color";
 import { ItemType } from "../util/UserContext";
-import { Canvas, RoundedRect, Shader, Skia, useClockValue, useComputedValue, vec } from "@shopify/react-native-skia";
+import { Canvas, RoundedRect, Shader, useComputedValue, useValue, vec } from "@shopify/react-native-skia";
+import { useSkiaRuntimeEffect } from "../util/SkiaRuntimeEffect";
 
-const source = Skia.RuntimeEffect.Make(`
+const shaderSource = `
 uniform vec2 resolution;
 uniform float time;
 
@@ -16,7 +17,7 @@ vec4 main(vec2 pos) {
 
     return color;
 }
-`)!;
+`;
 
 
 type ItemProps = {
@@ -36,7 +37,23 @@ const Item = (props: ItemProps) => {
     const theme = useTheme();
     const disabled = props.item.amount <= 0;
 
-    const clock = useClockValue();
+    const time = useValue(0);
+    const source = useSkiaRuntimeEffect(shaderSource);
+
+    useEffect(() => {
+        let frameId = 0;
+
+        const tick = () => {
+            time.current = Date.now();
+            frameId = requestAnimationFrame(tick);
+        };
+
+        frameId = requestAnimationFrame(tick);
+
+        return () => {
+            cancelAnimationFrame(frameId);
+        };
+    }, [time]);
 
     const baseColor = useMemo(() => (!disabled ? props.item.color: theme.colors.backdrop), [disabled, theme]);
     const [color, setColor] = useState(baseColor);
@@ -52,15 +69,15 @@ const Item = (props: ItemProps) => {
     const uniforms = useComputedValue(() => (
         {
             resolution: vec(WIDTH, HEIGHT),
-            time: clock.current,
+            time: time.current,
         }
-    ), [clock]);
+    ), [time]);
 
     return (
         <Pressable style={styles.main} disabled={!props.pressable} onPress={props.onPress} onPressIn={pressInCallback} onPressOut={pressOutCallback}>
             <View style={[styles.rect, {backgroundColor: color}]}>
                 {
-                    props.item.stars === 5 ? (
+                    props.item.stars === 5 && source ? (
                         <Canvas style={{position: "absolute", top: 0, bottom: 0, left: 0, right: 0}}>
                             <RoundedRect x={0} y={0} width={WIDTH} height={HEIGHT} r={10}>
                                 <Shader source={source} uniforms={uniforms} />

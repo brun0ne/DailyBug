@@ -20,18 +20,11 @@ import NextBugButton from "../NextBugButtons";
 import SkipModal from "../SkipModal";
 
 import { useIsFocused } from '@react-navigation/native';
-import { usePostHog } from "posthog-react-native";
-import { AdEventType, InterstitialAd, TestIds } from "react-native-google-mobile-ads";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const correctSound = require("../../assets/correct.mp3") as AVPlaybackSource;
 const wrongSound = require("../../assets/wrong.mp3") as AVPlaybackSource;
 const gaveUpSound = require("../../assets/gave_up.mp3") as AVPlaybackSource;
-
-import { AdsConsent } from 'react-native-google-mobile-ads';
-
-/* todo: replace with real admob ID */
-const afterNextAd = InterstitialAd.createForAdRequest(__DEV__ ? TestIds.INTERSTITIAL : "ca-app-pub-8184565622286989/8901421287");
 
 const HomeView = () => {
     const isFocused = useIsFocused();
@@ -57,23 +50,6 @@ const HomeView = () => {
     const [rewardText, setRewardText] = useState<string>(null);
 
     const userContext = useContext(UserContext);
-    const posthog = usePostHog(); // analytics
-
-    /* Ads */
-    const [bugsServedThisSession, setBugsServedThisSession] = useState(0);
-
-    const loadAd = useCallback(() => {
-        const unsubscribeClosed = afterNextAd.addAdEventListener(AdEventType.CLOSED, () => {
-            afterNextAd.load();
-        });
-        afterNextAd.load();
-
-        return unsubscribeClosed;
-    }, []);
-
-    useEffect(() => {
-        return loadAd();
-    }, []);
 
     /* Sound */
     const playSound = useCallback(async (s: AVPlaybackSource) => {
@@ -145,28 +121,6 @@ const HomeView = () => {
         }
     }, [sound]);
 
-    useEffect(() => {
-        if (userContext.user && posthog) {
-            (async () => {
-                const {
-                    developAndImproveProducts,
-                    storeAndAccessInformationOnDevice,
-                } = await AdsConsent.getUserChoices();
-                
-                const gdpr = await AdsConsent.getGdprApplies();
-
-                /* Analytics */
-                if (!gdpr || (developAndImproveProducts && storeAndAccessInformationOnDevice)) {
-                    posthog.identify(userContext.user.uid);
-                }
-                else {
-                    posthog.capture("cookies-opt-out");
-                    /* do not track this user using an UID */
-                }
-            })();
-        }
-    }, [userContext.user, posthog]);
-
     /* Core callbacks */
     const isAnswerCorrect = useCallback(() => (
         bug && selectedLine && !submitButtonDisabled && (bug.answer - 1) == selectedLine.index
@@ -209,10 +163,6 @@ const HomeView = () => {
             /* remove the bug from local storage */
             AsyncStorage.removeItem("previous-bug");
 
-            posthog?.capture("bug_answered", {
-                correct: true
-            });
-
             const {reward} = await UserAPI.correct(userContext);
             if (reward && reward.type !== 'none') {
                 switch(reward.type) { 
@@ -241,11 +191,8 @@ const HomeView = () => {
 
             playSound(wrongSound);
 
-            posthog?.capture("bug_answered", {
-                correct: false
-            });
         }
-    }, [confettiRef, isAnswerCorrect, posthog]);
+    }, [confettiRef, isAnswerCorrect]);
 
     const hideIncorrectCallback = useCallback(() => {
         setIncorrectPopupShown(false);
@@ -258,13 +205,7 @@ const HomeView = () => {
         setSelectedLine(null);
         setRewardText(null);
         setNextAfterWrongUnlocked(false);
-
-        /* show an ad */
-        if (afterNextAd.loaded && (/*bugsServedThisSession === 0 || */ bugsServedThisSession > 1 && bugsServedThisSession % 5 === 0))
-            afterNextAd.show();
-
-        setBugsServedThisSession(bugsServedThisSession + 1);
-    }, [afterNextAd, bugsServedThisSession]);
+    }, []);
 
     /* Hint callbacks */
     const hideHindModal = useCallback(() => {
@@ -298,10 +239,7 @@ const HomeView = () => {
 
         UserAPI.doSkip(userContext);
 
-        posthog?.capture("skipped", {
-            skips_left: userContext.progressData?.items["Skip"].amount ?? 0
-        });
-    }, [posthog]);
+    }, []);
 
     const giveUpCallback = useCallback(() => {
         setGaveUpState(true);
@@ -317,10 +255,7 @@ const HomeView = () => {
 
         playSound(gaveUpSound);
 
-        posthog?.capture("give_up", {
-            bug_id: bug.id
-        });
-    }, [selectedLine, posthog]);
+    }, [selectedLine]);
 
     /* Loading callback */
     const isLoadingCallback = useCallback(() => (

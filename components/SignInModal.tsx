@@ -1,14 +1,15 @@
 import { Card, Modal, Portal, useTheme, Text, Avatar, Button } from "react-native-paper";
-import { StyleSheet, TouchableOpacity, Image } from "react-native";
+import { StyleSheet, TouchableOpacity, Image, Platform } from "react-native";
 
-import auth from '@react-native-firebase/auth';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { auth } from '../firebaseConfig';
+import { GoogleAuthProvider, linkWithCredential, linkWithPopup, signInAnonymously, signInWithCredential, signInWithPopup } from 'firebase/auth';
+import * as AuthSession from 'expo-auth-session';
+import * as WebBrowser from 'expo-web-browser';
 import { View } from "react-native";
 import { ReactElement, useCallback } from "react";
 
 export const invokeAnonymousSignIn = async () => {
-    auth()
-        .signInAnonymously()
+    signInAnonymously(auth)
         .then(() => {
             console.log('User signed in anonymously');
         })
@@ -21,26 +22,72 @@ export const invokeAnonymousSignIn = async () => {
         });
 };
 
-GoogleSignin.configure({
-    webClientId: 'YOUR_WEB_OAUTH_CLIENT_ID',
-});
+WebBrowser.maybeCompleteAuthSession();
+
+const GOOGLE_WEB_CLIENT_ID = 'YOUR_WEB_OAUTH_CLIENT_ID';
+const GOOGLE_ANDROID_CLIENT_ID = 'YOUR_ANDROID_OAUTH_CLIENT_ID';
+
+const googleDiscovery = {
+    authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
+    tokenEndpoint: 'https://oauth2.googleapis.com/token',
+    revocationEndpoint: 'https://oauth2.googleapis.com/revoke',
+};
 
 export const invokeGoogleSignIn = async (link: boolean = false) => {
-    /* Check if device supports Google Play */
-    await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-    /* Get the user ID token */
-    const { idToken } = await GoogleSignin.signIn();
-    /* Create a Google credential */
-    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-    /* Sign-in  */
-    if (link) {
-        const linked = await auth().currentUser.linkWithCredential(googleCredential).catch((e) => false);
-        console.log(linked);
-        if (!linked)
-            return await invokeGoogleSignIn();
+    if (Platform.OS === 'web') {
+        const provider = new GoogleAuthProvider();
+
+        if (link) {
+            const currentUser = auth.currentUser;
+            if (!currentUser) {
+                throw new Error("No current user available for linking");
+            }
+
+            return linkWithPopup(currentUser, provider);
+        }
+
+        return signInWithPopup(auth, provider);
     }
-    else
-        return auth().signInWithCredential(googleCredential);
+
+    const request = new AuthSession.AuthRequest({
+        clientId: Platform.OS === 'android' ? GOOGLE_ANDROID_CLIENT_ID : GOOGLE_WEB_CLIENT_ID,
+        responseType: AuthSession.ResponseType.IdToken,
+        scopes: ['openid', 'profile', 'email'],
+        redirectUri: AuthSession.makeRedirectUri(),
+        extraParams: {
+            prompt: 'select_account',
+            nonce: String(Date.now()),
+        },
+    });
+
+    const response = await request.promptAsync(googleDiscovery);
+
+    if (response.type !== 'success') {
+        throw new Error('Google sign-in was cancelled or failed.');
+    }
+
+    const idToken = response.params?.id_token;
+    if (!idToken) {
+        throw new Error('No id token returned from Google sign-in.');
+    }
+
+    const googleCredential = GoogleAuthProvider.credential(idToken);
+
+    if (link) {
+        const currentUser = auth.currentUser;
+        if (!currentUser) {
+            throw new Error("No current user available for linking");
+        }
+
+        const linked = await linkWithCredential(currentUser, googleCredential).catch(() => false);
+        if (!linked) {
+            return await invokeGoogleSignIn();
+        }
+
+        return linked;
+    }
+
+    return signInWithCredential(auth, googleCredential);
 };
 
 type GoogleButtonProps = {
