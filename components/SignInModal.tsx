@@ -8,6 +8,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { View } from "react-native";
 import { ReactElement, useCallback } from "react";
 import { webModalContainerStyle } from "../util/Layout";
+import AppConfig from "../util/AppConfig";
 
 export const invokeAnonymousSignIn = async () => {
     signInAnonymously(auth)
@@ -25,8 +26,11 @@ export const invokeAnonymousSignIn = async () => {
 
 WebBrowser.maybeCompleteAuthSession();
 
-const GOOGLE_WEB_CLIENT_ID = 'YOUR_WEB_OAUTH_CLIENT_ID';
-const GOOGLE_ANDROID_CLIENT_ID = 'YOUR_ANDROID_OAUTH_CLIENT_ID';
+const GOOGLE_PLAY_AUTH_ENABLED = AppConfig.GOOGLE_PLAY_AUTH_ENABLED;
+const GOOGLE_WEB_CLIENT_ID = AppConfig.GOOGLE_WEB_CLIENT_ID;
+const GOOGLE_ANDROID_CLIENT_ID = AppConfig.GOOGLE_ANDROID_CLIENT_ID;
+
+export const GOOGLE_SIGN_IN_LABEL = GOOGLE_PLAY_AUTH_ENABLED ? 'Sign in with Google' : 'Sign in with Google (Disabled)';
 
 const googleDiscovery = {
     authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
@@ -35,6 +39,10 @@ const googleDiscovery = {
 };
 
 export const invokeGoogleSignIn = async (link: boolean = false) => {
+    if (!GOOGLE_PLAY_AUTH_ENABLED) {
+        throw new Error('Google sign-in is disabled.');
+    }
+
     if (Platform.OS === 'web') {
         const provider = new GoogleAuthProvider();
 
@@ -183,8 +191,8 @@ const SignInModal = (props: { visible: boolean, show: () => void, hide: () => vo
                     <Card.Content style={{gap: 30, marginTop: 10}}>
                         {
                             props.visible ? <>
-                                <GoogleButton onPress={googleSingInCallback} color="black" backgroundColor="white" disabled={false}>
-                                    <Text variant="bodyMedium" style={{fontWeight: "bold"}}>Sign in with Google</Text>
+                                <GoogleButton onPress={googleSingInCallback} color="black" backgroundColor="white" disabled={!GOOGLE_PLAY_AUTH_ENABLED}>
+                                    <Text variant="bodyMedium" style={{fontWeight: "bold"}}>{GOOGLE_SIGN_IN_LABEL}</Text>
                                 </GoogleButton>
                                 <View style={{justifyContent: "center", alignItems: "center"}}>
                                     <Button

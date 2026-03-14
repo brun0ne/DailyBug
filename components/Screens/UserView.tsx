@@ -11,7 +11,8 @@ import ShaderProgressBar from "../Animated/ShaderProgressBar";
 import ShaderFlatDisplay from "../Animated/ShaderFlatDisplay";
 import Item from "../Item";
 import ItemModal from "../ItemModal";
-import { GoogleButton, invokeGoogleSignIn } from "../SignInModal";
+import { GOOGLE_SIGN_IN_LABEL, GoogleButton, invokeGoogleSignIn } from "../SignInModal";
+import AppConfig from "../../util/AppConfig";
 
 import { itemImages } from "../../util/ItemImages";
 import DuckModal from "../CustomItemModals/DuckModal";
@@ -20,6 +21,7 @@ import { webScreenContentStyle } from "../../util/Layout";
 const UserView = () => {
     const userContext = useContext(UserContext); 
     const theme = useTheme();
+    const googlePlayAuthEnabled = AppConfig.GOOGLE_PLAY_AUTH_ENABLED;
 
     const isFocused = useIsFocused();
 
@@ -207,8 +209,8 @@ const UserView = () => {
             {
                 userContext.user.isAnonymous ? (
                     <View style={{marginTop: 20}}>
-                        <GoogleButton onPress={() => { invokeGoogleSignIn(true) }} color="black" backgroundColor="white" disabled={false}>
-                            <Text style={{fontWeight: "bold"}}>Sign in with Google</Text>
+                        <GoogleButton onPress={() => { invokeGoogleSignIn(true) }} color="black" backgroundColor="white" disabled={!googlePlayAuthEnabled}>
+                            <Text style={{fontWeight: "bold"}}>{GOOGLE_SIGN_IN_LABEL}</Text>
                         </GoogleButton>
                     </View>
                 ) : <></>
