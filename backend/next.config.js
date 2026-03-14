@@ -10,18 +10,6 @@ const nextConfig = {
             }
         ]
     },
-    async rewrites() {
-        return [
-            {
-                source: "/privacy",
-                destination: "/privacy.html"
-            },
-            {
-                source: "/terms",
-                destination: "/terms.html"
-            }
-        ]
-    }
 }
 
 module.exports = nextConfig
