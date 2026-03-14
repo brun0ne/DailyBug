@@ -8,6 +8,7 @@ import {
 
 import { Kysely } from 'kysely';
 import { LibsqlDialect } from "@libsql/kysely-libsql";
+import { Languages } from "@/lib/languages";
 
 export interface Database {
     bugs: BugTable
@@ -16,7 +17,7 @@ export interface Database {
     items: ItemsTable
 };
 
-export const Languages = ["javascript", "typescript", "cpp", "c", "ocaml", "java"] as const;
+export { Languages } from "@/lib/languages";
 
 export interface BugTable {
     id: Generated<number>

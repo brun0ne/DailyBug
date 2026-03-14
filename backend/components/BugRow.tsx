@@ -1,7 +1,7 @@
 "use client"
 import { memo, useCallback, useEffect, useState, useTransition } from "react";
 
-import { Bug } from "@/lib/db";
+import type { Bug } from "@/lib/db";
 import IconButton from "./IconButton";
 import { Spinner } from "flowbite-react";
 
