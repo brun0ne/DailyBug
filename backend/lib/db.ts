@@ -90,7 +90,7 @@ export { sql } from 'kysely';
 
 export const db = new Kysely<Database>({
     dialect: new LibsqlDialect({
-        url: "libsql://YOUR_DB_HOST",
+        url: process.env.DB_URL,
         authToken: process.env.DB_TOKEN,
     }),
 });
