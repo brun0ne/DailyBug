@@ -19,7 +19,10 @@ export const authOptions: NextAuthOptions = {
         }
       },
       async authorize(credentials) {
-        if (credentials?.username === "admin" && credentials.password === (process.env.ADMIN_SECRET ?? "ThisShouldNotBeUsed!!@#$%!@@")) {
+        if (!credentials || !process.env.ADMIN_SECRET)
+            return null;
+
+        if (credentials?.username === "admin" && credentials.password === process.env.ADMIN_SECRET) {
             const user = { id: "1", name: "Admin" };
             return user;
         }
