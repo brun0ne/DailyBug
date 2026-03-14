@@ -1,0 +1,12 @@
+{
+    "cleanUrls": true,
+    "regions": [
+        "fra1"
+    ],
+    "crons": [
+        {
+            "path": "/api/push/streak",
+            "schedule": "0 19 * * *"
+        }
+    ]
+}
