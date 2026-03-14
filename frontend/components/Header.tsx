@@ -64,16 +64,8 @@ const Header = () => {
         };
     }, [logoOffset]);
 
-    const privacyPolicyCallback = useCallback(() => {
-        Linking.openURL('https://dailybug.app/privacy');
-    }, []);
-
-    const contactCallback = useCallback(() => {
-        Linking.openURL('mailto:contact@dailybug.app');
-    }, []);
-
-    const feedbackCallback = useCallback(() => {
-        Linking.openURL('https://dailybug.app/feedback');
+    const githubCallback = useCallback(() => {
+        Linking.openURL('https://github.com/brun0ne/DailyBug');
     }, []);
 
     return (
@@ -107,9 +99,7 @@ const Header = () => {
                             />
                         }
                     >
-                        <Menu.Item onPress={privacyPolicyCallback} title="Privacy Policy" />
-                        <Menu.Item onPress={contactCallback} title="Contact us" />
-                        <Menu.Item onPress={feedbackCallback} title="Feedback" />
+                        <Menu.Item onPress={githubCallback} title="GitHub" />
                     </Menu>
                 </View>
             </View>
