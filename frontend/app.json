@@ -28,18 +28,8 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "extra": {
-      "eas": {
-        "projectId": "YOUR_EAS_PROJECT_ID"
-      }
-    },
+    "extra": {},
     "plugins": [
-      [
-        "expo-updates",
-        {
-          "username": "YOUR_EXPO_USERNAME"
-        }
-      ],
       "expo-localization",
       [
         "expo-font",
@@ -65,12 +55,6 @@
         {}
       ]
     ],
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
-    "updates": {
-      "url": "https://u.expo.dev/YOUR_EAS_PROJECT_ID"
-    },
     "notification": {
       "icon": "./assets/notif-icon.png",
       "color": "#fff"
