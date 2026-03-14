@@ -26,6 +26,7 @@
       "blockedPermissions": ["android.permission.RECORD_AUDIO"]
     },
     "web": {
+      "bundler": "metro",
       "favicon": "./assets/favicon.png"
     },
     "extra": {},

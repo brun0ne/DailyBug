@@ -19,7 +19,7 @@ export default function App() {
   const [isSkiaReady, setIsSkiaReady] = useState(Platform.OS !== "web");
   const [MainComponent, setMainComponent] = useState<React.ComponentType | null>(null);
   const [fontsLoaded] = useFonts({
-    ...MaterialCommunityIcons.font,
+    "material-community": require("./assets/fonts/MaterialCommunityIcons.ttf"),
     "Inter-Regular": require("./assets/fonts/Inter-Regular.ttf"),
     "Inter-Black": require("./assets/fonts/Inter-Black.ttf"),
     "Inter-Bold": require("./assets/fonts/Inter-Bold.ttf"),
