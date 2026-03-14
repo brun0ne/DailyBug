@@ -1,6 +1,6 @@
 "use client"
 
-import { Bug } from "@/lib/db";
+import type { Bug } from "@/lib/db";
 import { Button, Label, Select, TextInput, Textarea, Toast } from "flowbite-react";
 import { useCallback, useRef, useState } from "react";
 import { HiCheck } from 'react-icons/hi';

@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
-import { Bug } from "@/lib/db";
+import type { Bug } from "@/lib/db";
 import BugRow from "./BugRow";
 import LoadButton from "./LoadButton";
 

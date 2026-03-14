@@ -4,7 +4,8 @@ import { useCallback, useMemo, useState } from "react";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-import { Bug, Languages } from "@/lib/db";
+import type { Bug } from "@/lib/db";
+import { Languages } from "@/lib/languages";
 
 import BugTable from "./BugTable";
 import BugEditor from "./BugEditor";
