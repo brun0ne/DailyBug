@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { StyleSheet, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
 
 import CodeHighlighter, { type LineToHighlight } from "./CodeHighlighter";
@@ -32,12 +32,17 @@ const CodeView = (props: CodeViewProps) => {
         return m[lang.toLowerCase()] ?? lang;
     };
 
+    const verticalScrollViewWebProps = Platform.OS === "web"
+        ? { style: { flex: 1 } as const }
+        : undefined;
+
     return (
-        <View>
+        <View style={Platform.OS === "web" ? { flex: 1 } : undefined}>
             <View style={styles.languageView}><Text style={{color: "gray"}}>{prettyLanguage(props.codeLanguage)}</Text></View>
             <CodeHighlighter
                 hljsStyle={atomOneDarkReasonable}
                 horizontalScrollViewProps={{ contentContainerStyle: styles.codeContainer }}
+                verticalScrollViewProps={verticalScrollViewWebProps}
                 textStyle={styles.text}
                 language={props.codeLanguage}
                 showLineNumbers={true}

@@ -326,9 +326,9 @@ const styles = StyleSheet.create({
         ...webScreenContentStyle,
     },
     topWrapper: {
-        flex: 6,
+        flex: Platform.OS === "web" ? 1 : 6,
         marginTop: 20,
-        maxHeight: "50%"
+        ...(Platform.OS !== "web" ? { maxHeight: "50%" } : { marginBottom: 80 }),
     },
     bottomWrapper: {
         position: "absolute",

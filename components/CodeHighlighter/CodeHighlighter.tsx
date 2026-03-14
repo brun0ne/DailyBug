@@ -1,6 +1,7 @@
 import { type FunctionComponent, type ReactNode, useMemo, useRef } from "react";
 
 import {
+	Platform,
 	ScrollView,
 	type ScrollViewProps,
 	type StyleProp,
@@ -162,6 +163,10 @@ export const CodeHighlighter: FunctionComponent<CodeHighlighterProps> = ({
 			PreTag={View}
 			style={{}}
 			testID="react-native-code-highlighter"
+			{...(Platform.OS === "web" ? {
+				customStyle: { flex: 1 } as any,
+				codeTagProps: { style: { flex: 1 } as any }
+			} : {})}
 		>
 			{children}
 		</SyntaxHighlighter>
