@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { StyleSheet, View } from "react-native";
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialBottomTabNavigator } from 'react-native-paper/react-navigation';
@@ -11,6 +12,7 @@ import UserView from "./Screens/UserView";
 import SpecialView from "./Screens/SpecialView";
 import LoadView from "./Screens/LoadView";
 import { UserAPI, UserContext, UserProgressData } from "../util/UserContext";
+import { webScreenContentStyle } from "../util/Layout";
 
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from "../firebaseConfig";
@@ -100,7 +102,7 @@ const Main = () => {
         <UserContext.Provider value={context}>
             <NavigationContainer>
                 <Header />
-                <Tab.Navigator>
+                <Tab.Navigator barStyle={styles.footerBar}>
                     <Tab.Screen name="Home" component={signedIn ? HomeView : LoadView} options={{
                         tabBarIcon:({color})=>(
                             <MaterialCommunityIcons name="home" color={color} size={26} />
@@ -122,5 +124,11 @@ const Main = () => {
         </UserContext.Provider>
     );
 };
+
+const styles = StyleSheet.create({
+    footerBar: {
+        ...webScreenContentStyle,
+    }
+});
 
 export default Main;

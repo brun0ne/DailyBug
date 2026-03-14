@@ -101,9 +101,6 @@ const SpecialView = () => {
     /* responsive */
     const {height, width} = useWindowDimensions();
 
-    const ratio = width / height;
-    const tabletRatio = ratio > 0.70 ? true : false;
-
     /* animated styles */
     const sine = useSharedValue(0);
 
@@ -175,8 +172,8 @@ const SpecialView = () => {
         return <></>;
 
     return (
-        <View style={styles.screen}>
-            <View style={styles.content} onLayout={onContentLayout}>
+        <View style={[styles.screen, Platform.OS === "web" ? styles.screenWeb : null]}>
+            <View style={[styles.content, Platform.OS === "web" ? styles.contentWeb : null]} onLayout={onContentLayout}>
                 <View style={styles.banner}>
                     <Image source={bg} style={styles.image} />
                     <Animated.Image source={duck_only} style={[duckStyles, styles.image]} />
@@ -186,17 +183,29 @@ const SpecialView = () => {
 
                     <IconButton icon={"help"} style={styles.helpButton} mode={"contained-tonal"} onPress={showChances} />
 
-                    <View style={styles.storyPoints}>
-                        <ShaderFlatDisplay showBackground={false} text="STORY POINTS" number={userContext.progressData?.currency ?? 0} />
-                    </View>
+                    {
+                        Platform.OS !== "web" ? (
+                            <View style={styles.storyPoints}>
+                                <ShaderFlatDisplay showBackground={false} text="STORY POINTS" number={userContext.progressData?.currency ?? 0} />
+                            </View>
+                        ) : null
+                    }
                 </View>
 
-                <View style={styles.main}>
+                <View style={[styles.main, Platform.OS === "web" ? styles.mainWeb : null]}>
+                    {
+                        Platform.OS === "web" ? (
+                            <View style={styles.storyPointsWeb}>
+                                <ShaderFlatDisplay showBackground={false} text="STORY POINTS" number={userContext.progressData?.currency ?? 0} />
+                            </View>
+                        ) : null
+                    }
+
                     <Text variant={"titleLarge"} style={{fontSize: 25, color: "white"}}>SPRINT</Text>
 
-                    {
-                        !tabletRatio ? <Icon source="run-fast" color="white" size={50} /> : null
-                    }
+                    
+                    <Icon source="run-fast" color="white" size={50} />
+                    
 
                     <ShaderButton
                         disabled={(userContext.progressData?.currency ?? 0) < 150 || rollingPending || rolling !== false || rewardVisible}
@@ -294,14 +303,23 @@ const SpecialView = () => {
 
 const styles = StyleSheet.create({
     screen: {
-        flexGrow: 1,
+        flex: 1,
         backgroundColor: "#170112",
+    },
+    screenWeb: {
+        width: "100%",
+        minHeight: 0,
+        overflow: "visible",
     },
     content: {
         flex: 1,
         width: "100%",
         position: "relative",
         ...webScreenContentStyle,
+    },
+    contentWeb: {
+        minHeight: 0,
+        overflow: "visible",
     },
     banner: {
         width: "100%",
@@ -333,6 +351,22 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         gap: 20,
+    },
+    mainWeb: {
+        position: "absolute",
+        left: 0,
+        right: 0,
+        bottom: 26,
+        zIndex: 5,
+        flex: 0,
+        justifyContent: "flex-end",
+        paddingTop: 10,
+        paddingBottom: 28,
+        overflow: "visible",
+    },
+    storyPointsWeb: {
+        width: "100%",
+        paddingHorizontal: 10,
     },
     blackCover: {
         position: "absolute",

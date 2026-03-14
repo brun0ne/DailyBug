@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { View, StyleSheet, Image, Linking } from 'react-native';
+import { View, StyleSheet, Image, Linking, Platform } from 'react-native';
 import { Appbar, Button, Menu, useTheme } from 'react-native-paper';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
@@ -77,8 +77,8 @@ const Header = () => {
     }, []);
 
     return (
-        <Appbar.Header elevated>
-            <View>
+        <Appbar.Header elevated style={styles.header}>
+            <View style={styles.contentContainer}>
                 <Animated.View style={[statsStyles, styles.stats]}> 
                     <Button icon="calendar" mode="outlined" textColor="black">
                         {streak}
@@ -95,22 +95,41 @@ const Header = () => {
                     <Appbar.Content title="Daily Bug" />
                 </Animated.View>
 
-                <Menu
-                    visible={moreOptionsVisible}
-                    onDismiss={() => {setMoreOptionsVisible(false)}}
-                    anchor={{x: 800, y: 100}}
-                >
-                    <Menu.Item onPress={privacyPolicyCallback} title="Privacy Policy" />
-                    <Menu.Item onPress={contactCallback} title="Contact us" />
-                    <Menu.Item onPress={feedbackCallback} title="Feedback" />
-                </Menu>
+                <View style={styles.moreMenuContainer}>
+                    <Menu
+                        visible={moreOptionsVisible}
+                        onDismiss={() => {setMoreOptionsVisible(false)}}
+                        anchorPosition="bottom"
+                        anchor={
+                            <Appbar.Action
+                                icon="dots-vertical"
+                                onPress={() => {setMoreOptionsVisible(true)}}
+                            />
+                        }
+                    >
+                        <Menu.Item onPress={privacyPolicyCallback} title="Privacy Policy" />
+                        <Menu.Item onPress={contactCallback} title="Contact us" />
+                        <Menu.Item onPress={feedbackCallback} title="Feedback" />
+                    </Menu>
+                </View>
             </View>
-            <Appbar.Action style={{position: "absolute", right: 0}} icon="dots-vertical" onPress={() => {setMoreOptionsVisible(true)}} />
         </Appbar.Header>
     )
 };
 
 const styles = StyleSheet.create({
+    header: {
+        justifyContent: "center",
+    },
+    contentContainer: {
+        width: "100%",
+        ...(Platform.OS === "web"
+            ? {
+                maxWidth: 1100,
+                paddingHorizontal: 20,
+            }
+            : {}),
+    },
     stats: {
         position: "absolute",
         flexDirection: "row",
@@ -127,6 +146,12 @@ const styles = StyleSheet.create({
         width: "100%",
 
         padding: 15
+    },
+    moreMenuContainer: {
+        position: "absolute",
+        right: 0,
+        top: 0,
+        zIndex: 1
     }
 });
 

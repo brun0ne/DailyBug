@@ -14,13 +14,14 @@ vec4 main(vec2 pos) {
     vec2 n = pos/resolution.xy;
     vec4 color = vec4(n.x, n.y + sin(n.x * 5 - time/1000) * 0.3 - 0.3, 1, 1);
 
-    float wave = (
-        n.x + sin(n.y * 5 + time / 1000) * 0.01 + 
-        cos(n.y * 15 + time / 100) * 0.001 + 
-        sin(n.y * 15 + time / 100) * 0.001
-    );
+    float progressPx = progress * resolution.x;
+    float waveOffsetPx =
+        sin(n.y * 5 + time / 1000) * 3.0 +
+        cos(n.y * 15 + time / 100) * 0.3 +
+        sin(n.y * 15 + time / 100) * 0.3;
+    float wave = pos.x - progressPx - waveOffsetPx;
 
-    if (wave > progress)
+    if (wave > 0.0)
     {
         color = vec4(0, 0, n.x, 1);
     }

@@ -123,7 +123,7 @@ const SprintReward = (props: SprintRewardProps) => {
                     <View style={styles.content}>
                         <View style={{flexDirection: "row", gap: 0}}>
                             {
-                                [...Array(props.reward?.reward.stars ?? 0)].map((_, i) => {
+                                [...Array(props.reward?.reward?.stars ?? 0)].map((_, i) => {
                                     return <Icon key={`star_${i}`} source={"star"} size={20} color={"white"} />;
                                 })
                             }
@@ -132,7 +132,7 @@ const SprintReward = (props: SprintRewardProps) => {
                             itemImages[props.reward?.itemName ?? ""] ? (
                                 <Avatar.Image source={itemImages[props.reward?.itemName]} size={80} />
                             ) : (
-                                <Icon source={props.reward?.reward.icon ?? "progress-question"} size={80} color={props.reward?.reward.color ?? "white"} />
+                                <Icon source={props.reward?.reward?.icon ?? "progress-question"} size={80} color={props.reward?.reward?.color ?? "white"} />
                             )
                         }
                         <Text style={styles.name}>{props.reward?.itemName ?? ""}</Text>

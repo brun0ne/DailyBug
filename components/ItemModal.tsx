@@ -30,7 +30,7 @@ const ItemModal = (props: ItemModalProps) => {
         )
     ), [props.item]);
 
-    const actionDisabled = (props.item.amount <= 0 ?? true) || props.item.active;
+    const actionDisabled = props.item.amount <= 0 || props.item.active;
     const [activating, setActivating] = useState(false);
 
     useEffect(() => {
