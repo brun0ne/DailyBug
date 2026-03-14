@@ -1,6 +1,6 @@
-import { Canvas, RoundedRect, Shader, Text, useComputedValue, useFont, useValue, vec } from '@shopify/react-native-skia';
+import { Canvas, RoundedRect, Shader, useComputedValue, useValue, vec } from '@shopify/react-native-skia';
 import { useCallback, useEffect, useState } from 'react';
-import { Platform, StyleSheet, Text as RNText, View } from 'react-native';
+import { StyleSheet, Text as RNText, View } from 'react-native';
 import { useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSkiaRuntimeEffect } from '../../util/SkiaRuntimeEffect';
 
@@ -29,8 +29,6 @@ vec4 main(vec2 pos) {
 }
 `;
 
-const fontData = require("../../assets/Roboto/Roboto-Medium.ttf");
-
 type ShaderProgressBarProps = {
     progress: number
     text?: string
@@ -42,15 +40,10 @@ const ShaderProgressBar = ({
     text = "",
     fontSize = 12
 }: ShaderProgressBarProps) => {
-    const isWeb = Platform.OS === 'web';
     const time = useValue(0);
     const source = useSkiaRuntimeEffect(shaderSource);
     
     const [layoutSize, setLayoutSize] = useState({ width: 0, height: 25 });
-
-    const skiaFont = useFont(fontData, fontSize);
-    const font = isWeb ? null : skiaFont;
-    const fontHeight = font?.measureText(text).height ?? fontSize;
 
     const interpolatedProgress = useSharedValue(0);
 
@@ -96,8 +89,6 @@ const ShaderProgressBar = ({
         });
     }, []);
 
-    const textY = (layoutSize.height + fontHeight) / 2;
-
     return (
         <View style={styles.view} onLayout={onLayout}>
             <Canvas style={styles.canvas}>
@@ -110,21 +101,9 @@ const ShaderProgressBar = ({
                         <RoundedRect x={0} y={0} width={layoutSize.width} height={layoutSize.height} r={10} color={'#2E3A57'} />
                     )
                 }
-                {
-                    font && text !== "" ? (
-                        <Text
-                            x={15}
-                            y={textY}
-                            text={text}
-                            font={font}
-                            color={"white"}
-                            blendMode={"screen"}
-                        />
-                    ) : null 
-                }
             </Canvas>
             {
-                !font && text !== "" ? (
+                text !== "" ? (
                     <View pointerEvents="none" style={styles.webTextOverlay}>
                         <RNText style={{color: 'white', fontSize, fontFamily: "Roboto-Medium"}}>{text}</RNText>
                     </View>

@@ -1,7 +1,6 @@
-import { Canvas, Text, RoundedRect, Shader, useComputedValue, useValue, vec, useFont } from "@shopify/react-native-skia";
+import { Canvas, RoundedRect, Shader, useComputedValue, useValue, vec } from "@shopify/react-native-skia";
 import { useCallback, useEffect, useState } from "react";
-import { Platform, StyleSheet, Text as RNText, View } from "react-native";
-import { useDerivedValue, useSharedValue, withTiming } from "react-native-reanimated";
+import { StyleSheet, Text as RNText, View } from "react-native";
 import { useSkiaRuntimeEffect } from "../../util/SkiaRuntimeEffect";
 
 const sourceMainShader = `
@@ -43,7 +42,6 @@ vec4 main(vec2 pos) {
 `;
 
 
-const fontData = require("../../assets/fonts/Inter-Bold.ttf");
 
 type ShaderFlatDisplayProps = {
     text: string,
@@ -82,11 +80,9 @@ const ShaderFlatDisplay = ({
 
     showBackground = true
 }: ShaderFlatDisplayProps) => {
-    const isWeb = Platform.OS === "web";
     const time = useValue(0);
     const sourceMain = useSkiaRuntimeEffect(sourceMainShader);
     const sourceNumberRect = useSkiaRuntimeEffect(sourceNumberRectShader);
-    const displayedNumber = useSharedValue(0);
     const [layoutWidth, setLayoutWidth] = useState(0);
     const renderHeight = displayHeight;
 
@@ -113,23 +109,9 @@ const ShaderFlatDisplay = ({
         }
     ), [time, layoutWidth, renderHeight]);
 
-    const leftText = useDerivedValue(() => (
-        Math.round(displayedNumber.value).toString()
-    ), [displayedNumber]);
-    const skiaFont = useFont(fontData, fontSize);
-    const font = isWeb ? null : skiaFont;
-
     const estimatedCharWidth = fontSize * 0.6;
-    const fontHeight = font?.measureText(text).height ?? fontSize;
-    const mainTextWidth = font?.measureText(text).width ?? text.length * estimatedCharWidth;
-
-    const numbersWidth = useDerivedValue(() => (
-        font?.measureText(leftText.value).width ?? leftText.value.length * estimatedCharWidth
-    ), [font, leftText, estimatedCharWidth]);
-
+    const mainTextWidth = text.length * estimatedCharWidth;
     const marginLeft = (layoutWidth - leftRectWidth - gap - mainTextWidth) / 2 + horizontalOffset;
-    const mainTextX = marginLeft + leftRectWidth + gap;
-    const leftTextX = useDerivedValue(() => marginLeft + leftRectWidth / 2 - numbersWidth.value / 2, [marginLeft, leftRectWidth, numbersWidth]);
 
     const onLayout = useCallback((event: any) => {
         const { width } = event.nativeEvent.layout;
@@ -142,12 +124,6 @@ const ShaderFlatDisplay = ({
             return width;
         });
     }, []);
-
-    useEffect(() => {
-        displayedNumber.value = withTiming(number, {
-            duration: 500
-        });
-    }, [displayedNumber, number]);
 
     return (
         <View style={{width: "100%", height: displayHeight, flexShrink: 0, position: "relative", overflow: "hidden"}} onLayout={onLayout}>
@@ -174,38 +150,15 @@ const ShaderFlatDisplay = ({
                     )
                 }
 
-                {
-                    font ? <>
-                        <Text
-                            x={mainTextX}
-                            y={renderHeight / 2 + fontHeight / 2}
-                            font={font}
-                            text={text}
-                            color={textColor}
-                        />
-
-                        <Text
-                            x={leftTextX}
-                            y={renderHeight / 2 + fontHeight / 2}
-                            font={font}
-                            text={leftText}
-                            color={textColor}
-                        />
-                    </> : null
-                }
             </Canvas>
-            {
-                !font ? (
-                    <View pointerEvents="none" style={styles.webTextOverlay}>
-                        <View style={[styles.webTextRow, {transform: [{ translateX: horizontalOffset }]}]}>
-                            <View style={[styles.webLeftTextBox, {width: leftRectWidth, marginRight: gap}]}> 
-                                <RNText style={{color: textColor, fontSize, fontFamily: "Inter-Bold"}}>{Math.round(number).toString()}</RNText>
-                            </View>
-                            <RNText style={{color: textColor, fontSize, fontFamily: "Inter-Bold"}}>{text}</RNText>
-                        </View>
+            <View pointerEvents="none" style={styles.webTextOverlay}>
+                <View style={[styles.webTextRow, {transform: [{ translateX: horizontalOffset }]}]}>
+                    <View style={[styles.webLeftTextBox, {width: leftRectWidth, marginRight: gap}]}>
+                        <RNText style={{color: textColor, fontSize, fontFamily: "Inter-Regular", marginLeft: "5%", width: "100%", textAlign: "center"}}>{Math.round(number).toString()}</RNText>
                     </View>
-                ) : null
-            }
+                    <RNText style={{color: textColor, fontSize, fontFamily: "Inter-Bold"}}>{text}</RNText>
+                </View>
+            </View>
         </View>
     );
 }
